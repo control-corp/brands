@@ -37,11 +37,22 @@ class Application extends Container\Container
      */
     public function run()
     {
-        $response = $this->start();
-
-        $response->send();
-
-        return $this;
+        try {
+            $response = $this->start();
+            $response->send();
+        } catch (\Exception $e) {
+            if (env('development')) {
+                try {
+                    if ($this->has('ExceptionHandler')) {
+                        echo $this->get('ExceptionHandler')->handleException($e);
+                    } else {
+                        echo $e->getMessage();
+                    }
+                } catch (\Exception $e) {
+                    echo $e->getMessage();
+                }
+            }
+        }
     }
 
     /**
