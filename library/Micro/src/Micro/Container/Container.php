@@ -42,7 +42,7 @@ class Container implements ContainerInterface
     public function offsetGet($offset)
     {
         if (!isset($this->services[$offset])) {
-            throw new \InvalidArgumentException(sprintf('Container key "%s" does\'n exists', $offset), 500);
+            throw new \InvalidArgumentException(sprintf('[' . __METHOD__ . '] Container key "%s" does\'n exists', $offset), 500);
         }
 
         // call resolved
@@ -85,8 +85,8 @@ class Container implements ContainerInterface
      */
     public function offsetSet($offset, $value)
     {
-        if (isset($this->services[$offset])) {
-            throw new \InvalidArgumentException(sprintf('Container key "%s" already exists!', $offset), 500);
+        if (isset($this->resolved[$offset])) {
+            throw new \InvalidArgumentException(sprintf('[' . __METHOD__ . '] Container key "%s" already exists!', $offset), 500);
         }
 
         $this->services[$offset] = $value;
@@ -141,5 +141,30 @@ class Container implements ContainerInterface
     public function has($service)
     {
         return $this->offsetExists($service);
+    }
+
+    /**
+     * @param string $offset
+     * @param callable $callback
+     * @throws \InvalidArgumentException
+     * @return unknown
+     */
+    public function extend($offset, $callback)
+    {
+        if (isset($this->resolved[$offset])) {
+            throw new \InvalidArgumentException(sprintf('[' . __METHOD__ . '] Service "%s" is resolved!', $offset), 500);
+        }
+
+        if (!is_object($callback) || !method_exists($callback, '__invoke')) {
+            throw new \InvalidArgumentException('[' . __METHOD__ . '] Provided callback must be \Closure or implements __invoke!', 500);
+        }
+
+        $service = $this->services[$offset];
+
+        $extended = function ($c) use ($service, $callback) {
+            return $callback($service($c), $c);
+        };
+
+        return $this[$offset] = $extended;
     }
 }
