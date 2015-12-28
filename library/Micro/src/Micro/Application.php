@@ -21,7 +21,7 @@ class Application extends Container\Container
         } elseif (is_string($config) && file_exists($config)) {
             $config = new Config(include $config);
         } else if (!$config instanceof Config) {
-            throw new \InvalidArgumentException('Config param must be valid file or array', 500);
+            throw new \InvalidArgumentException('[' . __METHOD__ . '] Config param must be valid file or array', 500);
         }
 
         \MicroLoader::addPath($config->get('application.packages_paths', []));
@@ -61,7 +61,7 @@ class Application extends Container\Container
         try {
 
             if (($route = $this['router']->match()) === \null) {
-                throw new \Exception('Route not found', 404);
+                throw new \Exception('[' . __METHOD__ . '] Route not found', 404);
             }
 
             $response = $this->unpackage($route);
@@ -103,7 +103,7 @@ class Application extends Container\Container
         $route = $this['router']->getRoute($errorHandler['route']);
 
         if ($route === \null) {
-            throw new \Exception('Error route not found', 404);
+            throw new \Exception('[' . __METHOD__ . '] Error route not found', 404);
         }
 
         $route->setParams($this['config']->get('error.params', []) + ['exception' => $e]);
@@ -120,9 +120,12 @@ class Application extends Container\Container
         $packages = $this['config']->get('application.packages', []);
 
         foreach ($packages as $package) {
-            $instance = $package . '\\Package';
-            if (class_exists($instance)) {
-                $instance = new $instance($this);
+            $packageInstance = $package . '\\Package';
+            if (class_exists($packageInstance)) {
+                $instance = new $packageInstance($this);
+                if (!$instance instanceof Application\Package) {
+                    throw new \RuntimeException(sprintf('[' . __METHOD__ . '] %s must be instance of Micro\Application\Package', $packageInstance), 500);
+                }
                 $instance->setContainer($this);
                 $instance->boot();
                 $this->packages[$package] = $instance;
@@ -130,7 +133,7 @@ class Application extends Container\Container
         }
 
         if (empty($this->packages)) {
-            throw new \Exception('No packages found', 500);
+            throw new \Exception('[' . __METHOD__ . '] No packages found', 500);
         }
     }
 
@@ -159,9 +162,7 @@ class Application extends Container\Container
             $handlerResponse = $handler;
         }
 
-        if (is_callable($handlerResponse)) {
-            $handlerResponse = call_user_func($handlerResponse, $route, $this);
-        } else if (is_string($handlerResponse) && $this->has($handlerResponse)) {
+        if (is_string($handlerResponse) && $this->has($handlerResponse)) {
             $handlerResponse = $this->get($handlerResponse);
         }
 
@@ -176,17 +177,17 @@ class Application extends Container\Container
                 $parts = explode('\\', $package);
 
                 if (!isset($this->packages[$parts[0]])) {
-                    throw new \Exception('Package "' . $parts[0] . '" not found');
+                    throw new \Exception('[' . __METHOD__ . '] Package "' . $parts[0] . '" not found');
                 }
 
                 if (!class_exists($package)) {
-                    throw new \Exception('Package class "' . $package . '" not found');
+                    throw new \Exception('[' . __METHOD__ . '] Package class "' . $package . '" not found');
                 }
 
                 $package = new $package($this['request'], $this['response']);
 
                 if (!method_exists($package, $action)) {
-                    throw new \Exception('Method "' . $action . '" not found in "' . get_class($package) . '"', 404);
+                    throw new \Exception('[' . __METHOD__ . '] Method "' . $action . '" not found in "' . get_class($package) . '"', 404);
                 }
 
                 if ($package instanceof Container\ContainerAwareInterface) {
@@ -241,7 +242,7 @@ class Application extends Container\Container
     public function getPackage($package)
     {
         if (!isset($this->packages[$package])) {
-            throw new \Exception('Package "' . $package . '" not found');
+            throw new \Exception('[' . __METHOD__ . '] Package "' . $package . '" not found');
         }
 
         return $this->packages[$package];
