@@ -8,7 +8,7 @@ return [
             'App'
         ],
         'packages_paths' => [
-            __DIR__ . '/packages'
+            'application/packages'
         ],
         'perfomance' => [
             'enable' => 0

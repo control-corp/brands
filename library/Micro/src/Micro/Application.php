@@ -94,7 +94,13 @@ class Application extends Container\Container
      */
     public function handleError(\Exception $e)
     {
-        $route = $this['router']->getRoute($this['config']->get('error.route'));
+        $errorHandler = $this['config']->get('error');
+
+        if ($errorHandler === \null || !isset($errorHandler['route'])) {
+            throw $e;
+        }
+
+        $route = $this['router']->getRoute($errorHandler['route']);
 
         if ($route === \null) {
             throw new \Exception('Error route not found', 404);
@@ -148,22 +154,21 @@ class Application extends Container\Container
         $handler = $route->getHandler();
 
         if ($handler instanceof \Closure) {
-            $handler = $handler->bindTo($route);
-            $handlerResponse = $handler->__invoke();
+            $handlerResponse = $handler->__invoke($route, $route, $this);
         } else {
             $handlerResponse = $handler;
         }
 
         if (is_callable($handlerResponse)) {
-            $handlerResponse = call_user_func($handlerResponse);
+            $handlerResponse = call_user_func($handlerResponse, $route, $this);
+        } else if (is_string($handlerResponse) && $this->has($handlerResponse)) {
+            $handlerResponse = $this->get($handlerResponse);
         }
 
         if (is_string($handlerResponse)) {
 
             if (strpos($handlerResponse, '@') !== \false) {
                 list($package, $action) = explode('@', $handlerResponse);
-            } else if (strpos($handlerResponse, '::') !== \false) {
-                list($package, $action) = explode('::', $handlerResponse);
             }
 
             if ($package !== \null) {

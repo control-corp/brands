@@ -15,6 +15,8 @@ class Router
     protected $routesStatic = [];
     protected $globalParams = [];
 
+    const URL_DELIMITER = '/';
+
     /**
      * @param \Micro\Http\Request $request
      */
@@ -29,8 +31,8 @@ class Router
             $requestUri = $this->request->getPathInfo();
         }
 
-        if ($requestUri !== '/') {
-            $requestUri = rtrim($requestUri, '/');
+        if ($requestUri !== static::URL_DELIMITER) {
+            $requestUri = rtrim($requestUri, static::URL_DELIMITER);
         }
 
         if (isset($this->routesStatic[$requestUri])) {
@@ -50,6 +52,14 @@ class Router
     {
         if (isset($this->routes[$name])) {
             throw new \Exception(sprintf('Route "%s" already exists!', $name), 500);
+        }
+
+        $pattern = trim($pattern, static::URL_DELIMITER);
+
+        if (empty($pattern)) {
+            $pattern = static::URL_DELIMITER;
+        } else {
+            $pattern = static::URL_DELIMITER . $pattern;
         }
 
         $route = new Route($name, $pattern, $handler);
@@ -97,7 +107,7 @@ class Router
             }
         }
 
-        return $this->request->getBaseUrl() . '/' . trim($url, '/');
+        return $this->request->getBaseUrl() . static::URL_DELIMITER . trim($url, static::URL_DELIMITER);
     }
 
     public function setGlobalParam($key, $value)
@@ -123,6 +133,10 @@ class Router
 
     public function getRoute($name)
     {
-        return isset($this->routes[$name]) ? $this->routes[$name] : \null;
+        if (isset($this->routes[$name])) {
+            return $this->routes[$name];
+        }
+
+        return \null;
     }
 }

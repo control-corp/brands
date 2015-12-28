@@ -28,8 +28,6 @@ class Route
     {
         if (preg_match('~^' . $this->compile() . '$~ius', $requestUri, $matches)) {
 
-            unset($matches[0]);
-
             foreach ($this->params as $k => $v) {
                 if (isset($matches[$k])) {
                     $this->params[$k] = $matches[$k];

@@ -26,12 +26,23 @@ $app['router'] = function ($c) {
 
     $router = new Micro\Application\Router($c['request']);
 
-    $router->map('home', '/', 'App\\Controller\\Index@index');
-    $router->map('articles', '/articles', 'App\\Controller\\Index@articles');
-    $router->map('article', '/article/{id}', 'App\\Controller\\Index@article');
-    $router->map('error', '/error', 'App\\Controller\\Error@index');
+    if ((file_exists($file = 'application/boot/routes.php')) === \true) {
+        foreach (include $file as $name => $config) {
+            $route = $router->map($name, $config['pattern'], $config['handler']);
+            if (isset($config['conditions'])) {
+                $route->setConditions($config['conditions']);
+            }
+            if (isset($config['defaults'])) {
+                $route->setDefaults($config['defaults']);
+            }
+        }
+    }
 
     return $router;
 };
+
+if ((file_exists($file = 'application/boot/services.php')) === \true) {
+    include $file;
+}
 
 return $app;

@@ -9,7 +9,7 @@ if (php_sapi_name() === 'cli-server'
 chdir(dirname(__DIR__));
 
 try {
-    $app = include 'application/boot.php';
+    $app = include 'application/boot/start.php';
     $app->run();
 } catch (\Exception $e) {
     if (env('development')) {
