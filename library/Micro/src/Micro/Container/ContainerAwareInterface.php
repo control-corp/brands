@@ -1,0 +1,10 @@
+<?php
+
+namespace Micro\Container;
+
+interface ContainerAwareInterface
+{
+    public function setContainer(ContainerInterface $container);
+
+    public function getContainer();
+}

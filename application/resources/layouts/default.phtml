@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="<?php echo server_url(base_url()) . '/'; ?>" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><?php echo $this->renderSection('title', 'Home'); ?></title>
+    <style>
+    html, body { font-size: 16px; }
+    a { color: blue; }
+    a:hover { color: blue; text-decoration: none; }
+    ul.nav { margin: 0; padding: 0; }
+    ul.nav li { display: inline-block; }
+    ul.nav li:before { content: " / "; }
+    ul.nav li:first-child:before { content: ""; }
+    </style>
+    <?php echo $this->renderSection('styles'); ?>
+</head>
+<body>
+    <div class="container">
+        <ul class="nav">
+            <li><a href="<?php echo route('home'); ?>">home</a></li>
+            <li><a href="<?php echo route('articles'); ?>">articles</a></li>
+        </ul>
+        <?php echo $this->renderSection('content'); ?>
+    </div>
+    <?php echo $this->renderSection('scripts'); ?>
+</body>
+</html>

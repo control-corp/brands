@@ -1,0 +1,33 @@
+<?php
+
+namespace Micro\Application;
+
+use Micro\Http;
+use Micro\Container\ContainerAwareInterface;
+use Micro\Container\ContainerAwareTrait;
+
+class Controller implements ContainerAwareInterface
+{
+    use ContainerAwareTrait;
+
+    /**
+     * @var \Micro\Http\Request
+     */
+    protected $request;
+
+    /**
+     * @var \Micro\Http\Response
+     */
+    protected $response;
+
+    public function __construct(Http\Request $request, Http\Response $response)
+    {
+        $this->request = $request;
+        $this->response = $response;
+    }
+
+    public function init()
+    {
+
+    }
+}
