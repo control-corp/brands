@@ -70,7 +70,13 @@ class Application extends Container\Container
 
             try {
 
-                $this->handleError($e);
+                if (($exceptionResponse = $this->handleException($e)) instanceof Http\Response) {
+                    return $exceptionResponse;
+                }
+
+                if (env('development')) {
+                    $response->setBody((string) $exceptionResponse);
+                }
 
             } catch (\Exception $e) {
 
@@ -92,8 +98,12 @@ class Application extends Container\Container
      * @throws \Exception
      * @return \Micro\Http\Response
      */
-    public function handleError(\Exception $e)
+    public function handleException(\Exception $e)
     {
+        if ($this->has('ExceptionHandler')) {
+            return $this->get('ExceptionHandler')->handleException($e);
+        }
+
         $errorHandler = $this['config']->get('error');
 
         if ($errorHandler === \null || !isset($errorHandler['route'])) {
@@ -209,6 +219,7 @@ class Application extends Container\Container
                         );
                     }
                     $handlerResponse->injectPaths();
+                    $handlerResponse = $handlerResponse->render();
                 }
             }
         }

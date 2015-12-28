@@ -42,7 +42,7 @@ class Container implements ContainerInterface
     public function offsetGet($offset)
     {
         if (!isset($this->services[$offset])) {
-            throw new \InvalidArgumentException(sprintf('[' . __METHOD__ . '] Container key "%s" does\'n exists', $offset), 500);
+            throw new \InvalidArgumentException(sprintf('[' . __METHOD__ . '] Service "%s" not found!', $offset), 500);
         }
 
         // call resolved
@@ -86,7 +86,7 @@ class Container implements ContainerInterface
     public function offsetSet($offset, $value)
     {
         if (isset($this->resolved[$offset])) {
-            throw new \InvalidArgumentException(sprintf('[' . __METHOD__ . '] Container key "%s" already exists!', $offset), 500);
+            throw new \InvalidArgumentException(sprintf('[' . __METHOD__ . '] Service "%s" already exists!', $offset), 500);
         }
 
         $this->services[$offset] = $value;

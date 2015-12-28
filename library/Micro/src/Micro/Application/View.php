@@ -86,9 +86,7 @@ class View
             while (ob_get_level() > $__obLevel) {
                 ob_end_clean();
             }
-            if (env('development')) {
-                echo $e->getMessage();
-            }
+            throw $e;
         }
 
         return ob_get_clean();

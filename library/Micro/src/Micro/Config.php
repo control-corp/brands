@@ -8,15 +8,13 @@ class Config
 
     public function __construct($data = \null)
     {
-        $this->load($data);
+        if ($data !== \null) {
+            $this->load($data);
+        }
     }
 
-    public function load(array $data = \null)
+    public function load(array $data)
     {
-        if ($data === \null) {
-            return $this;
-        }
-
         static::$config = array_replace_recursive(static::$config, $data);
 
         return $this;
