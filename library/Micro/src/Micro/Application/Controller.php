@@ -20,6 +20,10 @@ class Controller implements ContainerAwareInterface
      */
     protected $response;
 
+    /**
+     * @param \Micro\Http\Request $request
+     * @param \Micro\Http\Response $response
+     */
     public function __construct(Http\Request $request, Http\Response $response)
     {
         $this->request = $request;

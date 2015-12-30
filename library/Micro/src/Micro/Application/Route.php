@@ -60,9 +60,7 @@ class Route
 
             };
 
-            $lambdaOptional = $lambdaOptional->bindTo($this);
-
-            $this->compiled = preg_replace_callback('~\[([^\]]*){([^}]+)}([^\]]*)\]~ius', $lambdaOptional, $this->compiled);
+            $this->compiled = preg_replace_callback('~\[([^\]]*){([^}]+)}([^\]]*)\]~ius', $lambdaOptional->bindTo($this), $this->compiled);
 
             $lambdaRequired = function ($match) {
 
@@ -78,9 +76,7 @@ class Route
 
             };
 
-            $lambdaRequired = $lambdaRequired->bindTo($this);
-
-            $this->compiled = preg_replace_callback('~{([^}]+)}~ius', $lambdaRequired, $this->compiled);
+            $this->compiled = preg_replace_callback('~{([^}]+)}~ius', $lambdaRequired->bindTo($this), $this->compiled);
         }
 
         return $this->compiled;

@@ -863,12 +863,18 @@ class Request
 
     /**
      * Is the request a Javascript XMLHttpRequest?
-     *
-     * Should work with Prototype/Script.aculo.us, possibly others.
-     *
      * @return boolean
      */
     public function isXmlHttpRequest()
+    {
+        return $this->isAjax();
+    }
+
+    /**
+     * Is the request a Javascript XMLHttpRequest?
+     * @return boolean
+     */
+    public function isAjax()
     {
         return ($this->getHeader('X_REQUESTED_WITH') == 'XMLHttpRequest');
     }

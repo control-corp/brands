@@ -5,12 +5,19 @@ namespace Micro\Application;
 class View
 {
     protected $template;
+
     protected $parent;
+
     protected $__currentSection;
+
     protected $data = [];
+
     protected $paths = [];
+
     protected $sections = [];
+
     protected $cloned = \false;
+
     protected static $helpers = [];
 
     public function __construct($template, array $data = \null, $injectPaths = \false)
@@ -50,7 +57,7 @@ class View
             if (empty($this->template)) {
                 throw new \Exception('Template is empty', 500);
             }
-            $file = str_replace(array('@', '::'), '/', $this->template);
+            $file = $this->template;
         }
 
         $file .= '.phtml';

@@ -5,7 +5,7 @@ return [
     'debug' => 1,
     'application' => [
         'packages' => [
-            'App'
+            'App',
         ],
         'packages_paths' => [
             'application/packages'

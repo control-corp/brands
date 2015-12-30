@@ -27,8 +27,8 @@ if (!function_exists('config')) {
 }
 
 if (!function_exists('env')) {
-    function env($env = \null) {
-
+    function env($env = \null)
+    {
         $_env = config('env', 'production');
 
         if ($env === \null) {
@@ -86,25 +86,29 @@ if (!function_exists('server_url')) {
 }
 
 if (!function_exists('json')) {
-    function json($body = '', $code = 200) {
+    function json($body = '', $code = 200)
+    {
         return new Micro\Http\Response\JsonResponse($body, $code);
     }
 }
 
 if (!function_exists('html')) {
-    function html($body = '', $code = 200) {
+    function html($body = '', $code = 200)
+    {
         return new Micro\Http\Response\HtmlResponse($body, $code);
     }
 }
 
 if (!function_exists('redirect')) {
-    function redirect($url, $code = 302) {
+    function redirect($url, $code = 302)
+    {
         return new Micro\Http\Response\RedirectResponse($url, $code);
     }
 }
 
 if (!function_exists('view')) {
-    function view($template, array $data = \null, $injectPaths = \false) {
+    function view($template, array $data = \null, $injectPaths = \false)
+    {
         return new Micro\Application\View($template, $data, $injectPaths);
     }
 }

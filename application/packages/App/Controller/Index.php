@@ -14,11 +14,11 @@ class Index extends Controller
 
     public function articles()
     {
-        return new View('articles::list');
+        return new View('articles/list');
     }
 
     public function article($id)
     {
-        return new View('articles::detail', ['id' => $id]);
+        return new View('articles/detail', ['id' => $id]);
     }
 }

@@ -43,8 +43,8 @@ class Application extends Container\Container
         } catch (\Exception $e) {
             if (env('development')) {
                 try {
-                    if ($this->has('ExceptionHandler')) {
-                        echo $this->get('ExceptionHandler')->handleException($e);
+                    if ($this->has('exception.handler')) {
+                        echo $this->get('exception.handler')->handleException($e);
                     } else {
                         echo $e->getMessage();
                     }
@@ -111,8 +111,8 @@ class Application extends Container\Container
      */
     public function handleException(\Exception $e)
     {
-        if ($this->has('ExceptionHandler')) {
-            return $this->get('ExceptionHandler')->handleException($e);
+        if ($this->has('exception.handler')) {
+            return $this->get('exception.handler')->handleException($e);
         }
 
         $errorHandler = $this['config']->get('error');
@@ -152,10 +152,6 @@ class Application extends Container\Container
                 $this->packages[$package] = $instance;
             }
         }
-
-        if (empty($this->packages)) {
-            throw new \Exception('[' . __METHOD__ . '] No packages found', 500);
-        }
     }
 
     /**
@@ -166,7 +162,7 @@ class Application extends Container\Container
      */
     public function unpackage(Application\Route $route)
     {
-        $this['request']->setParams($route->getParams());
+        $this['request']->setParams($route->getParams()/*  + $route->getDefaults() */);
 
         if (($eventResponse = $this['event']->trigger('unpackage.start', compact('response'))) instanceof Http\Response) {
             return $eventResponse;
@@ -178,7 +174,7 @@ class Application extends Container\Container
         $handler = $route->getHandler();
 
         if ($handler instanceof \Closure) {
-            $handlerResponse = $handler->__invoke($route, $route, $this);
+            $handlerResponse = $handler->__invoke($route, $this);
         } else {
             $handlerResponse = $handler;
         }
@@ -187,52 +183,51 @@ class Application extends Container\Container
             $handlerResponse = $this->get($handlerResponse);
         }
 
-        if (is_string($handlerResponse)) {
+        if (is_string($handlerResponse) && strpos($handlerResponse, '@') !== \false) {
 
-            if (strpos($handlerResponse, '@') !== \false) {
-                list($package, $action) = explode('@', $handlerResponse);
+            list($package, $action) = explode('@', $handlerResponse);
+
+            $parts = explode('\\', $package);
+
+            if (!isset($this->packages[$parts[0]])) {
+                throw new \Exception('[' . __METHOD__ . '] Package "' . $parts[0] . '" not found');
             }
 
-            if ($package !== \null) {
-
-                $parts = explode('\\', $package);
-
-                if (!isset($this->packages[$parts[0]])) {
-                    throw new \Exception('[' . __METHOD__ . '] Package "' . $parts[0] . '" not found');
-                }
-
-                if (!class_exists($package)) {
-                    throw new \Exception('[' . __METHOD__ . '] Package class "' . $package . '" not found');
-                }
-
-                $package = new $package($this['request'], $this['response']);
-
-                if (!method_exists($package, $action)) {
-                    throw new \Exception('[' . __METHOD__ . '] Method "' . $action . '" not found in "' . get_class($package) . '"', 404);
-                }
-
-                if ($package instanceof Container\ContainerAwareInterface) {
-                    $package->setContainer($this);
-                }
-
-                $package->init();
-
-                $handlerResponse = call_user_func_array(array($package, $action), $route->getParams());
-
-                if (is_array($handlerResponse) || $handlerResponse === \null) {
-                    $handlerResponse = new Application\View(\null, $handlerResponse);
-                }
-
-                if ($handlerResponse instanceof Application\View) {
-                    if ($handlerResponse->getTemplate() === \null) {
-                        $handlerResponse->setTemplate(
-                            Utils::decamelize($parts[0]) . '/' . Utils::decamelize($action)
-                        );
-                    }
-                    $handlerResponse->injectPaths();
-                    $handlerResponse = $handlerResponse->render();
-                }
+            if (!class_exists($package)) {
+                throw new \Exception('[' . __METHOD__ . '] Package class "' . $package . '" not found');
             }
+
+            $packageInstance = new $package($this['request'], $this['response']);
+
+            if (!method_exists($packageInstance, $action)) {
+                throw new \Exception('[' . __METHOD__ . '] Method "' . $action . '" not found in "' . $package . '"', 404);
+            }
+
+            if ($packageInstance instanceof Container\ContainerAwareInterface) {
+                $packageInstance->setContainer($this);
+            }
+
+            if ($packageInstance instanceof Application\Controller) {
+                $packageInstance->init();
+            }
+
+            $packageResponse = call_user_func_array(array($packageInstance, $action), $route->getParams());
+
+            if (is_array($packageResponse) || $packageResponse === \null) {
+                $packageResponse = new Application\View(\null, $packageResponse);
+            }
+
+            if ($packageResponse instanceof Application\View) {
+                if ($packageResponse->getTemplate() === \null) {
+                    $packageResponse->setTemplate(
+                        Utils::decamelize($parts[0]) . '/' . Utils::decamelize($action)
+                    );
+                }
+                $packageResponse->injectPaths();
+                $packageResponse = $packageResponse->render();
+            }
+
+            $handlerResponse = $packageResponse;
         }
 
         if ($handlerResponse instanceof Http\Response) {

@@ -32,7 +32,7 @@ abstract class Package implements ContainerAwareInterface
         if ($this->name === null) {
             $module = get_class($this);
             $module = explode('\\', $module);
-            $this->name = preg_replace('~Module$~', '', $module[0]);
+            $this->name = $module[0];
         }
 
         return $this->name;

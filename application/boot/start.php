@@ -22,16 +22,20 @@ $app['event'] = function () {
     return new Micro\Event\Manager();
 };
 
-$app['router'] = function ($c) {
+$app['router'] = function ($container) {
 
-    $router = new Micro\Application\Router($c['request']);
+    $router = new Micro\Application\Router($container['request']);
 
     if ((file_exists($file = 'application/boot/routes.php')) === \true) {
+
         foreach (include $file as $name => $config) {
+
             $route = $router->map($name, $config['pattern'], $config['handler']);
+
             if (isset($config['conditions'])) {
                 $route->setConditions($config['conditions']);
             }
+
             if (isset($config['defaults'])) {
                 $route->setDefaults($config['defaults']);
             }
