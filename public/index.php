@@ -3,7 +3,7 @@
 chdir(dirname(__DIR__));
 
 try {
-    $app = include 'application/boot/start.php';
+    $app = include 'application/start.php';
     $app->run();
 } catch (\Exception $e) {
     if (env('development')) {

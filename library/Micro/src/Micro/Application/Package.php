@@ -19,10 +19,11 @@ abstract class Package implements ContainerAwareInterface
      */
     protected $dir;
 
+    /**
+     * Some initializations like events
+     */
     public function boot()
-    {
-
-    }
+    {}
 
     /**
      * @return string $name

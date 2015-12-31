@@ -7,7 +7,7 @@ if ((file_exists($classes = 'application/data/classes.php')) === \true) {
 }
 
 $app = new Micro\Application(
-    include 'application/config.php'
+    include 'application/config/app.php'
 );
 
 $app['request'] = function () {
@@ -26,7 +26,7 @@ $app['router'] = function ($container) {
 
     $router = new Micro\Application\Router($container['request']);
 
-    if ((file_exists($file = 'application/boot/routes.php')) === \true) {
+    if ((file_exists($file = 'application/config/routes.php')) === \true) {
 
         foreach (include $file as $name => $config) {
 
@@ -45,7 +45,7 @@ $app['router'] = function ($container) {
     return $router;
 };
 
-if ((file_exists($file = 'application/boot/services.php')) === \true) {
+if ((file_exists($file = 'application/config/services.php')) === \true) {
     include $file;
 }
 

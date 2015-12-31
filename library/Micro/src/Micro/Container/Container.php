@@ -15,6 +15,11 @@ class Container implements ContainerInterface
     protected $resolved = [];
 
     /**
+     * @var array
+     */
+    protected $aliases = [];
+
+    /**
      * @var \Micro\Container
      */
     protected static $instance;
@@ -41,6 +46,13 @@ class Container implements ContainerInterface
      */
     public function offsetGet($offset)
     {
+        /**
+         * Check if it has an alias
+         */
+        if (isset($this->aliases[$offset])) {
+            $offset = $this->aliases[$offset];
+        }
+
         if (!isset($this->services[$offset])) {
             throw new \InvalidArgumentException(sprintf('[' . __METHOD__ . '] Service "%s" not found!', $offset), 500);
         }
@@ -86,10 +98,12 @@ class Container implements ContainerInterface
     public function offsetSet($offset, $value)
     {
         if (isset($this->resolved[$offset])) {
-            throw new \InvalidArgumentException(sprintf('[' . __METHOD__ . '] Service "%s" already exists!', $offset), 500);
+            throw new \InvalidArgumentException(sprintf('[' . __METHOD__ . '] Service "%s" is resolved!', $offset), 500);
         }
 
         $this->services[$offset] = $value;
+
+        return $this;
     }
 
     /**
@@ -166,5 +180,17 @@ class Container implements ContainerInterface
         };
 
         return $this[$offset] = $extended;
+    }
+
+    /**
+     * @param string $alias
+     * @param string $service
+     * @return \Micro\Container\Container
+     */
+    public function alias($alias, $service)
+    {
+        $this->aliases[$service] = $alias;
+
+        return $this;
     }
 }

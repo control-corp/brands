@@ -11,10 +11,24 @@ class Router
      */
     protected $request;
 
+    /**
+     * @var array
+     */
     protected $routes = [];
+
+    /**
+     * @var array
+     */
     protected $routesStatic = [];
+
+    /**
+     * @var array
+     */
     protected $globalParams = [];
 
+    /**
+     * @var string
+     */
     const URL_DELIMITER = '/';
 
     /**
@@ -25,6 +39,10 @@ class Router
         $this->request = $request;
     }
 
+    /**
+     * @param string|null $requestUri
+     * @return \Micro\Application\Route|null
+     */
     public function match($requestUri = \null)
     {
         if ($requestUri === \null) {
@@ -48,19 +66,20 @@ class Router
         return null;
     }
 
+    /**
+     * @param string $name
+     * @param string $pattern
+     * @param \Closure|string $handler
+     * @throws \Exception
+     * @return \Micro\Application\Route
+     */
     public function map($name, $pattern, $handler)
     {
         if (isset($this->routes[$name])) {
             throw new \Exception(sprintf('Route "%s" already exists!', $name), 500);
         }
 
-        $pattern = trim($pattern, static::URL_DELIMITER);
-
-        if (empty($pattern)) {
-            $pattern = static::URL_DELIMITER;
-        } else {
-            $pattern = static::URL_DELIMITER . $pattern;
-        }
+        $pattern = static::URL_DELIMITER . trim($pattern, static::URL_DELIMITER);
 
         $route = new Route($name, $pattern, $handler);
 
@@ -76,6 +95,13 @@ class Router
         return $route;
     }
 
+    /**
+     * @param string $name
+     * @param array $data
+     * @param boolean $qsa
+     * @throws \Exception
+     * @return string
+     */
     public function assemble($name, array $data = [], $qsa = \false)
     {
         if (!isset($this->routes[$name])) {
@@ -110,6 +136,11 @@ class Router
         return $this->request->getBaseUrl() . static::URL_DELIMITER . trim($url, static::URL_DELIMITER);
     }
 
+    /**
+     * @param string $key
+     * @param string $value
+     * @return \Micro\Application\Router
+     */
     public function setGlobalParam($key, $value)
     {
         $this->globalParams[$key] = $value;
@@ -117,6 +148,11 @@ class Router
         return $this;
     }
 
+    /**
+     * @param string $key
+     * @param string|null $value
+     * @return multitype:|unknown
+     */
     public function getGlobalParam($key, $value = \null)
     {
         if (isset($this->globalParams[$key])) {
@@ -126,11 +162,18 @@ class Router
         return $value;
     }
 
+    /**
+     * @return array of \Micro\Application\Route's
+     */
     public function getRoutes()
     {
         return $this->routes;
     }
 
+    /**
+     * @param string $name
+     * @return \Micro\Application\Route|\null
+     */
     public function getRoute($name)
     {
         if (isset($this->routes[$name])) {

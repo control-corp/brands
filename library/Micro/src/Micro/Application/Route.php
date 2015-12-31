@@ -4,14 +4,46 @@ namespace Micro\Application;
 
 class Route
 {
+    /**
+     * @var string
+     */
     protected $pattern;
+
+    /**
+     * @var array
+     */
     protected $conditions = [];
+
+    /**
+     * @var string
+     */
     protected $compiled;
+
+    /**
+     * @var string
+     */
     protected $name;
+
+    /**
+     * @var \Closure|string
+     */
     protected $handler;
+
+    /**
+     * @var array
+     */
     protected $defaults = [];
+
+    /**
+     * @var array
+     */
     protected $params = [];
 
+    /**
+     * @param string $name
+     * @param string $pattern
+     * @param \Closure|string $handler
+     */
     public function __construct($name, $pattern, $handler)
     {
         $this->name    = $name;
@@ -19,11 +51,19 @@ class Route
         $this->handler = $handler;
     }
 
+    /**
+     * @param string $pattern
+     * @return boolean
+     */
     public static function isStatic($pattern)
     {
         return !preg_match('~[{}\[\]]~', $pattern);
     }
 
+    /**
+     * @param string $requestUri
+     * @return boolean
+     */
     public function match($requestUri)
     {
         if (preg_match('~^' . $this->compile() . '$~ius', $requestUri, $matches)) {
@@ -40,6 +80,10 @@ class Route
         return \false;
     }
 
+    /**
+     * Compile route pattern to regex
+     * @return string
+     */
     public function compile()
     {
         if ($this->compiled === \null) {
@@ -82,6 +126,22 @@ class Route
         return $this->compiled;
     }
 
+    /**
+     * @param string $compiled
+     * @return \Micro\Application\Route
+     */
+    public function setCompiled($compiled)
+    {
+        $this->compiled = $compiled;
+
+        return $this;
+    }
+
+    /**
+     * @param array $data
+     * @throws \Exception
+     * @return string
+     */
     public function assemble(array &$data = [])
     {
         $data += $this->defaults;
@@ -121,11 +181,18 @@ class Route
         return $url;
     }
 
+    /**
+     * @return \Closure|string
+     */
     public function getHandler()
     {
         return $this->handler;
     }
 
+    /**
+     * @param array $conditions
+     * @return \Micro\Application\Route
+     */
     public function setConditions(array $conditions)
     {
         $this->conditions = $conditions;
@@ -133,11 +200,18 @@ class Route
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getConditions()
     {
         return $this->conditions;
     }
 
+    /**
+     * @param array $defaults
+     * @return \Micro\Application\Route
+     */
     public function setDefaults(array $defaults)
     {
         $this->defaults = $defaults;
@@ -145,11 +219,18 @@ class Route
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getDefaults()
     {
         return $this->defaults;
     }
 
+    /**
+     * @param string $pattern
+     * @return \Micro\Application\Route
+     */
     public function setPattern($pattern)
     {
         $this->pattern = $pattern;
@@ -157,16 +238,26 @@ class Route
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getPattern()
     {
         return $this->pattern;
     }
 
+    /**
+     * @return array
+     */
     public function getParams()
     {
         return $this->params;
     }
 
+    /**
+     * @param array $params
+     * @return \Micro\Application\Route
+     */
     public function setParams(array $params)
     {
         $this->params = $params;
