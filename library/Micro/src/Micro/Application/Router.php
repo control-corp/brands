@@ -63,7 +63,7 @@ class Router
             }
         }
 
-        return null;
+        return \null;
     }
 
     /**
@@ -76,7 +76,7 @@ class Router
     public function map($name, $pattern, $handler)
     {
         if (isset($this->routes[$name])) {
-            throw new \Exception(sprintf('Route "%s" already exists!', $name), 500);
+            throw new \Exception(sprintf('[' . __METHOD__ . '] Route "%s" already exists!', $name), 500);
         }
 
         $pattern = static::URL_DELIMITER . trim($pattern, static::URL_DELIMITER);
@@ -85,7 +85,7 @@ class Router
 
         if (Route::isStatic($pattern)) {
             if (isset($this->routesStatic[$pattern])) {
-                throw new \Exception(sprintf('Route pattern "%s" already exists!', $pattern), 500);
+                throw new \Exception(sprintf('[' . __METHOD__ . '] Route pattern "%s" already exists!', $pattern), 500);
             }
             $this->routesStatic[$pattern] = $name;
         }
@@ -105,7 +105,7 @@ class Router
     public function assemble($name, array $data = [], $qsa = \false)
     {
         if (!isset($this->routes[$name])) {
-            throw new \Exception(sprintf('Route "%s" not found!', $name), 500);
+            throw new \Exception(sprintf('[' . __METHOD__ . '] Route "%s" not found!', $name), 500);
         }
 
         $route = $this->routes[$name];

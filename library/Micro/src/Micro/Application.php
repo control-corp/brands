@@ -38,6 +38,7 @@ class Application extends Container\Container
     public function run()
     {
         try {
+            $this->boot();
             $response = $this->start();
             $response->send();
         } catch (\Exception $e) {
@@ -61,8 +62,6 @@ class Application extends Container\Container
      */
     public function start()
     {
-        $this->boot();
-
         $response = $this['response'];
 
         if (($eventResponse = $this['event']->trigger('application.start', compact('response'))) instanceof Http\Response) {
@@ -177,10 +176,6 @@ class Application extends Container\Container
             $handlerResponse = $handler->__invoke($route, $this);
         } else {
             $handlerResponse = $handler;
-        }
-
-        if (is_string($handlerResponse) && $this->has($handlerResponse)) {
-            $handlerResponse = $this->get($handlerResponse);
         }
 
         if (is_string($handlerResponse) && strpos($handlerResponse, '@') !== \false) {
