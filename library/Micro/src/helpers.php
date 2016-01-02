@@ -39,6 +39,19 @@ if (!function_exists('public_path')) {
     }
 }
 
+if (!function_exists('package_path')) {
+    function package_path($package, $path = \null)
+    {
+        $packagePath = app()->getPackage($package)->getDir();
+
+        if ($path !== \null) {
+            $packagePath .= DIRECTORY_SEPARATOR . trim($path, '/\\');
+        }
+
+        return $packagePath;
+    }
+}
+
 if (!function_exists('config')) {
     function config($key, $value = \null)
     {
