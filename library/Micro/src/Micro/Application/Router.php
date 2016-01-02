@@ -182,4 +182,23 @@ class Router
 
         return \null;
     }
+
+    /**
+     * @param array $routes
+     */
+    public function mapFromConfig(array $routes)
+    {
+        foreach ($routes as $name => $config) {
+
+            $route = $this->map($name, $config['pattern'], $config['handler']);
+
+            if (isset($config['conditions'])) {
+                $route->setConditions($config['conditions']);
+            }
+
+            if (isset($config['defaults'])) {
+                $route->setDefaults($config['defaults']);
+            }
+        }
+    }
 }
