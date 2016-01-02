@@ -45,7 +45,7 @@ $app['router'] = function ($container) {
     return $router;
 };
 
-if ((file_exists($file = 'application/config/services.php')) === \true) {
+if ((file_exists($file = 'application/config/dependencies.php')) === \true) {
     include $file;
 }
 
