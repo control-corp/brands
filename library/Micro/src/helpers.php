@@ -13,6 +13,32 @@ if (!function_exists('app')) {
     }
 }
 
+if (!function_exists('app_path')) {
+    function app_path($path = \null)
+    {
+        $appPath = ltrim(config('application.path', 'application'), '/\\');
+
+        if ($path !== \null) {
+            $appPath .= DIRECTORY_SEPARATOR . trim($path, '/\\');
+        }
+
+        return $appPath;
+    }
+}
+
+if (!function_exists('public_path')) {
+    function public_path($path = \null)
+    {
+        $publicPath = ltrim(config('application.public_path', 'public'), '/\\');
+
+        if ($path !== \null) {
+            $publicPath .= DIRECTORY_SEPARATOR . trim($path, '/\\');
+        }
+
+        return $publicPath;
+    }
+}
+
 if (!function_exists('config')) {
     function config($key, $value = \null)
     {
