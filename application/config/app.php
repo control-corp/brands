@@ -1,7 +1,6 @@
 <?php
 
 return [
-    'env' => 'development',
     'debug' => 1,
     'application' => [
         'packages' => [

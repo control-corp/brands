@@ -29,7 +29,11 @@ if (!function_exists('config')) {
 if (!function_exists('env')) {
     function env($env = \null)
     {
-        $_env = config('env', 'production');
+        $_env = getenv('APP_ENV');
+
+        if ($_env === \false) {
+            $_env = 'production';
+        }
 
         if ($env === \null) {
             return $_env;
