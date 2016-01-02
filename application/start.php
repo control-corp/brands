@@ -8,18 +8,6 @@ if ((file_exists($classes = 'application/data/classes.php')) === \true) {
 
 $app = new Micro\Application(include 'application/config/app.php');
 
-$app['request'] = function () {
-    return new Micro\Http\Request();
-};
-
-$app['response'] = function () {
-    return new Micro\Http\Response\HtmlResponse();
-};
-
-$app['event'] = function () {
-    return new Micro\Event\Manager();
-};
-
 $app['router'] = function ($c) {
     $router = new Micro\Application\Router($c['request']);
     $router->mapFromConfig(include 'application/config/routes.php');

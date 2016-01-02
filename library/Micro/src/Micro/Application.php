@@ -37,6 +37,18 @@ class Application extends Container\Container
      */
     public function run()
     {
+        if (!isset($this['request'])) {
+            $this['request'] = new Http\Request();
+        }
+
+        if (!isset($this['response'])) {
+            $this['response'] = new Http\Response\HtmlResponse();
+        }
+
+        if (!isset($this['event'])) {
+            $this['event'] = new Event\Manager();
+        }
+
         try {
             $this->boot();
             $response = $this->start();
