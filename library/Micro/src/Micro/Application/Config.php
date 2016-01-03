@@ -1,6 +1,6 @@
 <?php
 
-namespace Micro;
+namespace Micro\Application;
 
 class Config
 {

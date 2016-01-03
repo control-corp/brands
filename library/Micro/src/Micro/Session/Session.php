@@ -817,26 +817,22 @@ class Session extends SessionAbstract
 
     /**
      * Register session options
+     * @param array $config
      */
-    public static function register()
+    public static function register(array $config)
     {
-        $session = config('session');
+        $saveHandler = \null;
 
-        if ($session !== \null) {
+        if (isset($config['save_handler'])) {
+            $saveHandler = $config['save_handler'];
+            unset($config['save_handler']);
+        }
 
-            $saveHandler = \null;
+        static::setOptions($config);
 
-            if (isset($session['save_handler'])) {
-                $saveHandler = $session['save_handler'];
-                unset($session['save_handler']);
-            }
-
-            static::setOptions($session);
-
-            if ($saveHandler !== \null) {
-                if (class_exists($saveHandler)) {
-                    static::setSaveHandler(new $saveHandler($session));
-                }
+        if ($saveHandler !== \null) {
+            if (class_exists($saveHandler)) {
+                static::setSaveHandler(new $saveHandler($config));
             }
         }
     }

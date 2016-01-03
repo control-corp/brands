@@ -17,10 +17,10 @@ class Application extends Container\Container
     public function __construct($config)
     {
         if (is_array($config)) {
-            $config = new Config($config);
+            $config = new Application\Config($config);
         } elseif (is_string($config) && file_exists($config)) {
-            $config = new Config(include $config);
-        } else if (!$config instanceof Config) {
+            $config = new Application\Config(include $config);
+        } else if (!$config instanceof Application\Config) {
             throw new \InvalidArgumentException('[' . __METHOD__ . '] Config param must be valid file or array', 500);
         }
 
