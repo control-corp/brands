@@ -2,7 +2,7 @@
 
 MicroLoader::register();
 
-include __DIR__ . '/src/helpers.php';
+include __DIR__ . '/src/Micro/helpers.php';
 
 class MicroLoader
 {

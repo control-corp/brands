@@ -1,15 +1,18 @@
 <?php
 
+use Micro\Application\Application;
+use Micro\Application\Router;
+
 require 'library/Micro/autoload.php';
 
 if ((file_exists($classes = 'application/data/classes.php')) === \true) {
     MicroLoader::setFiles(include $classes);
 }
 
-$app = new Micro\Application(include 'application/config/app.php');
+$app = new Application(include 'application/config/app.php');
 
 $app['router'] = function ($c) {
-    $router = new Micro\Application\Router($c['request']);
+    $router = new Router($c['request']);
     $router->mapFromConfig(include 'application/config/routes.php');
     return $router;
 };

@@ -1,8 +1,13 @@
 <?php
 
-namespace Micro;
+namespace Micro\Application;
 
-class Application extends Container\Container
+use Micro\Http;
+use Micro\Event;
+use Micro\Container\Container;
+use Micro\Container\ContainerAwareInterface;
+
+class Application extends Container
 {
     /**
      * @var array
@@ -17,10 +22,10 @@ class Application extends Container\Container
     public function __construct($config)
     {
         if (is_array($config)) {
-            $config = new Application\Config($config);
+            $config = new Config($config);
         } elseif (is_string($config) && file_exists($config)) {
-            $config = new Application\Config(include $config);
-        } else if (!$config instanceof Application\Config) {
+            $config = new Config(include $config);
+        } else if (!$config instanceof Config) {
             throw new \InvalidArgumentException('[' . __METHOD__ . '] Config param must be valid file or array', 500);
         }
 
@@ -33,7 +38,7 @@ class Application extends Container\Container
 
     /**
      * Start the application
-     * @return \Micro\Application
+     * @return \Micro\Application\Application
      */
     public function run()
     {
@@ -155,7 +160,7 @@ class Application extends Container\Container
             $packageInstance = $package . '\\Package';
             if (class_exists($packageInstance)) {
                 $instance = new $packageInstance($this);
-                if (!$instance instanceof Application\Package) {
+                if (!$instance instanceof Package) {
                     throw new \RuntimeException(sprintf('[' . __METHOD__ . '] %s must be instance of Micro\Application\Package', $packageInstance), 500);
                 }
                 $instance->setContainer($this);
@@ -171,7 +176,7 @@ class Application extends Container\Container
      * @throws \Exception
      * @return \Micro\Http\Response
      */
-    public function unpackage(Application\Route $route)
+    public function unpackage(Route $route)
     {
         $this['request']->setParams($route->getParams()/*  + $route->getDefaults() */);
 
@@ -210,21 +215,21 @@ class Application extends Container\Container
                 throw new \Exception('[' . __METHOD__ . '] Method "' . $action . '" not found in "' . $package . '"', 404);
             }
 
-            if ($packageInstance instanceof Container\ContainerAwareInterface) {
+            if ($packageInstance instanceof ContainerAwareInterface) {
                 $packageInstance->setContainer($this);
             }
 
-            if ($packageInstance instanceof Application\Controller) {
+            if ($packageInstance instanceof Controller) {
                 $packageInstance->init();
             }
 
             $packageResponse = call_user_func_array(array($packageInstance, $action), $route->getParams());
 
             if (is_array($packageResponse) || $packageResponse === \null) {
-                $packageResponse = new Application\View(\null, $packageResponse);
+                $packageResponse = new View(\null, $packageResponse);
             }
 
-            if ($packageResponse instanceof Application\View) {
+            if ($packageResponse instanceof View) {
                 if ($packageResponse->getTemplate() === \null) {
                     $packageResponse->setTemplate(
                         Utils::decamelize($parts[0]) . '/' . Utils::decamelize($action)
