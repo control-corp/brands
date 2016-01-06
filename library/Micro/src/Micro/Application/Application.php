@@ -223,7 +223,7 @@ class Application extends Container
                 $packageInstance->init();
             }
 
-            $packageResponse = call_user_func_array(array($packageInstance, $action), $route->getParams());
+            $packageResponse = $packageInstance->$action();
 
             if (is_array($packageResponse) || $packageResponse === \null) {
                 $packageResponse = new View(\null, $packageResponse);
