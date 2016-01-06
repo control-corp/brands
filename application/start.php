@@ -2,6 +2,7 @@
 
 use Micro\Application\Application;
 use Micro\Application\Router;
+use Micro\Session\Session;
 
 require 'library/Micro/autoload.php';
 
@@ -17,8 +18,10 @@ $app['router'] = function () use ($app) {
     return $router;
 };
 
-if ((file_exists($file = 'application/config/dependencies.php')) === \true) {
+foreach (\glob('application/config/dependencies/*.php') as $file) {
     include $file;
 }
+
+Session::register($app['config']->get('session', []));
 
 return $app;

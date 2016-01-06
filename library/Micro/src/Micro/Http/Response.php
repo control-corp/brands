@@ -180,6 +180,15 @@ class Response
         return isset($this->headers[$key]);
     }
 
+    public function removeHeader($key)
+    {
+        if ($this->hasHeader($key)) {
+            unset($this->headers[$key]);
+        }
+
+        return $this;
+    }
+
     public static function closeOutputBuffers($targetLevel, $flush)
     {
         $status = ob_get_status(true);

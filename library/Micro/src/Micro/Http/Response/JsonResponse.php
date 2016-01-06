@@ -6,12 +6,14 @@ use Micro\Http\Response;
 
 class JsonResponse extends Response
 {
-    public function setBody($body)
+    public function send()
     {
-        $this->body = json_encode($body);
+        $this->removeHeader('Content-Type');
 
         $this->addHeader('Content-Type', 'application/json');
 
-        return $this;
+        $this->setBody(json_encode($this->body));
+
+        return parent::send();
     }
 }

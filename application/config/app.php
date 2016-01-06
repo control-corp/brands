@@ -22,6 +22,9 @@ return [
             'application/resources/packages'
         ]
     ],
+    'session' => [
+        'name' => 'TEST'
+    ],
     'cache' => [
         'default'  => 'file',
         'adapters' => [
