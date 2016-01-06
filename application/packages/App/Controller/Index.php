@@ -19,6 +19,6 @@ class Index extends Controller
 
     public function article()
     {
-        return new View('articles/detail', ['id' => $this->request->getParam('id')]);
+        return new View('articles/detail', $this->request->getParams());
     }
 }

@@ -129,6 +129,11 @@ if (!function_exists('server_url')) {
 }
 
 if (!function_exists('json')) {
+    /**
+     * @param string $body
+     * @param int $code
+     * @return \Micro\Http\Response\JsonResponse
+     */
     function json($body = '', $code = 200)
     {
         return new Micro\Http\Response\JsonResponse($body, $code);
@@ -136,6 +141,11 @@ if (!function_exists('json')) {
 }
 
 if (!function_exists('html')) {
+    /**
+     * @param string $body
+     * @param int $code
+     * @return \Micro\Http\Response\HtmlResponse
+     */
     function html($body = '', $code = 200)
     {
         return new Micro\Http\Response\HtmlResponse($body, $code);
@@ -143,6 +153,11 @@ if (!function_exists('html')) {
 }
 
 if (!function_exists('redirect')) {
+    /**
+     * @param string $url
+     * @param int $code
+     * @return \Micro\Http\Response\RedirectResponse
+     */
     function redirect($url, $code = 302)
     {
         return new Micro\Http\Response\RedirectResponse($url, $code);
@@ -150,6 +165,12 @@ if (!function_exists('redirect')) {
 }
 
 if (!function_exists('view')) {
+    /**
+     * @param string $template
+     * @param array $data
+     * @param boolean $injectPaths
+     * @return \Micro\Application\View
+     */
     function view($template, array $data = \null, $injectPaths = \false)
     {
         return new Micro\Application\View($template, $data, $injectPaths);
