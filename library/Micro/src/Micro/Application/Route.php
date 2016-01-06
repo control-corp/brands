@@ -92,7 +92,7 @@ class Route
 
             $lambdaOptional = function ($match) {
 
-                $regex = '[\-\w]+';
+                $regex = '\w+';
 
                 $this->params[$match[2]] = isset($this->defaults[$match[2]]) ? $this->defaults[$match[2]] : \null;
 
@@ -108,7 +108,7 @@ class Route
 
             $lambdaRequired = function ($match) {
 
-                $regex = '[\-\w]+';
+                $regex = '\w+';
 
                 $this->params[$match[1]] = isset($this->defaults[$match[1]]) ? $this->defaults[$match[1]] : \null;
 

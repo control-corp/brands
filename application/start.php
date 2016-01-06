@@ -11,8 +11,8 @@ if ((file_exists($classes = 'application/data/classes.php')) === \true) {
 
 $app = new Application(include 'application/config/app.php');
 
-$app['router'] = function ($c) {
-    $router = new Router($c['request']);
+$app['router'] = function () use ($app) {
+    $router = new Router($app['request']);
     $router->mapFromConfig(include 'application/config/routes.php');
     return $router;
 };
