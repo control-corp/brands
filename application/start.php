@@ -25,7 +25,7 @@ $app['router'] = function () use ($app) {
 };
 
 /**
- * Add custom services per project
+ * Add services per file
  */
 foreach (\glob('application/config/dependencies/*.php') as $file) {
     include $file;
