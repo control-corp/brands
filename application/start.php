@@ -7,7 +7,7 @@ use Micro\Session\Session;
 require 'library/Micro/autoload.php';
 
 /**
- * Cached mapped classes
+ * Cached mapped classes / dirs
  */
 if ((file_exists($classes = 'application/data/classes.php')) === \true) {
     \MicroLoader::setFiles(include $classes);
