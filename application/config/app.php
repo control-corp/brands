@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'debug' => 0,
+    'debug' => 1,
     'application' => [
         'packages' => [
             'App',
