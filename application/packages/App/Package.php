@@ -12,7 +12,7 @@ class Package extends BasePackage
     {
         $this->container['event']->attach('application.end', function (Message $message) {
 
-            if (config('application.perfomance.enable', 0)) {
+            if (config('application.perfomance', 0)) {
                 file_put_contents('application/data/classes.php', "<?php\nreturn " . var_export(\MicroLoader::getFiles(), true) . ";", LOCK_EX);
             }
 
@@ -22,7 +22,7 @@ class Package extends BasePackage
                 return;
             }
 
-            if (config('debug', 0)) {
+            if (config('application.debug', 0)) {
                 $body = $response->getBody();
                 $body = explode('</body>', $body);
                 $body[0] = $body[0] . sprintf('<br />Execution time %.8fs.', microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) . '</body>';

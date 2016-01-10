@@ -1,16 +1,16 @@
 <?php
 
 return [
-    'debug' => 1,
     'application' => [
-        'packages' => [
-            'App',
+        'debug' => 1,
+        'perfomance' => 0
+    ],
+    'packages' => [
+        'registered' => [
+            'App'
         ],
-        'packages_paths' => [
+        'paths' => [
             'application/packages'
-        ],
-        'perfomance' => [
-            'enable' => 0
         ]
     ],
     'error' => [

@@ -1,6 +1,6 @@
 <?php
 
-MicroLoader::register();
+\MicroLoader::register();
 
 include __DIR__ . '/src/Micro/helpers.php';
 
@@ -11,7 +11,7 @@ class MicroLoader
 
     public static function register()
     {
-        static::addPath(__DIR__ . '/src');
+        static::addPath(__DIR__ . DIRECTORY_SEPARATOR . 'src');
 
         spl_autoload_register(array('MicroLoader', 'autoload'));
     }
@@ -29,7 +29,7 @@ class MicroLoader
 
         foreach (static::$paths as $path) {
 
-            $file = rtrim($path, '/\\') . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
+            $file = $path . DIRECTORY_SEPARATOR . str_replace(array('\\', '_'), DIRECTORY_SEPARATOR, $class) . '.php';
 
             if (file_exists($file)) {
                 include $file;
@@ -48,7 +48,7 @@ class MicroLoader
             return;
         }
 
-        static::$paths[] = $paths;
+        static::$paths[] = rtrim($paths, '/\\');
     }
 
     public static function getFiles()
