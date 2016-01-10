@@ -27,8 +27,8 @@ return [
             'localhost' => [
                 'adapter'  => 'mysqli',
                 'host'     => 'localhost',
-                'dbname'   => '',
-                'username' => '',
+                'dbname'   => 'micro',
+                'username' => 'root',
                 'password' => '',
                 'charset'  => 'utf8'
             ]

@@ -1,8 +1,8 @@
 <?php $this->extend('layouts/default'); ?>
 
-<?php $this->section('title', 'Artcile ' . $this->id); ?>
+<?php $this->section('title', $this->item['name']); ?>
 
-<h1>Article <?php echo $this->id; ?></h1>
+<h1><?php echo $this->item['name']; ?></h1>
 
 <div>
     <a href="<?php echo route('article.list', [], \true); ?>">back</a>

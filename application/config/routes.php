@@ -10,7 +10,7 @@ return [
         'handler' => 'App\Error@index'
     ],
     'article.list' => [
-        'pattern' => '/articles',
+        'pattern' => '/article',
         'handler' => 'Article\Index@index'
     ],
     'article.detail' => [

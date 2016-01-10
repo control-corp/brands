@@ -4,9 +4,9 @@
 
 <h1>List of articles</h1>
 
-<?php foreach (range(1, 10) as $id) : ?>
+<?php foreach ($this->items as $item) : ?>
 <div class="item">
-    <a href="<?php echo route('article.detail', ['id' => $id], \true); ?>"><?php echo 'Article ' . $id; ?></a>
+    <a href="<?php echo route('article.detail', ['id' => $item['id']], \true); ?>"><?php echo $item['name']; ?></a>
 </div>
 <?php endforeach; ?>
 

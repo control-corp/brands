@@ -3,16 +3,29 @@
 namespace Article;
 
 use Micro\Application\Controller;
+use Article\Model\Article;
 
 class Index extends Controller
 {
     public function index()
     {
+        $model = new Article();
 
+        return ['items' => $model->fetchAll()];
     }
 
     public function detail()
     {
-        return $this->request->getParams();
+        $model = new Article();
+
+        $id    = (int) $this->request->getParam('id');
+
+        $item  = $model->find($id)->current();
+
+        if ($item === \null) {
+            throw new \Exception(sprintf('Article %d not found', $id), 404);
+        }
+
+        return ['item' => $item];
     }
 }
