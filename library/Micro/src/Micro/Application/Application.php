@@ -50,36 +50,45 @@ class Application extends Container
             $response->send();
         } catch (\Exception $e) {
             if (env('development')) {
-                try {
-                    if ($this->has('exception.handler')) {
-                        echo $this->get('exception.handler')->handleException($e);
-                    } else {
-                        echo $e->getMessage();
-                    }
-                } catch (\Exception $e) {
-                    echo $e->getMessage();
-                }
+                echo $e->getMessage();
             }
         }
     }
 
+    /**
+     * @return \Micro\Application\Application
+     */
     public function registerDefaultServices()
     {
         if (!isset($this['request'])) {
-            $this['request'] = new Http\Request();
+            $this['request'] = function () {
+                return new Http\Request();
+            };
         }
 
         if (!isset($this['response'])) {
-            $this['response'] = new Http\Response\HtmlResponse();
+            $this['response'] = function () {
+                return new Http\Response\HtmlResponse();
+            };
         }
 
         if (!isset($this['event'])) {
-            $this['event'] = new Event\Manager();
+            $this['event'] = function () {
+                return new Event\Manager();
+            };
         }
+
+        if (!isset($this['exception.handler'])) {
+            $this['exception.handler'] = function ($app) {
+                return $app;
+            };
+        }
+
+        return $this;
     }
 
     /**
-     * Boot and unpackage the application request
+     * Unpackage the application request
      * @return \Micro\Http\Response
      */
     public function start()
@@ -102,7 +111,7 @@ class Application extends Container
 
             try {
 
-                if (($exceptionResponse = $this->handleException($e)) instanceof Http\Response) {
+                if (($exceptionResponse = $this['exception.handler']->handleException($e)) instanceof Http\Response) {
                     return $exceptionResponse;
                 }
 
@@ -132,10 +141,6 @@ class Application extends Container
      */
     public function handleException(\Exception $e)
     {
-        if ($this->has('exception.handler')) {
-            return $this->get('exception.handler')->handleException($e);
-        }
-
         $errorHandler = $this['config']->get('error');
 
         if ($errorHandler === \null || !isset($errorHandler['route'])) {
@@ -261,7 +266,7 @@ class Application extends Container
     }
 
     /**
-     * @return array of \Micro\Package's
+     * @return array of \Micro\Application\Package's
      */
     public function getPackages()
     {
@@ -271,7 +276,7 @@ class Application extends Container
     /**
      * @param string $package
      * @throws \Exception
-     * @return \Micro\Package
+     * @return \Micro\Application\Package
      */
     public function getPackage($package)
     {

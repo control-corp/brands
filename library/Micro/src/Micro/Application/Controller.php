@@ -27,6 +27,7 @@ class Controller implements ContainerAwareInterface
     public function __construct(Http\Request $request, Http\Response $response)
     {
         $this->request = $request;
+
         $this->response = $response;
     }
 

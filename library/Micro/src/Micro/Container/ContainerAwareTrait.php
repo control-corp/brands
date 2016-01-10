@@ -12,9 +12,4 @@ trait ContainerAwareTrait
 
         return $this;
     }
-
-    public function getContainer()
-    {
-        return $this->container;
-    }
 }

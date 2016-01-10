@@ -50,7 +50,7 @@ class Container implements ContainerInterface
          * Check if it has an alias
          */
         if (isset($this->aliases[$offset])) {
-            $offset = $this->aliases[$offset];
+            $offset = $this->resolveAlias($offset);
         }
 
         if (!isset($this->services[$offset])) {
@@ -189,8 +189,35 @@ class Container implements ContainerInterface
      */
     public function alias($alias, $service)
     {
-        $this->aliases[$service] = $alias;
+        $this->aliases[$alias] = $service;
 
         return $this;
+    }
+
+    /**
+     * @param sring $alias
+     * @throws \Exception
+     * @return string
+     */
+    public function resolveAlias($alias)
+    {
+        $stack = [];
+
+        while (isset($this->aliases[$alias])) {
+
+            if (isset($stack[$alias])) {
+                throw new \Exception(sprintf(
+                    'Circular alias reference: %s -> %s',
+                    implode(' -> ', $stack),
+                    $alias
+                ));
+            }
+
+            $stack[$alias] = $alias;
+
+            $alias = $this->aliases[$alias];
+        }
+
+        return $alias;
     }
 }
