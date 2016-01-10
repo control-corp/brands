@@ -109,18 +109,18 @@ class Auth
      * @param boolean $force
      * @return mixed
      */
-    public static function identity($force = false)
+    public static function identity($force = \false)
     {
-        static $cache = false;
+        static $cache = \false;
 
-        if ($force === false && $cache !== false) {
+        if ($force === \false && $cache !== \false) {
             return $cache;
         }
 
         $identity = static::getInstance()->getIdentity();
 
-        if ($identity === null || static::$resolver === null) {
-            return null;
+        if ($identity === \null || static::$resolver === \null) {
+            return \null;
         }
 
         return $cache = call_user_func(static::$resolver, $identity);
