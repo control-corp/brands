@@ -25,13 +25,6 @@ $app['router'] = function () use ($app) {
 };
 
 /**
- * Add services per file
- */
-foreach (\glob('application/config/dependencies/*.php') as $file) {
-    include $file;
-}
-
-/**
  * Register session config
  */
 Session::register($app['config']->get('session', []));

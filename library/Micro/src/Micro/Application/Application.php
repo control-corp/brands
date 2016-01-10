@@ -6,6 +6,7 @@ use Micro\Http;
 use Micro\Event;
 use Micro\Container\Container;
 use Micro\Container\ContainerAwareInterface;
+use Micro\Cache\Cache;
 
 class Application extends Container
 {
@@ -81,6 +82,28 @@ class Application extends Container
         if (!isset($this['exception.handler'])) {
             $this['exception.handler'] = function ($app) {
                 return $app;
+            };
+        }
+
+        if (!isset($this['caches'])) {
+            $this['caches'] = function ($app) {
+                $adapters = $app['config']->get('cache.adapters', []);
+                $caches = [];
+                foreach ($adapters as $adapter => $config) {
+                    $caches[$adapter] = Cache::factory(
+                        $config['frontend']['adapter'], $config['backend']['adapter'],
+                        $config['frontend']['options'], $config['backend']['options']
+                    );
+                }
+                return $caches;
+            };
+        }
+
+        if (!isset($this['cache'])) {
+            $this['cache'] = function ($app) {
+                $adapters = $app->get('caches');
+                $default  = (string) $app['config']->get('cache.default');
+                return isset($adapters[$default]) ? $adapters[$default] : \null;
             };
         }
 
