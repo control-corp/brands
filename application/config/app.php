@@ -6,12 +6,7 @@ return [
         'perfomance' => 0
     ],
     'packages' => [
-        'registered' => [
-            'App'
-        ],
-        'paths' => [
-            'application/packages'
-        ]
+        'App' => 'application/packages/App'
     ],
     'error' => [
         'route' => 'error'

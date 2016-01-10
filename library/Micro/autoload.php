@@ -2,16 +2,17 @@
 
 \MicroLoader::register();
 
-include __DIR__ . '/src/Micro/helpers.php';
+include __DIR__ . '/src/helpers.php';
 
 class MicroLoader
 {
     protected static $paths;
+
     protected static $files = [];
 
     public static function register()
     {
-        static::addPath(__DIR__ . DIRECTORY_SEPARATOR . 'src');
+        static::addPath('Micro\\', __DIR__ . DIRECTORY_SEPARATOR . 'src');
 
         spl_autoload_register(array('MicroLoader', 'autoload'));
     }
@@ -27,28 +28,38 @@ class MicroLoader
             return \true;
         }
 
-        foreach (static::$paths as $path) {
+        $parts  = explode('\\', $class);
+        $vendor = $parts[0] . '\\';
 
-            $file = $path . DIRECTORY_SEPARATOR . str_replace(array('\\', '_'), DIRECTORY_SEPARATOR, $class) . '.php';
+        if (isset(static::$paths[$vendor])) {
+
+            $file = static::$paths[$vendor] . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, substr($class, strlen($vendor))) . '.php';
 
             if (file_exists($file)) {
                 include $file;
                 static::$files[$class] = $file;
                 return \true;
             }
+
         }
     }
 
-    public static function addPath($paths)
+    public static function addPath($prefix, $path = \null)
     {
-        if (is_array($paths)) {
-            foreach ($paths as $path) {
-                static::addPath($path);
+        if (is_array($prefix)) {
+            foreach ($prefix as $k => $v) {
+                static::addPath($k, $v);
             }
             return;
         }
 
-        static::$paths[] = rtrim($paths, '/\\');
+        if ($path === \null) {
+            return;
+        }
+
+        $prefix = rtrim($prefix, '\\') . '\\';
+
+        static::$paths[$prefix] = rtrim($path, '/\\');
     }
 
     public static function getFiles()

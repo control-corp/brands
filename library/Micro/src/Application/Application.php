@@ -30,7 +30,7 @@ class Application extends Container
             throw new \InvalidArgumentException('[' . __METHOD__ . '] Config param must be valid file or array', 500);
         }
 
-        \MicroLoader::addPath($config->get('packages.paths', []));
+        \MicroLoader::addPath($config->get('packages', []));
 
         $this['config'] = $config;
 
@@ -187,9 +187,9 @@ class Application extends Container
      */
     public function boot()
     {
-        $packages = $this['config']->get('packages.registered', []);
+        $packages = $this['config']->get('packages', []);
 
-        foreach ($packages as $package) {
+        foreach ($packages as $package => $path) {
             $packageInstance = $package . '\\Package';
             if (class_exists($packageInstance)) {
                 $instance = new $packageInstance($this);
