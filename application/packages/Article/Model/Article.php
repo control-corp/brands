@@ -8,8 +8,11 @@ class Article extends TableAbstract
 {
     protected $_name = 'articles';
 
-    public function __construct()
+    public function __construct($config = array())
     {
-        parent::__construct(app('db'));
+        static::setDefaultAdapter(app('db'));
+        static::setDefaultMetadataCache(app('cache'));
+
+        parent::__construct($config);
     }
 }

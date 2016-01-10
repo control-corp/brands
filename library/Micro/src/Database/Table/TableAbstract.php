@@ -183,6 +183,7 @@ abstract class TableAbstract
 
 
     protected $_defaultSource = self::DEFAULT_NONE;
+
     protected $_defaultValues = array();
 
     /**
