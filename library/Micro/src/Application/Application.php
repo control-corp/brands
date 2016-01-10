@@ -190,7 +190,7 @@ class Application extends Container
         $packages = $this['config']->get('packages', []);
 
         foreach ($packages as $package => $path) {
-            $packageInstance = $package . '\\Package';
+            $packageInstance = $package . '\\__Package';
             if (class_exists($packageInstance)) {
                 $instance = new $packageInstance($this);
                 if (!$instance instanceof Package) {
@@ -199,6 +199,8 @@ class Application extends Container
                 $instance->setContainer($this);
                 $instance->boot();
                 $this->packages[$package] = $instance;
+            } else {
+                throw new \RuntimeException(sprintf('[' . __METHOD__ . '] "__Package.php" file not exists in "%s"!', $package), 500);
             }
         }
     }

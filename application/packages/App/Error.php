@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App;
 
 use Micro\Application\Controller;
 use Micro\Application\View;

@@ -6,7 +6,7 @@
 
 <?php foreach (range(1, 10) as $id) : ?>
 <div class="item">
-    <a href="<?php echo route('article', ['id' => $id], \true); ?>"><?php echo 'Article ' . $id; ?></a>
+    <a href="<?php echo route('article.detail', ['id' => $id], \true); ?>"><?php echo 'Article ' . $id; ?></a>
 </div>
 <?php endforeach; ?>
 

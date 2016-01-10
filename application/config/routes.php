@@ -3,18 +3,18 @@
 return [
     'home' => [
         'pattern' => '/',
-        'handler' => 'App\Controller\Index@index'
+        'handler' => 'App\Index@index'
     ],
     'error' => [
         'pattern' => '/error',
-        'handler' => 'App\Controller\Error@index'
+        'handler' => 'App\Error@index'
     ],
-    'articles' => [
+    'article.list' => [
         'pattern' => '/articles',
-        'handler' => 'App\Controller\Index@articles'
+        'handler' => 'Article\Index@index'
     ],
-    'article' => [
+    'article.detail' => [
         'pattern' => '/article/{id}',
-        'handler' => 'App\Controller\Index@article'
+        'handler' => 'Article\Index@detail'
     ]
 ];

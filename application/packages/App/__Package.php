@@ -6,7 +6,7 @@ use Micro\Application\Package as BasePackage;
 use Micro\Event\Message;
 use Micro\Http\Response;
 
-class Package extends BasePackage
+class __Package extends BasePackage
 {
     public function boot()
     {
