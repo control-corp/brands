@@ -15,6 +15,7 @@ return [
     ],
     'article.detail' => [
         'pattern' => '/article/{id}',
-        'handler' => 'Article\Index@detail'
+        'handler' => 'Article\Index@detail',
+        'conditions' => ['id' => '\d+']
     ]
 ];

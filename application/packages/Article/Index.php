@@ -18,12 +18,12 @@ class Index extends Controller
     {
         $model = new Article();
 
-        $id    = (int) $this->request->getParam('id');
+        $id    = $this->request->getParam('id');
 
         $item  = $model->find($id)->current();
 
         if ($item === \null) {
-            throw new \Exception(sprintf('Article %d not found', $id), 404);
+            throw new \Exception(sprintf('Article "%s" not found', $id), 404);
         }
 
         return ['item' => $item];
