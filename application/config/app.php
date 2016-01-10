@@ -20,6 +20,19 @@ return [
     'session' => [
         'name' => 'TEST'
     ],
+    'db' => [
+        'default' => 'localhost',
+        'adapters' => [
+            'localhost' => [
+                'adapter'  => 'mysqli',
+                'host'     => 'localhost',
+                'dbname'   => '',
+                'username' => '',
+                'password' => '',
+                'charset'  => 'utf8'
+            ]
+        ]
+    ],
     'cache' => [
         'default'  => 'file',
         'adapters' => [

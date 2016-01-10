@@ -3,6 +3,7 @@
 use Micro\Application\Application;
 use Micro\Application\Router;
 use Micro\Session\Session;
+use Micro\Database\Database;
 
 require 'library/Micro/autoload.php';
 
@@ -22,6 +23,15 @@ $app['router'] = function () use ($app) {
     $router = new Router($app['request']);
     $router->mapFromConfig(include 'application/config/routes.php');
     return $router;
+};
+
+/**
+ * Create default db adapter
+ */
+$app['db'] = function () use ($app) {
+    $dbConfig = $app['config']->get('db', []);
+    $adapter  = $dbConfig['adapters'][$dbConfig['default']];
+    return Database::factory($adapter['adapter'], $adapter);
 };
 
 /**
