@@ -19,4 +19,14 @@ class Utils
 
         return $value;
     }
+
+    public static function safeSerialize($s)
+    {
+        return base64_encode(serialize($s));
+    }
+
+    public static function safeUnserialize($s)
+    {
+        return unserialize(base64_decode($s));
+    }
 }
