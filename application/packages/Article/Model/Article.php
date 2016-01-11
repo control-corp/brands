@@ -11,6 +11,7 @@ class Article extends TableAbstract
     public function __construct($config = array())
     {
         static::setDefaultAdapter(app('db'));
+
         static::setDefaultMetadataCache(app('cache'));
 
         parent::__construct($config);

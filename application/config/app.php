@@ -2,7 +2,7 @@
 
 return [
     'application' => [
-        'debug' => 0,
+        'debug' => 1,
         'perfomance' => 0
     ],
     'packages' => [

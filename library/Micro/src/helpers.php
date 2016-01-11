@@ -42,7 +42,13 @@ if (!function_exists('public_path')) {
 if (!function_exists('package_path')) {
     function package_path($package, $path = \null)
     {
-        $packagePath = app()->getPackage($package)->getDir();
+        $packages = config('packages', []);
+
+        if (!isset($packages[$package])) {
+            throw new \Exception(sprintf('[' . __FUNCTION__ . '] Invalid package "%s"', $package));
+        }
+
+        $packagePath = rtrim($packages[$package], '/\\');
 
         if ($path !== \null) {
             $packagePath .= DIRECTORY_SEPARATOR . trim($path, '/\\');
