@@ -1,0 +1,21 @@
+<?php $this->extend('layouts/default'); ?>
+
+<div class="login">
+    <form method="post">
+        <input type="text" name="username" placeholder="username" />
+        <input type="password" name="password" placeholder="password" />
+        <input type="submit" name="login" value="login" />
+    </form>
+</div>
+
+<?php $this->start('styles'); ?>
+<style>
+    .login {
+    	margin-top: 10px;
+    }
+    .login input {
+	   display: block;
+       margin-bottom: 5px;
+    }
+</style>
+<?php $this->stop(); ?>

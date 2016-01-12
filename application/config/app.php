@@ -2,12 +2,13 @@
 
 return [
     'application' => [
-        'debug' => 1,
+        'debug' => 0,
         'perfomance' => 0
     ],
     'packages' => [
         'App' => 'application/packages/App',
         'Article' => 'application/packages/Article',
+        'UserManagement' => 'application/packages/UserManagement',
     ],
     'error' => [
         'route' => 'error'

@@ -182,3 +182,10 @@ if (!function_exists('view')) {
         return new Micro\Application\View($template, $data, $injectPaths);
     }
 }
+
+if (!function_exists('identity')) {
+    function identity($force = \false)
+    {
+        return Micro\Auth\Auth::identity($force);
+    }
+}

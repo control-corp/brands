@@ -8,11 +8,15 @@ class Acl implements AclInterface
 
     protected static $resolver;
 
-    public function __construct()
+    public function __construct(array $data = [])
     {
-        $this->data = static::$resolver !== \null
-                      ? call_user_func(static::$resolver)
-                      : array();
+        if (empty($data)) {
+            $this->data = static::$resolver !== \null
+                          ? call_user_func(static::$resolver)
+                          : [];
+        } else {
+            $this->data = $data;
+        }
     }
 
     /**
@@ -33,7 +37,7 @@ class Acl implements AclInterface
 
         do {
 
-            if (isset($item['resources'][$resource]) && $item['resources'][$resource]) {
+            if (isset($item['resources'][$resource]) && $item['resources'][$resource] === $privilege) {
                 return \true;
             }
 

@@ -246,7 +246,7 @@ class View
                 foreach (config('packages', []) as $package => $path) {
                     $search[] = $helper = $package . '\\View\\' . ucfirst($method);
                     if (class_exists($helper)) {
-                        static::$helpers[$method] = $helper = new $helper();
+                        static::$helpers[$method] = $helper = new $helper($this);
                         break;
                     }
                 }

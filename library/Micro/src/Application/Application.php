@@ -213,7 +213,7 @@ class Application extends Container
     {
         $this['request']->setParams($route->getParams() + $route->getDefaults());
 
-        if (($eventResponse = $this['event']->trigger('unpackage.start', compact('response'))) instanceof Http\Response) {
+        if (($eventResponse = $this['event']->trigger('unpackage.start', compact('route'))) instanceof Http\Response) {
             return $eventResponse;
         }
 

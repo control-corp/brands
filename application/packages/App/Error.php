@@ -16,6 +16,8 @@ class Error extends Controller
             return new JsonResponse($exception->getMessage());
         }
 
+        $this->response->setCode($exception->getCode() ?: 404);
+
         return new View('error', ['exception' => $exception]);
     }
 }
