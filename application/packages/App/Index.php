@@ -6,6 +6,7 @@ use Micro\Application\Controller;
 use Micro\Auth\Auth;
 use Micro\Http\Response\RedirectResponse;
 use Micro\Application\Security;
+use Micro\Form\Form;
 use UserManagement\Model\Users;
 
 class Index extends Controller
@@ -31,33 +32,41 @@ class Index extends Controller
 
     public function register()
     {
+        $form = new Form(__DIR__ . '/resources/forms/register.php');
+
         if ($this->request->isPost()) {
-            $username = $this->request->getPost('username');
-            $password = $this->request->getPost('password');
-            if ($username && $password) {
+            $data = $this->request->getPost();
+            if ($form->isValid($data)) {
                 $usersModel = new Users();
                 $usersModel->insert(array(
-                    'username' => $username,
-                    'password' => Security::hash($password),
+                    'username' => $data['username'],
+                    'password' => Security::hash($data['password']),
                     'group_id' => 2
                 ));
                 return new RedirectResponse(route('login'));
             }
         }
+
+        return ['form' => $form];
     }
 
     public function login()
     {
+        $form = new Form(__DIR__ . '/resources/forms/login.php');
+
         if ($this->request->isPost()) {
-            $username = $this->request->getPost('username');
-            $password = $this->request->getPost('password');
-            $usersModel = new Users();
-            $user = $usersModel->login($username, \null);
-            if ($user !== \null && Security::verity($password, $user['password'])) {
-                Auth::getInstance()->setIdentity($user);
-                return new RedirectResponse(route('home'));
+            $data = $this->request->getPost();
+            if ($form->isValid($data)) {
+                $usersModel = new Users();
+                $user = $usersModel->login($data['username'], \null);
+                if ($user !== \null && Security::verity($data['password'], $user['password'])) {
+                    Auth::getInstance()->setIdentity($user);
+                    return new RedirectResponse(route('home'));
+                }
             }
         }
+
+        return ['form' => $form];
     }
 
     public function logout()

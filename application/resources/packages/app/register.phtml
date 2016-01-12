@@ -2,8 +2,8 @@
 
 <div class="register">
     <form method="post">
-        <input type="text" name="username" placeholder="username" />
-        <input type="password" name="password" placeholder="password" />
+        <?php echo $this->form->username; ?>
+        <?php echo $this->form->password; ?>
         <input type="submit" name="register" value="register" />
     </form>
 </div>
@@ -15,7 +15,7 @@
     }
     .register input {
 	   display: block;
-       margin-bottom: 5px;
+       margin-top: 5px;
     }
 </style>
 <?php $this->stop(); ?>

@@ -226,11 +226,6 @@ class View
         return $this->sections;
     }
 
-    protected function escape($string)
-    {
-        return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
-    }
-
     public function __call($method, $params)
     {
         $method = ucfirst($method);
@@ -273,5 +268,14 @@ class View
     public function injectPaths()
     {
         $this->addPath(config('view.paths', []));
+    }
+
+    public function escape($var, $encoding = 'UTF-8', $escape = 'htmlspecialchars')
+    {
+        if (in_array($escape, array('htmlspecialchars', 'htmlentities'))) {
+            return call_user_func($escape, $var, ENT_COMPAT, $encoding);
+        }
+
+        return call_user_func($escape, $var);
     }
 }
