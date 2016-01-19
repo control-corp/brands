@@ -6,11 +6,22 @@ use Micro\Application\Package as BasePackage;
 use Micro\Acl\Acl;
 use Micro\Auth\Auth;
 use Micro\Event\Message;
+use Micro\Database\Table\TableAbstract;
 
 class Package extends BasePackage
 {
     public function boot()
     {
+        $this->container['event']->attach('application.start', array($this, 'onApplicationStart'));
+        $this->container['event']->attach('dispatch.start', array($this, 'onDispatchStart'));
+    }
+
+    public function onApplicationStart(Message $message)
+    {
+        TableAbstract::setDefaultAdapter(app('db'));
+
+        TableAbstract::setDefaultMetadataCache(app('cache'));
+
         /**
          * Acl
          */
@@ -18,19 +29,20 @@ class Package extends BasePackage
             return new Acl([
                 'guest' => [
                     'resources' => [
-                        'App\Index@index' => \true,
-                        'App\Index@login' => \true,
-                        'App\Index@register' => \true,
+                        'App\Controller\Index@index' => \true,
+                        'App\Controller\Index@login' => \true,
+                        'App\Controller\Index@register' => \true,
+                        'App\Controller\Admin\Index@index' => \true,
                     ],
                     'parent' => \null
                 ],
                 'user' => [
                     'resources' => [
-                        'App\Index@index' => \true,
-                        'App\Index@logout' => \true,
-                        'App\Index@profile' => \true,
-                        'Article\Index@index' => \true,
-                        'Article\Index@detail' => \true,
+                        'App\Controller\Index@index' => \true,
+                        'App\Controller\Index@logout' => \true,
+                        'App\Controller\Index@profile' => \true,
+                        'Article\Controller\Index@index' => \true,
+                        'Article\Controller\Index@detail' => \true,
                     ],
                     'parent' => \null
                 ],
@@ -47,11 +59,9 @@ class Package extends BasePackage
         Auth::setResolver(function ($identity) {
             return $identity;
         });
-
-        $this->container['event']->attach('unpackage.start', array($this, 'onUnpackageStart'));
     }
 
-    public function onUnpackageStart(Message $message)
+    public function onDispatchStart(Message $message)
     {
         $route   = $message->getParam('route');
         $handler = $route->getHandler();
@@ -60,16 +70,17 @@ class Package extends BasePackage
             $handler = $handler->__invoke($route, $this);
         }
 
-        if (!is_string($handler)) {
+        if (!is_string($handler) || strpos($handler, '@') === \false) {
             return;
         }
 
-        $identity = Auth::identity();
-
-        $role = 'guest';
+        // текущ потребител
+        $identity = identity();
 
         if ($identity !== \null) {
             $role = $identity->getGroup();
+        } else {
+            $role = 'guest';
         }
 
         if ($route->getName() !== 'error'

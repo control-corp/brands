@@ -189,3 +189,12 @@ if (!function_exists('identity')) {
         return Micro\Auth\Auth::identity($force);
     }
 }
+
+if (!function_exists('flash')) {
+    function flash()
+    {
+        $flash = new Micro\Helper\Flash();
+
+        return $flash;
+    }
+}

@@ -27,6 +27,11 @@ class Router
     protected $globalParams = [];
 
     /**
+     * @var \Micro\Application\Route
+     */
+    protected $currentRoute;
+
+    /**
      * @var string
      */
     const URL_DELIMITER = '/';
@@ -54,12 +59,12 @@ class Router
         }
 
         if (isset($this->routesStatic[$requestUri])) {
-            return $this->routes[$this->routesStatic[$requestUri]];
+            return $this->currentRoute = $this->routes[$this->routesStatic[$requestUri]];
         }
 
         foreach ($this->routes as $route) {
             if ($route->match($requestUri)) {
-                return $route;
+                return $this->currentRoute = $route;
             }
         }
 
@@ -184,6 +189,14 @@ class Router
     }
 
     /**
+     * @return \Micro\Application\Route
+     */
+    public function getCurrentRoute()
+    {
+        return $this->currentRoute;
+    }
+
+    /**
      * @param array $routes
      */
     public function mapFromConfig(array $routes)
@@ -199,6 +212,28 @@ class Router
             if (isset($config['defaults'])) {
                 $route->setDefaults($config['defaults']);
             }
+        }
+
+        if (!isset($this->routes['admin'])) {
+            $this->map('admin', '/admin[/{package}][/{controller}][/{action}][/{id}]', function (Route $route) {
+                $params = $route->getParams();
+                return ucfirst(Utils::camelize($params['package']))
+                        . '\\Controller\\Admin\\'
+                        . ucfirst(Utils::camelize($params['controller']))
+                        . '@'
+                        . lcfirst(Utils::camelize($params['action']));
+            })->setDefaults(['package' => 'App', 'controller' => 'Index', 'action' => 'index', 'id' => null]);
+        }
+
+        if (!isset($this->routes['default'])) {
+            $this->map('default', '/{package}[/{controller}][/{action}][/{id}]', function (Route $route) {
+                $params = $route->getParams();
+                return ucfirst(Utils::camelize($params['package']))
+                        . '\\Controller\\'
+                        . ucfirst(Utils::camelize($params['controller']))
+                        . '@'
+                        . lcfirst(Utils::camelize($params['action']));
+            })->setDefaults(['package' => 'App', 'controller' => 'Index', 'action' => 'index', 'id' => null]);
         }
     }
 }

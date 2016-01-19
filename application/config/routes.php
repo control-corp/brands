@@ -3,35 +3,35 @@
 return [
     'home' => [
         'pattern' => '/',
-        'handler' => 'App\Index@index'
+        'handler' => 'App\Controller\Index@index'
     ],
     'error' => [
         'pattern' => '/error',
-        'handler' => 'App\Error@index'
+        'handler' => 'App\Controller\Error@index'
     ],
     'login' => [
         'pattern' => '/login',
-        'handler' => 'App\Index@login'
+        'handler' => 'App\Controller\Index@login'
     ],
     'logout' => [
         'pattern' => '/logout',
-        'handler' => 'App\Index@logout'
+        'handler' => 'App\Controller\Index@logout'
     ],
     'register' => [
         'pattern' => '/register',
-        'handler' => 'App\Index@register'
+        'handler' => 'App\Controller\Index@register'
     ],
     'profile' => [
         'pattern' => '/profile',
-        'handler' => 'App\Index@profile'
+        'handler' => 'App\Controller\Index@profile'
     ],
     'article.list' => [
         'pattern' => '/article',
-        'handler' => 'Article\Index@index'
+        'handler' => 'Article\Controller\Index@index'
     ],
     'article.detail' => [
         'pattern' => '/article/{id}',
-        'handler' => 'Article\Index@detail',
+        'handler' => 'Article\Controller\Index@detail',
         'conditions' => ['id' => '\d+']
     ]
 ];

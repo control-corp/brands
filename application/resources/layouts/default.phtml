@@ -14,6 +14,7 @@
     ul.nav li { display: inline-block; }
     ul.nav li:before { content: " / "; }
     ul.nav li:first-child:before { content: ""; }
+    #content .flash { margin-top: 5px; }
     </style>
     <?php echo $this->renderSection('styles'); ?>
 </head>
@@ -30,7 +31,10 @@
             <li><a href="<?php echo route('register'); ?>">register</a></li>
         <?php endif;  ?>
         </ul>
-        <?php echo $this->renderSection('content'); ?>
+        <div id="content">
+            <?php echo $this->partial('layouts/_flash'); ?>
+            <?php echo $this->renderSection('content'); ?>
+        </div>
     </div>
     <?php echo $this->renderSection('scripts'); ?>
 </body>

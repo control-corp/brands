@@ -252,7 +252,22 @@ class Application extends Container
                 $packageInstance->init();
             }
 
+            if (($eventResponse = $this['event']->trigger('dispatch.start', [
+                    'route' => $route,
+                    'package_instance' => $packageInstance]
+            )) instanceof Http\Response) {
+                return $eventResponse;
+            }
+
             $packageResponse = $packageInstance->$action();
+
+            if (($eventResponse = $this['event']->trigger('dispatch.end', [
+                    'route' => $route,
+                    'package_instance' => $packageInstance,
+                    'package_response' => $packageResponse])
+            ) instanceof Http\Response) {
+                return $eventResponse;
+            }
 
             if (is_array($packageResponse) || $packageResponse === \null) {
                 $packageResponse = new View(\null, $packageResponse);

@@ -10,15 +10,6 @@ class Users extends TableAbstract
 
     protected $_rowClass = 'UserManagement\Model\Entity\User';
 
-    public function __construct($config = array())
-    {
-        static::setDefaultAdapter(app('db'));
-
-        static::setDefaultMetadataCache(app('cache'));
-
-        parent::__construct($config);
-    }
-
     public function login($username, $password)
     {
         $select = $this->select(true)
