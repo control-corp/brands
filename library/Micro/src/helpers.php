@@ -213,3 +213,27 @@ if (!function_exists('escape')) {
         return call_user_func($escape, $var);
     }
 }
+
+if (!function_exists('is_allowed')) {
+    function is_allowed($resource = \null, $role = \null, $privilege = \true)
+    {
+        if ($role === \null) {
+            $identity = identity();
+            if ($identity !== \null && is_object($identity) && method_exists($identity, 'getGroup')) {
+                $role = $identity->getGroup();
+            } else {
+                $role = 'guest';
+            }
+        }
+
+        if ($resource === \null) {
+            $route = app('router')->getCurrentRoute();
+            if ($route->getName() === 'error') {
+                return \true;
+            }
+            $resource = $route->getHandler();
+        }
+
+        return app('acl')->isAllowed($role, $resource, $privilege);
+    }
+}

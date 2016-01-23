@@ -31,8 +31,13 @@ class Controller implements ContainerAwareInterface
         $this->response = $response;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function init()
     {
-
+        if (!is_allowed()) {
+            throw new \Exception('Access denied', 403);
+        }
     }
 }

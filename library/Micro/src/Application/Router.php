@@ -189,6 +189,17 @@ class Router
     }
 
     /**
+     * @param \Micro\Application\Route $route
+     * @return \Micro\Application\Router
+     */
+    public function setCurrentRoute(Route $route)
+    {
+        $this->currentRoute = $route;
+
+        return $this;
+    }
+
+    /**
      * @return \Micro\Application\Route
      */
     public function getCurrentRoute()

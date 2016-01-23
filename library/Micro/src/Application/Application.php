@@ -182,6 +182,8 @@ class Application extends Container
 
         $route->setParams($this['config']->get('error.params', []) + ['exception' => $e]);
 
+        $this['router']->setCurrentRoute($route);
+
         return $this->unpackage($route);
     }
 

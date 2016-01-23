@@ -13,7 +13,6 @@ class Package extends BasePackage
     public function boot()
     {
         $this->container['event']->attach('application.start', array($this, 'onApplicationStart'));
-        $this->container['event']->attach('dispatch.start', array($this, 'onDispatchStart'));
     }
 
     public function onApplicationStart(Message $message)
@@ -60,34 +59,5 @@ class Package extends BasePackage
         Auth::setResolver(function ($identity) {
             return $identity;
         });
-    }
-
-    public function onDispatchStart(Message $message)
-    {
-        $route   = $message->getParam('route');
-        $handler = $route->getHandler();
-
-        if ($handler instanceof \Closure) {
-            $handler = $handler->__invoke($route, $this);
-        }
-
-        if (!is_string($handler) || strpos($handler, '@') === \false) {
-            return;
-        }
-
-        // текущ потребител
-        $identity = identity();
-
-        if ($identity !== \null) {
-            $role = $identity->getGroup();
-        } else {
-            $role = 'guest';
-        }
-
-        if ($route->getName() !== 'error'
-            && $this->container['acl']->isAllowed($role, $handler, \true) === \false
-        ) {
-            throw new \Exception('Access denied', 403);
-        }
     }
 }
