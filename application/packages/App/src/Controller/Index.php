@@ -32,7 +32,7 @@ class Index extends Controller
 
     public function register()
     {
-        $form = new Form(package_path('App', 'resources/forms/register.php'));
+        $form = new Form(package_path('App', 'forms/register.php'));
 
         if ($this->request->isPost()) {
             $data = $this->request->getPost();
@@ -52,7 +52,7 @@ class Index extends Controller
 
     public function login()
     {
-        $form = new Form(package_path('App', 'resources/forms/login.php'));
+        $form = new Form(package_path('App', 'forms/login.php'));
 
         if ($this->request->isPost()) {
             $data = $this->request->getPost();

@@ -10,9 +10,11 @@ class Button extends Element
     {
         $tmp = '';
 
-        $tmp .= '<button name="' . $this->getFullyName() . '"' . $this->htmlAttributes() . '>' . $this->view->escape($this->getValue()) . '</button>';
+        $tmp .= '<button name="' . $this->getFullyName() . '"' . $this->htmlAttributes() . '>' . escape($this->value) . '</button>';
 
-        $tmp .= $this->renderErrors();
+        if ($this->showErrors === \true) {
+            $tmp .= $this->renderErrors();
+        }
 
         return $tmp;
     }

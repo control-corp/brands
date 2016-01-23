@@ -74,7 +74,11 @@ if (!function_exists('config')) {
 if (!function_exists('env')) {
     function env($env = \null)
     {
-        $_env = getenv('APP_ENV');
+        if (defined('APP_ENV')) {
+            $_env = APP_ENV;
+        } else {
+            $_env = getenv('APP_ENV');
+        }
 
         if ($_env === \false) {
             $_env = 'production';
@@ -196,5 +200,16 @@ if (!function_exists('flash')) {
         $flash = new Micro\Helper\Flash();
 
         return $flash;
+    }
+}
+
+if (!function_exists('escape')) {
+    function escape($var, $encoding = 'UTF-8', $escape = 'htmlspecialchars')
+    {
+        if (in_array($escape, array('htmlspecialchars', 'htmlentities'))) {
+            return call_user_func($escape, $var, ENT_COMPAT, $encoding);
+        }
+
+        return call_user_func($escape, $var);
     }
 }

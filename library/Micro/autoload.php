@@ -44,11 +44,11 @@ class MicroLoader
         }
     }
 
-    public static function addPath($prefix, $path = \null)
+    public static function addPath($prefix, $path = \null, $suffix = \null)
     {
         if (is_array($prefix)) {
             foreach ($prefix as $k => $v) {
-                static::addPath($k, $v);
+                static::addPath($k, $v, $suffix);
             }
             return;
         }
@@ -59,7 +59,7 @@ class MicroLoader
 
         $prefix = rtrim($prefix, '\\') . '\\';
 
-        static::$paths[$prefix] = rtrim($path, '/\\');
+        static::$paths[$prefix] = rtrim($path, '/\\') . ($suffix !== \null ? DIRECTORY_SEPARATOR . trim($suffix, '/\\') : '');
     }
 
     public static function getFiles()

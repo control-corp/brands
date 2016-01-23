@@ -30,7 +30,7 @@ class Application extends Container
             throw new \InvalidArgumentException('[' . __METHOD__ . '] Config param must be valid file or array', 500);
         }
 
-        \MicroLoader::addPath($config->get('packages', []));
+        \MicroLoader::addPath($config->get('packages', []), \null, 'src');
 
         $this['config'] = $config;
 
@@ -43,12 +43,14 @@ class Application extends Container
      */
     public function run()
     {
-        $this->registerDefaultServices();
-
         try {
+
             $this->boot();
+
             $response = $this->start();
+
             $response->send();
+
         } catch (\Exception $e) {
             if (env('development')) {
                 echo $e->getMessage();
@@ -118,7 +120,7 @@ class Application extends Container
     {
         $response = $this['response'];
 
-        if (($eventResponse = $this['event']->trigger('application.start', compact('response'))) instanceof Http\Response) {
+        if (($eventResponse = $this['event']->trigger('application.start', compact('request', 'response'))) instanceof Http\Response) {
             return $eventResponse;
         }
 
@@ -128,7 +130,9 @@ class Application extends Container
                 throw new \Exception('[' . __METHOD__ . '] Route not found', 404);
             }
 
-            $response = $this->unpackage($route);
+            if (($packageResponse = $this->unpackage($route)) instanceof Http\Response) {
+                $response = $packageResponse;
+            }
 
         } catch (\Exception $e) {
 
@@ -187,11 +191,13 @@ class Application extends Container
      */
     public function boot()
     {
+        $this->registerDefaultServices();
+
         $packages = $this['config']->get('packages', []);
 
         foreach ($packages as $package => $path) {
             $packageInstance = $package . '\\Package';
-            if (class_exists($packageInstance)) {
+            if (class_exists($packageInstance, \true)) {
                 $instance = new $packageInstance($this);
                 if (!$instance instanceof Package) {
                     throw new \RuntimeException(sprintf('[' . __METHOD__ . '] %s must be instance of Micro\Application\Package', $packageInstance), 500);
@@ -252,20 +258,13 @@ class Application extends Container
                 $packageInstance->init();
             }
 
-            if (($eventResponse = $this['event']->trigger('dispatch.start', [
-                    'route' => $route,
-                    'package_instance' => $packageInstance]
-            )) instanceof Http\Response) {
+            if (($eventResponse = $this['event']->trigger('dispatch.start', ['route' => $route, 'package_instance' => $packageInstance])) instanceof Http\Response) {
                 return $eventResponse;
             }
 
             $packageResponse = $packageInstance->$action();
 
-            if (($eventResponse = $this['event']->trigger('dispatch.end', [
-                    'route' => $route,
-                    'package_instance' => $packageInstance,
-                    'package_response' => $packageResponse])
-            ) instanceof Http\Response) {
+            if (($eventResponse = $this['event']->trigger('dispatch.end', ['route' => $route, 'package_instance' => $packageInstance, 'package_response' => $packageResponse])) instanceof Http\Response) {
                 return $eventResponse;
             }
 
@@ -275,12 +274,14 @@ class Application extends Container
 
             if ($packageResponse instanceof View) {
                 if ($packageResponse->getTemplate() === \null) {
-                    $packageResponse->setTemplate(
-                        Utils::decamelize($parts[0]) . '/' . Utils::decamelize($action)
-                    );
+                    $packageResponse->setTemplate(Utils::decamelize($action));
                 }
-                $packageResponse->injectPaths();
-                $packageResponse = $packageResponse->render();
+                try {
+                    $paths = (array) package_path($parts[0], 'views');
+                } catch (\Exception $e) {
+                    $paths = [];
+                }
+                $packageResponse = $packageResponse->injectPaths($paths)->render();
             }
 
             $handlerResponse = $packageResponse;

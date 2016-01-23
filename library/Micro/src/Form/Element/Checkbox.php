@@ -3,22 +3,23 @@
 namespace Micro\Form\Element;
 
 use Micro\Form\Element;
+use Micro\Validate;
 
 class Checkbox extends Element
 {
     protected $checkedValue = '1';
     protected $uncheckedValue = '0';
 
-    public function __construct($name, array $options)
+    public function isValid($value, array $context = \null)
     {
-        parent::__construct($name, $options);
-
-        if ($this->isRequired()) {
-            $this->addValidator('NotIdentical', array(
+        if ($this->isRequired() && !isset($this->validators[Validate\NotIdentical::class])) {
+            $this->prependValidator(new Validate\NotIdentical([
                 'value' => $this->uncheckedValue,
                 'error' => 'Полето е задължително'
-            ));
+            ]));
         }
+
+        return parent::isValid($value, $context);
     }
 
     public function render()
@@ -27,16 +28,18 @@ class Checkbox extends Element
 
         $checked = '';
 
-        if ($this->getValue() == $this->checkedValue) {
+        if ($this->value == $this->checkedValue) {
             $checked = ' checked="checked"';
         }
 
         $name = $this->getFullyName();
 
-        $tmp .= '<input type="hidden" name="' . $name . '" value="' . $this->view->escape($this->uncheckedValue) . '" />';
-        $tmp .= '<input type="checkbox" name="' . $name . '" value="' . $this->view->escape($this->checkedValue) . '"' . $checked . $this->htmlAttributes() . ' />';
+        $tmp .= '<input type="hidden" name="' . $name . '" value="' . escape($this->uncheckedValue) . '" />';
+        $tmp .= '<input type="checkbox" name="' . $name . '" value="' . escape($this->checkedValue) . '"' . $checked . $this->htmlAttributes() . ' />';
 
-        $tmp .= $this->renderErrors();
+        if ($this->showErrors === \true) {
+            $tmp .= $this->renderErrors();
+        }
 
         return $tmp;
     }

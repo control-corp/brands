@@ -15,6 +15,6 @@ return [
                 'required' => 1,
                 'attributes' => ['placeholder' => 'password']
             ]
-        ]
+        ],
     ]
 ];

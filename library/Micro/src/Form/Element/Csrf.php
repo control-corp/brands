@@ -5,6 +5,7 @@ namespace Micro\Form\Element;
 use Micro\Application\Utils;
 use Micro\Form\Element;
 use Micro\Session\SessionNamespace;
+use Micro\Validate;
 
 class Csrf extends Element
 {
@@ -14,14 +15,14 @@ class Csrf extends Element
     {
         parent::__construct($name, $options);
 
-        $session = new SessionNamespace($name . '_csrf');
+        $session = new SessionNamespace($name . '_form_csrf');
 
-        $this->setRequired(true);
+        $this->setRequired(\true);
 
-        $this->addValidator('Identical', array(
-            'value' => (isset($session->value) ? $session->value : null),
+        $this->addValidator(new Validate\Identical([
+            'value' => (isset($session->value) ? $session->value : \null),
             'error' => 'Формата е невалидна'
-        ));
+        ]));
 
         $this->csrf = $session->value = md5(Utils::randomSentence(10) . time());
     }
@@ -34,7 +35,9 @@ class Csrf extends Element
 
         $tmp .= '<input type="hidden" name="' . $name . '" value="' . $this->csrf . '" />';
 
-        $tmp .= $this->renderErrors();
+        if ($this->showErrors === \true) {
+            $tmp .= $this->renderErrors();
+        }
 
         return $tmp;
     }

@@ -3,43 +3,34 @@
 namespace Micro\Form;
 
 use Micro\Validate\ValidateInterface;
-use Micro\Application\View;
 
 class Element
 {
     protected $name;
     protected $value;
     protected $label;
+    protected $labelClass;
     protected $class;
-
-    protected $view;
-
-    protected $required = false;
-    protected $validators = array();
-    protected $errors = array();
-    protected $attributes = array();
-    protected $isArray = false;
-    protected $translate = false;
-
     protected $belongsTo;
+    protected $required = \false;
+    protected $validators = [];
+    protected $errors = [];
+    protected $showErrors = \true;
+    protected $attributes = [];
+    protected $isArray = \false;
+    protected $translate = \false;
 
     /**
      * @param string $name
      * @param array $options
      */
-    public function __construct($name, array $options = null)
+    public function __construct($name, array $options = [])
     {
-        if ($options === null) {
-            $options = array();
-        }
-
         $this->name = $name;
 
         if (!empty($options)) {
             $this->setOptions($options);
         }
-
-        $this->view = new View($name);
     }
 
     public function setOptions(array $options)
@@ -54,11 +45,16 @@ class Element
         return $this;
     }
 
-    public function setIsArray($flag = true)
+    public function setIsArray($flag = \true)
     {
         $this->isArray = (bool) $flag;
 
         return $this;
+    }
+
+    public function getIsArray()
+    {
+        return $this->isArray;
     }
 
     public function setClass($value)
@@ -68,23 +64,26 @@ class Element
         return $this;
     }
 
+    public function getClass()
+    {
+        return isset($this->attributes['class']) ? $this->attributes['class'] : \null;
+    }
+
+    public function setShowErrors($value = \true)
+    {
+        $this->showErrors = $value;
+
+        return $this;
+    }
+
+    public function getShowErrors()
+    {
+        return $this->showErrors;
+    }
+
     public function setName($value)
     {
         $this->name = $value;
-
-        return $this;
-    }
-
-    public function setTranslate($value)
-    {
-        $this->translate = $value;
-
-        return $this;
-    }
-
-    public function setBelongsTo($value)
-    {
-        $this->belongsTo = $value;
 
         return $this;
     }
@@ -96,7 +95,33 @@ class Element
 
     public function getFullyName()
     {
-        return ($this->belongsTo ? $this->belongsTo . '[' . $this->name . ']' : $this->name);
+        return $this->belongsTo !== \null
+                ? $this->belongsTo . '[' . $this->name . ']'
+                : $this->name;
+    }
+
+    public function setTranslate($value)
+    {
+        $this->translate = (bool) $value;
+
+        return $this;
+    }
+
+    public function getTranslate()
+    {
+        return $this->translate;
+    }
+
+    public function setBelongsTo($value)
+    {
+        $this->belongsTo = $value;
+
+        return $this;
+    }
+
+    public function getBelongsTo()
+    {
+        return $this->belongsTo;
     }
 
     public function setLabel($value)
@@ -111,6 +136,18 @@ class Element
         return $this->label;
     }
 
+    public function setLabelClass($value)
+    {
+        $this->labelClass = $value;
+
+        return $this;
+    }
+
+    public function getLabelClass()
+    {
+        return $this->labelClass;
+    }
+
     public function setValue($value)
     {
         $this->value = $value;
@@ -123,11 +160,16 @@ class Element
         return $this->value;
     }
 
-    public function setRequired($flag = true)
+    public function setRequired($flag = \true)
     {
         $this->required = (bool) $flag;
 
         return $this;
+    }
+
+    public function getRequired()
+    {
+        return $this->isRequired();
     }
 
     public function isRequired()
@@ -137,42 +179,27 @@ class Element
 
     public function setAttributes(array $attributes)
     {
-        $this->addAttributes($attributes);
-
-        return $this;
-    }
-
-    public function clearAttributes()
-    {
-        $this->attributes = array();
-
-        return $this;
-    }
-
-    public function addAttributes(array $attributes)
-    {
         foreach ($attributes as $k => $v) {
-            $this->setAttribute($k, $v);
+            $this->attributes[$k] = $v;
         }
 
         return $this;
     }
 
-    public function setAttribute($k, $v)
+    public function getAttribute($key = \null)
     {
-        $this->attributes[$k] = $v;
+        if ($key === \null) {
+            return $this->attributes;
+        }
+
+        return isset($this->attributes[$key]) ? $this->attributes[$key] : \null;
+    }
+
+    public function clearAttributes()
+    {
+        $this->attributes = [];
 
         return $this;
-    }
-
-    public function getAttribute($k)
-    {
-        return isset($this->attributes[$k]) ? $this->attributes[$k] : null;
-    }
-
-    public function getAttributes()
-    {
-        return $this->attributes;
     }
 
     public function setValidators(array $validators)
@@ -186,7 +213,7 @@ class Element
 
     public function clearValidators()
     {
-        $this->validators = array();
+        $this->validators = [];
 
         return $this;
     }
@@ -194,20 +221,29 @@ class Element
     public function addValidators(array $validators)
     {
         foreach ($validators as $validatorInfo) {
-            if (is_string($validatorInfo)) {
+
+            if (is_string($validatorInfo) || $validatorInfo instanceof ValidateInterface) {
+
                 $this->addValidator($validatorInfo);
-            } elseif ($validatorInfo instanceof ValidateInterface) {
-                $this->addValidator($validatorInfo);
+
             } elseif (is_array($validatorInfo)) {
-                $options = array();
+
                 if (isset($validatorInfo['validator'])) {
+
                     $validator = $validatorInfo['validator'];
+
+                    $options = [];
+
                     if (isset($validatorInfo['options'])) {
+
                         $options = $validatorInfo['options'];
                     }
+
                     $this->addValidator($validator, $options);
+
                 } else {
-                    throw new \Exception('Invalid validator passed to addValidators()');
+
+                    throw new \Exception('Invalid validator config passed to addValidators()');
                 }
             }
         }
@@ -215,20 +251,16 @@ class Element
         return $this;
     }
 
-    public function addValidator($validator, array $options = null)
+    public function addValidator($validator, array $options = [])
     {
-        if ($options === null) {
-            $options = array();
-        }
-
         if ($validator instanceof ValidateInterface) {
             $name = get_class($validator);
         } else if (is_string($validator)) {
             $name = $validator;
-            $validator = array(
+            $validator = [
                 'validator' => $validator,
                 'options'   => $options,
-            );
+            ];
         } else {
             throw new \Exception('Invalid validator provided to addValidator; must be string or Micro\Validate\ValidateInterface');
         }
@@ -238,9 +270,20 @@ class Element
         return $this;
     }
 
+    public function prependValidator(ValidateInterface $validator)
+    {
+        $validators = $this->getValidators();
+
+        array_unshift($validators, $validator);
+
+        $this->setValidators($validators);
+
+        return $this;
+    }
+
     public function getValidators()
     {
-        $validators = array();
+        $validators = [];
 
         foreach ($this->validators as $key => $value) {
             if ($value instanceof ValidateInterface) {
@@ -254,8 +297,12 @@ class Element
         return $validators;
     }
 
-    protected function loadValidator($validator)
+    protected function loadValidator(array $validator)
     {
+        if (!isset($validator['validator'])) {
+            throw new \Exception(sprintf('[%s] Validator key does not exists', __METHOD__));
+        }
+
         $origName = $validator['validator'];
 
         if (class_exists($origName)) {
@@ -263,27 +310,34 @@ class Element
         } else {
             $name = 'Micro\Validate\\' . ucfirst($origName);
             if (!class_exists($name)) {
-                throw new \Exception('Class "' . $name . '" does not exists');
+                throw new \Exception('Class [' . $name . '] does not exists');
             }
         }
 
-        $instance = new $name($validator['options']);
+        $instance = new $name((isset($validator['options']) ? $validator['options'] : []));
 
         if ($origName != $name) {
+
             $validatorNames     = array_keys($this->validators);
             $order              = array_flip($validatorNames);
             $order[$name]       = $order[$origName];
-            $validatorsExchange = array();
+            $validatorsExchange = [];
+
             unset($order[$origName]);
+
             asort($order);
+
             foreach ($order as $key => $index) {
                 if ($key == $name) {
                     $validatorsExchange[$key] = $instance;
                     continue;
                 }
+
                 $validatorsExchange[$key] = $this->validators[$key];
             }
+
             $this->validators = $validatorsExchange;
+
         } else {
             $this->validators[$name] = $instance;
         }
@@ -291,14 +345,14 @@ class Element
         return $instance;
     }
 
-    public function isValid($value, array $context = null)
+    public function isValid($value, array $context = \null)
     {
         $this->setValue($value);
 
         $value = $this->getValue();
 
-        if ((('' === $value) || (null === $value)) && !$this->isRequired()) {
-            return true;
+        if ((('' === $value) || (\null === $value)) && !$this->isRequired()) {
+            return \true;
         }
 
         if ($this->isRequired()) {
@@ -310,15 +364,14 @@ class Element
         foreach ($this->getValidators() as $key => $validator) {
             if (!$validator->isValid($value, $context)) {
                 $this->errors = array_merge($this->errors, $validator->getMessages());
-                return false;
             }
         }
 
         if (!empty($this->errors)) {
-            return false;
+            return \false;
         }
 
-        return true;
+        return \true;
     }
 
     public function addError($message)
@@ -372,7 +425,7 @@ class Element
                 $val = implode(' ', $val);
             }
 
-            if (strpos($val, '"') !== false) {
+            if (strpos($val, '"') !== \false) {
                 $xhtml .= " $key='$val'";
             } else {
                 $xhtml .= " $key=\"$val\"";
@@ -385,8 +438,8 @@ class Element
 
     public function renderLabel()
     {
-        if ($this->getLabel()) {
-            return '<label class="control-label' . ($this->isRequired() ? ' required' : '') . '">' . $this->getLabel() . ($this->isRequired() ? ' <span class="asterisk">*</span>' : '') . '</label>';
+        if ($this->label) {
+            return '<label class="' . ($this->labelClass ? $this->labelClass : 'element-label') . ($this->required ? ' required' : '') . '">' . $this->translateData($this->label) . ($this->required ? ' <span class="asterisk">*</span>' : '') . '</label>';
         }
 
         return '';
@@ -397,7 +450,7 @@ class Element
         $tmp = '';
 
         foreach ($this->errors as $error) {
-            $tmp .= '<span class="errors">' . $error . '</span>';
+            $tmp .= '<span class="element-errors">' . $this->translateData($error) . '</span>';
         }
 
         return $tmp;
@@ -405,7 +458,7 @@ class Element
 
     public function translateData($data)
     {
-        if ($this->translate === false) {
+        if ($this->translate === \false) {
             return $data;
         }
 

@@ -10,11 +10,11 @@ class Textarea extends Element
     {
         $tmp = '';
 
-        $name = $this->getFullyName();
+        $tmp .= '<textarea name="' . $this->getFullyName() . '"' . $this->htmlAttributes() . '>' . escape($this->value) . '</textarea>';
 
-        $tmp .= '<textarea name="' . $name . '"' . $this->htmlAttributes() . '>' . $this->view->escape($this->getValue()) . '</textarea>';
-
-        $tmp .= $this->renderErrors();
+        if ($this->showErrors === \true) {
+            $tmp .= $this->renderErrors();
+        }
 
         return $tmp;
     }

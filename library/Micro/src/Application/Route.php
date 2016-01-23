@@ -2,6 +2,8 @@
 
 namespace Micro\Application;
 
+use Micro\Application\Utils;
+
 class Route
 {
     /**
@@ -154,6 +156,8 @@ class Route
                 unset($data[$k]);
                 continue;
             }
+
+            $v = Utils::decamelize($v);
 
             $lambda = function ($match) use ($v) {
                 array_shift($match);

@@ -2,18 +2,20 @@
 
 namespace Micro\Form\Element;
 
+use Micro\Validate;
+
 class Radio extends Select
 {
-    public function __construct($name, array $options)
+    public function isValid($value, array $context = \null)
     {
-        parent::__construct($name, $options);
-
-        if ($this->isRequired()) {
-            $this->addValidator('NotIdentical', array(
+        if ($this->isRequired() && !isset($this->validators[Validate\NotIdentical::class])) {
+            $this->prependValidator(new Validate\NotIdentical([
                 'value' => "",
                 'error' => 'Полето е задължително'
-            ));
+            ]));
         }
+
+        return parent::isValid($value, $context);
     }
 
     public function render()
@@ -30,19 +32,21 @@ class Radio extends Select
 
             $checked = '';
 
-            if ($this->getValue() == $k) {
+            if ($this->value == $k) {
                 $checked = ' checked="checked"';
             }
 
             $tmp .= '<label>';
-            $tmp .= '<input type="radio" name="' . $name . '" value="' . $this->view->escape($k) . '"' . $checked . $this->htmlAttributes() . ' />';
-            $tmp .= '<span class="label-body">' . $this->view->escape($v) . '</span>';
+            $tmp .= '<input type="radio" name="' . $name . '" value="' . escape($k) . '"' . $checked . $this->htmlAttributes() . ' />';
+            $tmp .= '<span class="element-radio-label">' . escape($v) . '</span>';
             $tmp .= '</label>';
 
             $tmp .=  '</div>';
         }
 
-        $tmp .= $this->renderErrors();
+        if ($this->showErrors === \true) {
+            $tmp .= $this->renderErrors();
+        }
 
         return $tmp;
     }

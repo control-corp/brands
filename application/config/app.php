@@ -8,7 +8,8 @@ return [
     'packages' => [
         'App' => 'application/packages/App',
         'Article' => 'application/packages/Article',
-        'UserManagement' => 'application/packages/UserManagement',
+        // core packages
+        'UserManagement' => 'application/packages-core/UserManagement'
     ],
     'error' => [
         'route' => 'error'
@@ -16,7 +17,6 @@ return [
     'view' => [
         'paths' => [
             'application/resources',
-            'application/resources/packages'
         ]
     ],
     'session' => [

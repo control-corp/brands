@@ -10,11 +10,11 @@ class Hidden extends Element
     {
         $tmp = '';
 
-        $name = $this->getFullyName();
+        $tmp .= '<input type="hidden" name="' . $this->getFullyName() . '" value="' . escape($this->value) . '"' . $this->htmlAttributes() . ' />';
 
-        $tmp .= '<input type="hidden" name="' . $name . '" value="' . $this->view->escape($this->getValue()) . '"' . $this->htmlAttributes() . ' />';
-
-        $tmp .= $this->renderErrors();
+        if ($this->showErrors === \true) {
+            $tmp .= $this->renderErrors();
+        }
 
         return $tmp;
     }

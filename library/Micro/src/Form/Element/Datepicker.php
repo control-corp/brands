@@ -14,20 +14,26 @@ class Datepicker extends Element
 
         $name = $this->getFullyName();
 
-        $value = $this->getValue();
+        $value = $this->value;
 
-        if ($value instanceof \DateTime) {
-            $value = $value->format($this->format);
-        } else if (is_string($value)) {
-            $date  = new \DateTime($value);
-            $value = $date->format($this->format);
-        } else {
+        try {
+            if ($value instanceof \DateTime) {
+                $value = $value->format($this->format);
+            } else if (is_string($value)) {
+                $date  = new \DateTime($value);
+                $value = $date->format($this->format);
+            } else {
+                $value = '';
+            }
+        } catch (\Exception $e) {
             $value = '';
         }
 
-        $tmp .= '<input type="text" name="' . $name . '" value="' . $this->view->escape($value) . '"' . $this->htmlAttributes() . ' />';
+        $tmp .= '<input type="text" name="' . $name . '" value="' . escape($value) . '"' . $this->htmlAttributes() . ' />';
 
-        $tmp .= $this->renderErrors();
+        if ($this->showErrors === \true) {
+            $tmp .= $this->renderErrors();
+        }
 
         return $tmp;
     }

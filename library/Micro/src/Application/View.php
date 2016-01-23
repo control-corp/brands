@@ -265,17 +265,10 @@ class View
         return $this->cloned;
     }
 
-    public function injectPaths()
+    public function injectPaths(array $paths = [])
     {
-        $this->addPath(config('view.paths', []));
-    }
+        $this->addPath(array_merge($paths, config('view.paths', [])));
 
-    public function escape($var, $encoding = 'UTF-8', $escape = 'htmlspecialchars')
-    {
-        if (in_array($escape, array('htmlspecialchars', 'htmlentities'))) {
-            return call_user_func($escape, $var, ENT_COMPAT, $encoding);
-        }
-
-        return call_user_func($escape, $var);
+        return $this;
     }
 }

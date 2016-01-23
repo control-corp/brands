@@ -1,0 +1,5 @@
+<?php $this->extend('layouts/default'); ?>
+
+<?php $this->section('title', 'Admin panel'); ?>
+
+<h1>ADMIN Welcome <?php echo identity() ? identity()->username : ''; ?> !!!</h1>

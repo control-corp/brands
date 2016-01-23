@@ -10,11 +10,11 @@ class Text extends Element
     {
         $tmp = '';
 
-        $name = $this->getFullyName();
+        $tmp .= '<input type="text" name="' . $this->getFullyName() . '" value="' . escape($this->value) . '"' . $this->htmlAttributes() . ' />';
 
-        $tmp .= '<input type="text" name="' . $name . '" value="' . $this->view->escape($this->getValue()) . '"' . $this->htmlAttributes() . ' />';
-
-        $tmp .= $this->renderErrors();
+        if ($this->showErrors === \true) {
+            $tmp .= $this->renderErrors();
+        }
 
         return $tmp;
     }

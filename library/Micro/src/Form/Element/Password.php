@@ -10,11 +10,11 @@ class Password extends Element
     {
         $tmp = '';
 
-        $name = $this->getFullyName();
+        $tmp .= '<input type="password" name="' . $this->getFullyName() . '"' . $this->htmlAttributes() . ' />';
 
-        $tmp .= '<input type="password" name="' . $name . '"' . $this->htmlAttributes() . ' />';
-
-        $tmp .= $this->renderErrors();
+        if ($this->showErrors === \true) {
+            $tmp .= $this->renderErrors();
+        }
 
         return $tmp;
     }

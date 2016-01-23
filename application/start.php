@@ -6,6 +6,7 @@ use Micro\Session\Session;
 use Micro\Database\Database;
 
 require 'library/Micro/autoload.php';
+
 require __DIR__ . '/helpers.php';
 
 /**

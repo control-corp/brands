@@ -7,12 +7,12 @@ class Form
     /**
      * @var array
      */
-    protected $elements = array();
+    protected $elements = [];
 
     /**
      * @var boolean
      */
-    protected $errorsExist = false;
+    protected $errorsExist = \false;
 
     /**
      * Form constructor
@@ -23,7 +23,7 @@ class Form
     {
         if (is_string($options) && file_exists($options)) {
             $options = include $options;
-            $options = is_array($options) ? $options : array();
+            $options = is_array($options) ? $options : [];
         }
 
         if (!is_array($options)) {
@@ -64,21 +64,24 @@ class Form
      * @param array $config
      * @throws CoreException
      */
-    public function addElement($name, array $config = null)
+    public function addElement($name, array $config = \null)
     {
         if ($name instanceof Element) {
             $instance = $name;
-        } else if (is_array($config) && isset($config['type'])) {
-            $options = isset($config['options']) ? $config['options'] : array();
+        } else if (is_string($name) && is_array($config) && isset($config['type'])) {
+            $options = isset($config['options']) ? $config['options'] : [];
             if (class_exists($config['type'])) {
                 $instance = $config['type'];
             } else {
                 $instance = 'Micro\Form\Element\\' . ucfirst($config['type']);
-                if (!class_exists($instance)) {
+                if (!class_exists($instance, \true)) {
                     throw new \Exception('Form element class "' . $instance . '" does not exists');
                 }
             }
             $instance = new $instance($name, $options);
+            if (!$instance instanceof Element) {
+                throw new \Exception('The element is not instance of Micro\\Form\\Element');
+            }
         } else {
             throw new \Exception('The element is not instance of Micro\\Form\\Element');
         }
@@ -92,7 +95,7 @@ class Form
      */
     public function getElement($name)
     {
-        return isset($this->elements[$name]) ? $this->elements[$name] : null;
+        return isset($this->elements[$name]) ? $this->elements[$name] : \null;
     }
 
     /**
@@ -121,16 +124,13 @@ class Form
      */
     public function isValid(array $data)
     {
-        $valid = true;
+        $valid = \true;
 
         foreach ($this->elements as $key => $element) {
-            if (!$element instanceof Element) {
-                continue;
-            }
             if (isset($data[$key])) {
                 $valid = $element->isValid($data[$key], $data) && $valid;
             } else {
-                $valid = $element->isValid(null, $data) && $valid;
+                $valid = $element->isValid(\null, $data) && $valid;
             }
         }
 
@@ -143,21 +143,19 @@ class Form
      * @param string $name
      * @return array
      */
-    public function getErrors($name = null)
+    public function getErrors($name = \null)
     {
-        if (null !== $name) {
+        if (\null !== $name) {
             if (isset($this->elements[$name])) {
                 return $this->getElement($name)->getErrors();
             }
-            return array();
+            return [];
         }
 
-        $errors = array();
+        $errors = [];
 
         foreach ($this->elements as $key => $element) {
-            if ($element instanceof Element) {
-                $errors[$key] = $element->getErrors();
-            }
+            $errors[$key] = $element->getErrors();
         }
 
         return $errors;
@@ -178,10 +176,7 @@ class Form
     {
         foreach ($this->elements as $name => $element) {
             if (array_key_exists($name, $values)) {
-                $element = $this->elements[$name];
-                if ($element instanceof Element) {
-                    $element->setValue($values[$name]);
-                }
+                $this->elements[$name]->setValue($values[$name]);
             }
         }
     }
@@ -191,12 +186,10 @@ class Form
      */
     public function getValues()
     {
-        $values = array();
+        $values = [];
 
         foreach ($this->elements as $key => $element) {
-            if ($element instanceof Element) {
-                $values[$key] = $element->getValue();
-            }
+            $values[$key] = $element->getValue();
         }
 
         return $values;
@@ -212,7 +205,7 @@ class Form
             return $this->elements[$key];
         }
 
-        return null;
+        return \null;
     }
 
     /**
@@ -220,7 +213,7 @@ class Form
      */
     public function markAsError()
     {
-        $this->errorsExist = true;
+        $this->errorsExist = \true;
 
         return $this;
     }

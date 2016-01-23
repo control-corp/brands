@@ -7,16 +7,16 @@ use Micro\Application\Utils;
 
 class Select extends Element
 {
-    protected $multiOptions = array();
+    protected $multiOptions = [];
     protected $emptyOption;
     protected $emptyOptionValue = '';
 
-    public function isValid($value, array $context = null)
+    public function isValid($value, array $context = \null)
     {
         $valid = parent::isValid($value, $context);
 
         if ($this->isArray && !$this->getValue()) {
-            $this->setValue(array());
+            $this->setValue([]);
         }
 
         return $valid;
@@ -33,9 +33,11 @@ class Select extends Element
             $name .= '[]';
         }
 
-        $tmp .= '<select' . ($this->isArray ? ' multiple="multiple"' : '') . ' name="' . $name . '"' . $this->htmlAttributes() . '>' . Utils::buildOptions($this->translateData($this->multiOptions), $this->getValue(), $this->emptyOption, $this->emptyOptionValue) . '</select>';
+        $tmp .= '<select' . ($this->isArray ? ' multiple="multiple"' : '') . ' name="' . $name . '"' . $this->htmlAttributes() . '>' . Utils::buildOptions($this->translateData($this->multiOptions), $this->value, $this->emptyOption, $this->emptyOptionValue) . '</select>';
 
-        $tmp .= $this->renderErrors();
+        if ($this->showErrors === \true) {
+            $tmp .= $this->renderErrors();
+        }
 
         return $tmp;
     }
@@ -70,7 +72,7 @@ class Select extends Element
 
     public function clearMultiOptions()
     {
-        $this->multiOptions = array();
+        $this->multiOptions = [];
 
         return $this;
     }
