@@ -209,6 +209,10 @@ if (!function_exists('escape')) {
 if (!function_exists('is_allowed')) {
     function is_allowed($resource = \null, $role = \null, $privilege = \true)
     {
+        if (!app()->has('acl')) {
+            return \true;
+        }
+
         if ($role === \null) {
             $identity = identity();
             if ($identity !== \null && is_object($identity) && method_exists($identity, 'getGroup')) {

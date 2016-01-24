@@ -7,7 +7,6 @@ use Micro\Acl\Acl;
 use Micro\Auth\Auth;
 use Micro\Event\Message;
 use Micro\Database\Table\TableAbstract;
-use Micro\Helper\Files;
 
 class Package extends BasePackage
 {
@@ -26,21 +25,7 @@ class Package extends BasePackage
          * Acl
          */
         $this->container['acl'] = function () {
-            $config = [
-                'guest' => [
-                    'resources' => Files::fetchControllers(),
-                    'parent' => \null
-                ],
-                'user' => [
-                    'resources' => [],
-                    'parent' => 'guest'
-                ],
-                'admin' => [
-                    'resources' => [],
-                    'parent' => 'user'
-                ]
-            ];
-            return new Acl($config);
+            return new Acl(include __DIR__ . '/../rights.php');
         };
 
         /**
