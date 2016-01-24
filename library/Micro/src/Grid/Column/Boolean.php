@@ -1,6 +1,6 @@
 <?php
 
-namespace micro\Grid\Column;
+namespace Micro\Grid\Column;
 
 use Micro\Grid\Column;
 
