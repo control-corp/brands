@@ -109,6 +109,10 @@ class Router
      */
     public function assemble($name, array $data = [], $reset = \false, $qsa = \false)
     {
+        if ($name === \null && $this->currentRoute instanceof Route) {
+            $name = $this->currentRoute->getName();
+        }
+
         if (!isset($this->routes[$name])) {
             throw new \Exception(sprintf('[' . __METHOD__ . '] Route "%s" not found!', $name), 500);
         }
@@ -119,7 +123,7 @@ class Router
 
         $data += $this->globalParams;
 
-        if ($this->currentRoute && $reset === \false) {
+        if ($this->currentRoute instanceof Route && $reset === \false) {
             $data += $this->currentRoute->getParams();
         }
 

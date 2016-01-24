@@ -62,9 +62,11 @@ class View
 
         $file .= '.phtml';
 
+        $file = ltrim($file, '/\\');
+
         foreach ($this->paths as $path) {
-            if (file_exists($path . '/' . $file)) {
-                $content = $this->evalFile($path . '/' . $file);
+            if (file_exists($path . DIRECTORY_SEPARATOR . $file)) {
+                $content = $this->evalFile($path . DIRECTORY_SEPARATOR . $file);
                 if ($renderParent === \true && $this->parent !== \null) {
                     $this->parent->setSections(array_merge(
                         $this->getSections(),

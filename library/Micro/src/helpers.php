@@ -97,17 +97,9 @@ if (!function_exists('env')) {
 }
 
 if (!function_exists('route')) {
-    function route($name, array $data = [], $reset = \false, $qsa = \false)
+    function route($name = \null, array $data = [], $reset = \false, $qsa = \false)
     {
-        static $cache = [];
-
-        $hash = md5($name . json_encode($data) . (string) $reset . (string) $qsa);
-
-        if (isset($cache[$hash])) {
-            return $cache[$hash];
-        }
-
-        return $cache[$hash] = app('router')->assemble($name, $data, $reset, $qsa);
+        return app('router')->assemble($name, $data, $reset, $qsa);
     }
 }
 

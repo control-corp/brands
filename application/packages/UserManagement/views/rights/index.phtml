@@ -1,0 +1,20 @@
+<?php $this->extend('layouts/default'); ?>
+
+<?php $this->section('title', 'Права'); ?>
+
+<?php
+$currentPackage = \null;
+foreach ($this->resources as $resource => $privilege) :
+    $parts = explode('\\', $resource);
+    $package = $parts[0];
+    unset($parts[0]);
+    $parts = implode('\\', $parts);
+    if ($currentPackage == \null || $package !== $currentPackage) {
+        $currentPackage = $package;
+        echo '<h2>' . $package . '</h2>';
+    }
+?>
+<div>
+    <input type="checkbox" name="resources[]" value="<?php echo $resource; ?>" /> <?php echo $parts; ?>
+</div>
+<?php endforeach; ?>

@@ -5,6 +5,7 @@ namespace Micro\Database\Model;
 use Micro\Database\Table\Row\RowAbstract;
 use Micro\Database\Table\TableAbstract;
 use Micro\Database\Table\Select;
+use Micro\Database\Expr;
 
 abstract class ModelAbstract extends TableAbstract
 {
@@ -46,25 +47,34 @@ abstract class ModelAbstract extends TableAbstract
         return $row;
     }
 
-    public function getItems($where = null, $order = null, $count = null, $offset = null)
+    /**
+     * @param mixed $where
+     * @param mixed $order
+     * @param mixed $count
+     * @param mixed $offset
+     * @throws \Exception
+     * @return \Micro\Database\Select
+     */
+    public function buildSelect($where = \null, $order = \null, $count = \null, $offset = \null)
     {
         if (!($where instanceof Select)) {
 
             $select = $this->select();
 
-            if ($where !== null) {
+            if ($where !== \null) {
                 $this->_where($select, $where);
             }
 
-            if ($order !== null) {
+            if ($order !== \null) {
                 $this->_order($select, $order);
             }
 
-            if ($count !== null || $offset !== null) {
+            if ($count !== \null || $offset !== \null) {
                 $select->limit($count, $offset);
             }
 
         } else {
+
             $select = $where;
         }
 
@@ -114,7 +124,22 @@ abstract class ModelAbstract extends TableAbstract
             $select->$joinType($dependentTableInfo['name'], implode(" AND ", $onCondition), array_diff($dependentTableInfo['cols'], $this->_cols));
         }
 
-        return $this->fetchAll($select);
+        return $select;
+    }
+
+    /**
+     * @param mixed $where
+     * @param mixed $order
+     * @param mixed $count
+     * @param mixed $offset
+     * @throws \Exception
+     * @return \Micro\Database\Table\Rowset\RowsetAbstract
+     */
+    public function getItems($where = \null, $order = \null, $count = \null, $offset = \null)
+    {
+        return $this->fetchAll(
+            $this->buildSelect($where, $order, $count, $offset)
+        );
     }
 
     public function getItem()
@@ -272,6 +297,21 @@ abstract class ModelAbstract extends TableAbstract
         $data = array_merge($data, $row->toArray());
 
         return $data;
+    }
+
+    public function fetchPairs($where = \null, $order = \null, $count = \null, $offset = \null, $columns = \null)
+    {
+        $select = $this->buildSelect($where, $order, $count, $offset);
+
+        $select->reset('columns');
+
+        if ($columns !== \null) {
+            $select->columns($columns);
+        } else {
+            $select->columns(['id', new Expr('name')]);
+        }
+
+        return $this->_db->fetchPairs($select);
     }
 
     public function beginTransaction()

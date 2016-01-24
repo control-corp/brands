@@ -13,7 +13,6 @@ class CountriesLang extends ModelAbstract
             'columns' => 'country_id',
             'refTableClass' => Countries::class,
             'refColumns' => 'id',
-            'onDelete'  => self::CASCADE,
         ),
     );
 }

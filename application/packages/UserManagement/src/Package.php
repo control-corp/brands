@@ -7,6 +7,7 @@ use Micro\Acl\Acl;
 use Micro\Auth\Auth;
 use Micro\Event\Message;
 use Micro\Database\Table\TableAbstract;
+use Micro\Helper\Files;
 
 class Package extends BasePackage
 {
@@ -25,34 +26,21 @@ class Package extends BasePackage
          * Acl
          */
         $this->container['acl'] = function () {
-            return new Acl([
+            $config = [
                 'guest' => [
-                    'resources' => [
-                        'App\Controller\Index@index' => \true,
-                        'App\Controller\Index@login' => \true,
-                        'App\Controller\Index@register' => \true,
-                    ],
+                    'resources' => Files::fetchControllers(),
                     'parent' => \null
                 ],
                 'user' => [
-                    'resources' => [
-                        'App\Controller\Index@index' => \true,
-                        'App\Controller\Index@logout' => \true,
-                        'App\Controller\Index@profile' => \true,
-
-                        'Nomenclatures\Controller\Countries@index' => \true,
-                        'Nomenclatures\Controller\Countries@add' => \true,
-                        'Nomenclatures\Controller\Countries@edit' => \true,
-                        'Nomenclatures\Controller\Countries@delete' => \true,
-                        'Nomenclatures\Controller\Countries@view' => \true,
-                    ],
-                    'parent' => \null
+                    'resources' => [],
+                    'parent' => 'guest'
                 ],
                 'admin' => [
                     'resources' => [],
                     'parent' => 'user'
                 ]
-            ]);
+            ];
+            return new Acl($config);
         };
 
         /**

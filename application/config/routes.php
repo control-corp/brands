@@ -12,22 +12,26 @@ return [
     ],
     'login' => [
         'pattern' => '/login',
-        'handler' => 'App\Controller\Index@login'
+        'handler' => 'UserManagement\Controller\Index@login'
     ],
     'logout' => [
         'pattern' => '/logout',
-        'handler' => 'App\Controller\Index@logout'
+        'handler' => 'UserManagement\Controller\Index@logout'
     ],
     'register' => [
         'pattern' => '/register',
-        'handler' => 'App\Controller\Index@register'
+        'handler' => 'UserManagement\Controller\Index@register'
     ],
     'profile' => [
         'pattern' => '/profile',
-        'handler' => 'App\Controller\Index@profile'
+        'handler' => 'UserManagement\Controller\Index@profile'
+    ],
+    'rights' => [
+        'pattern' => '/rights',
+        'handler' => 'UserManagement\Controller\Rights@index'
     ],
     'default' => [
-        'pattern' => '/{package}/{controller}/{action}[/{id}]',
+        'pattern' => '/{package}[/{controller}][/{action}][/{id}]',
         'handler' => function ($route) {
             $params = $route->getParams();
             return ucfirst(Utils::camelize($params['package'])) . '\\Controller\\' . ucfirst(Utils::camelize($params['controller'])) . '@' . lcfirst(Utils::camelize($params['action']));

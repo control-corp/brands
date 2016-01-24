@@ -7,7 +7,6 @@ return [
     ],
     'packages' => [
         'App' => 'application/packages/App',
-        'Article' => 'application/packages/Article',
         'Nomenclatures' => 'application/packages/Nomenclatures',
         // core packages
         'UserManagement' => 'application/packages/UserManagement'
