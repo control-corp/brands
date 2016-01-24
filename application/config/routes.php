@@ -1,6 +1,7 @@
 <?php
 
 use Micro\Application\Utils;
+
 return [
     'home' => [
         'pattern' => '/',
@@ -29,14 +30,5 @@ return [
     'rights' => [
         'pattern' => '/rights',
         'handler' => 'UserManagement\Controller\Rights@index'
-    ],
-    'default' => [
-        'pattern' => '/{package}[/{controller}][/{action}][/{id}]',
-        'handler' => function ($route) {
-            $params = $route->getParams();
-            return ucfirst(Utils::camelize($params['package'])) . '\\Controller\\' . ucfirst(Utils::camelize($params['controller'])) . '@' . lcfirst(Utils::camelize($params['action']));
-        },
-        'defaults' => ['package' => 'app', 'controller' => 'index', 'action' => 'index'],
-        'conditions' => ['id' => '\d+']
     ]
 ];
