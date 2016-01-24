@@ -123,6 +123,10 @@ class Auth
             return \null;
         }
 
+        if ($identity !== \null && static::$resolver === \null) {
+            return $identity;
+        }
+
         return $cache = call_user_func(static::$resolver, $identity);
     }
 

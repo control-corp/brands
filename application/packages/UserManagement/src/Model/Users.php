@@ -8,13 +8,9 @@ class Users extends ModelAbstract
 {
     protected $_name = 'users';
 
-    protected $_rowClass = Entity\User::class;
-
     public function login($username, $password)
     {
-        $select = $this->select(true)
-                       ->setIntegrityCheck(false)
-                       ->joinInner('groups', 'users.group_id = groups.id', array('groups.alias as group'));
+        $select = $this->getUserSelect();
 
         $select->where('username = ?', $username);
 
@@ -23,5 +19,23 @@ class Users extends ModelAbstract
         }
 
         return $this->fetchRow($select);
+    }
+
+    public function findUser($id)
+    {
+        $select = $this->getUserSelect();
+
+        $select->where('users.id = ?', (int) $id);
+
+        return $this->fetchRow($select);
+    }
+
+    protected function getUserSelect()
+    {
+        $select = $this->select(\true)
+                       ->setIntegrityCheck(\false)
+                       ->joinInner('groups', 'users.group_id = groups.id', array('groups.alias as group'));
+
+        return $select;
     }
 }
