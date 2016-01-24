@@ -13,6 +13,10 @@ class Index extends Controller
 {
     public function profile()
     {
+        if (!identity()) {
+            return new RedirectResponse(route('login'));
+        }
+
         if ($this->request->isPost()) {
             $password = $this->request->getPost('password');
             if ($password) {

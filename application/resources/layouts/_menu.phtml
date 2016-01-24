@@ -1,13 +1,29 @@
-<ul class="nav">
-    <li><a href="<?php echo route('home'); ?>">Начало</a></li>
-<?php if (identity()) : ?>
-    <li><a href="<?php echo route('rights'); ?>">Права</a></li>
-    <li><a href="<?php echo route('default', ['package' => 'nomenclatures', 'controller' => 'cities'], \true); ?>">Градове</a></li>
-    <li><a href="<?php echo route('default', ['package' => 'nomenclatures', 'controller' => 'countries'], \true); ?>">Държави</a></li>
-    <li><a href="<?php echo route('profile'); ?>">Профил</a></li>
-    <li><a href="<?php echo route('logout'); ?>">Изход</a></li>
-<?php else : ?>
-    <li><a href="<?php echo route('login'); ?>">Вход</a></li>
-    <li><a href="<?php echo route('register'); ?>">Регистрация</a></li>
-<?php endif;  ?>
-</ul>
+<?php
+
+$navigation = new Micro\Navigation\Navigation([
+    ['label' => 'Начало', 'route' => 'home'],
+    ['label' => 'Вход', 'route' => 'login'],
+    ['label' => 'Регистрация', 'route' => 'register'],
+    ['label' => 'Профил', 'route' => 'profile'],
+    ['label' => 'Права', 'route' => 'rights'],
+    ['label' => 'Градове', 'route' => 'default', 'routeParams' => ['package' => 'nomenclatures', 'controller' => 'cities']],
+    ['label' => 'Държави', 'route' => 'default', 'routeParams' => ['package' => 'nomenclatures', 'controller' => 'countries']],
+    ['label' => 'Изход', 'route' => 'logout'],
+]);
+
+$tmp = '<ul class="nav">' . PHP_EOL;
+
+foreach ((new \RecursiveIteratorIterator($navigation, \RecursiveIteratorIterator::SELF_FIRST)) as $page) {
+    if (!$page->hasAccess()) {
+        continue;
+    }
+    if ($page->isActive(\true)) {
+        $tmp .= '<li><span>' . $page->getLabel() . '</span></li>' . PHP_EOL;
+    } else {
+        $tmp .= '<li><a href="' . $page->getHref() . '">' . $page->getLabel() . '</a></li>' . PHP_EOL;
+    }
+}
+
+$tmp .= '</ul>' . PHP_EOL;
+
+echo $tmp;

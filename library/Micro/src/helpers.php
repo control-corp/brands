@@ -214,20 +214,30 @@ if (!function_exists('is_allowed')) {
         }
 
         if ($role === \null) {
+
             $identity = identity();
-            if ($identity !== \null && is_object($identity) && method_exists($identity, 'getGroup')) {
-                $role = $identity->getGroup();
-            } else {
-                $role = 'guest';
+
+            $role = 'guest';
+
+            if ($identity !== \null && $identity instanceof Micro\Database\Table\Row) {
+                try {
+                    $role = $identity['group'];
+                } catch (\Exception $e) {
+                    trigger_error($e->getMessage(), E_USER_WARNING);
+                }
             }
         }
 
         if ($resource === \null) {
+
             $route = app('router')->getCurrentRoute();
-            if ($route->getName() === 'error') {
+
+            if ($route === \null || $route->getName() === 'error') {
                 return \true;
             }
+
             $resource = $route->getHandler();
+
             if ($resource instanceof \Closure) {
                 $resource = $resource->__invoke($route, app());
             }
