@@ -26,24 +26,6 @@ return [
         'pattern' => '/profile',
         'handler' => 'App\Controller\Index@profile'
     ],
-    'article.list' => [
-        'pattern' => '/article',
-        'handler' => 'Article\Controller\Index@index'
-    ],
-    'article.detail' => [
-        'pattern' => '/article/{id}',
-        'handler' => 'Article\Controller\Index@detail',
-        'conditions' => ['id' => '\d+']
-    ],
-    'article.add' => [
-        'pattern' => '/article/add',
-        'handler' => 'Article\Controller\Index@add',
-    ],
-    'article.delete' => [
-        'pattern' => '/article/{id}/delete',
-        'handler' => 'Article\Controller\Index@delete',
-        'conditions' => ['id' => '\d+']
-    ],
     'default' => [
         'pattern' => '/{package}/{controller}/{action}[/{id}]',
         'handler' => function ($route) {

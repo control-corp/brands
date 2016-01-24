@@ -31,8 +31,6 @@ class Package extends BasePackage
                         'App\Controller\Index@index' => \true,
                         'App\Controller\Index@login' => \true,
                         'App\Controller\Index@register' => \true,
-                        'App\Controller\Admin\Index@index' => \true,
-                        'App\Controller\Admin\Index@test' => \true,
                     ],
                     'parent' => \null
                 ],
@@ -41,10 +39,6 @@ class Package extends BasePackage
                         'App\Controller\Index@index' => \true,
                         'App\Controller\Index@logout' => \true,
                         'App\Controller\Index@profile' => \true,
-                        'Article\Controller\Index@index' => \true,
-                        'Article\Controller\Index@detail' => \true,
-                        'Article\Controller\Index@add' => \true,
-                        'Article\Controller\Index@delete' => \true,
 
                         'Nomenclatures\Controller\Countries@index' => \true,
                         'Nomenclatures\Controller\Countries@add' => \true,

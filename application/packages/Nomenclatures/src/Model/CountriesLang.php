@@ -9,7 +9,7 @@ class CountriesLang extends ModelAbstract
     protected $_name = 'nom_countries_lang';
 
     protected $_referenceMap = array(
-        'Article' => array(
+        'Country' => array(
             'columns' => 'country_id',
             'refTableClass' => Countries::class,
             'refColumns' => 'id',
