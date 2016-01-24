@@ -141,6 +141,8 @@ class Router
                 $qs = $data + $qs;
             }
 
+            $qs = array_filter($qs);
+
             if (!empty($qs)) {
                 $url .= '?' . http_build_query($qs);
             }

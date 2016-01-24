@@ -25,6 +25,23 @@
             <p class="text-muted">Copyright © <?php echo date('Y'); ?></p>
         </div>
     </footer>
+    <script>var siteLanguage = {code: 'bg'}; </script>
+    <script>var siteConfig = <?php echo json_encode(config('config.js', array())); ?>; </script>
+    <script type="text/javascript" src="assets/js/jquery/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="assets/js/jquery/jquery.migrate.1.2.1.min.js"></script>
+    <script type="text/javascript" src="assets/js/jquery/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="assets/templates/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="assets/templates/bootstrap/js/bootbox.min.js"></script>
+    <script type="text/javascript" src="assets/templates/bootstrap/extends/datepicker/js/bootstrap-datepicker.min.js"></script>
+    <script type="text/javascript" src="assets/templates/bootstrap/extends/datepicker/locales/bootstrap-datepicker.bg.min.js"></script>
+    <script type="text/javascript" src="assets/templates/bootstrap/extends/summernote/summernote.min.js"></script>
+    <script type="text/javascript" src="assets/templates/bootstrap/extends/summernote/lang/bg-BG.js"></script>
+    <script type="text/javascript" src="assets/templates/bootstrap/extends/select/js/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="assets/templates/bootstrap/extends/select/js/i18n/defaults-bg_BG.min.js"></script>
+    <script type="text/javascript" src="assets/templates/bootstrap/js/main.js"></script>
+    <script type="text/javascript" src="assets/templates/bootstrap/js/chainedOneByOne.js"></script>
+    <script type="text/javascript" src="assets/js/jquery/jquery.blockui.js"></script>
+    <script type="text/javascript" src="assets/js/jquery/jquery.nestable.js"></script>
     <?php echo $this->renderSection('scripts'); ?>
 </body>
 </html>

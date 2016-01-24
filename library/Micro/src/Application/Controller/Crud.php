@@ -49,6 +49,13 @@ class Crud extends Controller
     {
         $controller = $this->request->getParam('controller');
 
+        if ($this->request->isPost()) {
+            $post = $this->request->getPost();
+            if (isset($post['btnAdd'])) {
+                return new RedirectResponse(route(\null, ['action' => 'add', 'page' => \null]));
+            }
+        }
+
         return new View(
             $controller . '/index',
             ['items' => $this->getModel()->getItems()]
@@ -73,16 +80,15 @@ class Crud extends Controller
             if ($form->isValid($post)) {
 
                 if ($entity === \null) {
-                    $entity = $post + ['language_id' => 2];
+                    $this->getModel()->save($post + ['language_id' => 2]);
                 } else {
                     $entity->setFromArray($post);
+                    $this->getModel()->save($entity);
                 }
-
-                $this->getModel()->save($entity);
 
                 $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index'], \false, \true));
 
-                return $redirectResponse->withFlash(sprintf('Информацията е %s', ($entity ? 'редактирана' : 'добавена')));
+                return $redirectResponse->withFlash(sprintf('Записът е %s', ($entity ? 'редактиран' : 'добавен')));
             }
         }
 
@@ -97,7 +103,7 @@ class Crud extends Controller
         $item = $this->getModel()->getItem((int) $this->request->getParam('id', 0));
 
         if ($item === \null) {
-            throw new \Exception(sprintf('Информацията не е намерена'), 404);
+            throw new \Exception(sprintf('Записът не е намерен'), 404);
         }
 
         return $this->add($item);
@@ -105,11 +111,22 @@ class Crud extends Controller
 
     public function delete()
     {
-        $this->getModel()->delete(array('id = ?' => (int) $this->request->getParam('id')));
+        $id = (int) $this->request->getParam('id', 0);
+        $ids = $this->request->getParam('ids', []);
 
-        $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index', 'id' => \null], \false, \true));
+        if ($id) {
+            $ids = array($id);
+        }
 
-        return $redirectResponse->withFlash('Информацията е изтрита');
+        $ids = array_filter($ids);
+
+        if (!empty($ids)) {
+            $this->getModel()->delete(array('id IN (?)' => array_map('intval', $ids)));
+        }
+
+        $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index', 'id' => \null, 'ids' => \null], \false, \true));
+
+        return $redirectResponse->withFlash('Записът е изтрит');
     }
 
     public function view()
@@ -117,7 +134,7 @@ class Crud extends Controller
         $item = $this->getModel()->getItem((int) $this->request->getParam('id', 0));
 
         if ($item === \null) {
-            throw new \Exception(sprintf('Информацията не е намерена'), 404);
+            throw new \Exception(sprintf('Записът не е намерен'), 404);
         }
 
         $controller = $this->request->getParam('controller');
