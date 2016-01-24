@@ -107,7 +107,7 @@ class Router
      * @throws \Exception
      * @return string
      */
-    public function assemble($name, array $data = [], $qsa = \false)
+    public function assemble($name, array $data = [], $reset = \false, $qsa = \false)
     {
         if (!isset($this->routes[$name])) {
             throw new \Exception(sprintf('[' . __METHOD__ . '] Route "%s" not found!', $name), 500);
@@ -118,6 +118,10 @@ class Router
         $pattern = $route->getPattern();
 
         $data += $this->globalParams;
+
+        if ($this->currentRoute && $reset === \false) {
+            $data += $this->currentRoute->getParams();
+        }
 
         if (isset($this->routesStatic[$pattern])) {
             $url = $pattern;

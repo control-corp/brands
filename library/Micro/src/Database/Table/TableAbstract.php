@@ -181,6 +181,8 @@ abstract class TableAbstract
      */
     protected $_dependentTables = array();
 
+    protected $dependentTableInstances = array();
+
 
     protected $_defaultSource = self::DEFAULT_NONE;
 
@@ -398,6 +400,18 @@ abstract class TableAbstract
     public function getDependentTables()
     {
         return $this->_dependentTables;
+    }
+
+    public function getDependentTableInstance($dependentTable)
+    {
+        if (!isset($this->dependentTableInstances[$dependentTable])) {
+            if (!class_exists($dependentTable, \true)) {
+                throw new \Exception(sprintf('Invalid dependent table %s', $dependentTable), 500);
+            }
+            $this->dependentTableInstances[$dependentTable] = new $dependentTable;
+        }
+
+        return $this->dependentTableInstances[$dependentTable];
     }
 
     /**
@@ -1065,6 +1079,7 @@ abstract class TableAbstract
     public function delete($where)
     {
         $depTables = $this->getDependentTables();
+
         if (!empty($depTables)) {
             $resultSet = $this->fetchAll($where);
             if (count($resultSet) > 0 ) {
@@ -1074,7 +1089,7 @@ abstract class TableAbstract
                      */
                     foreach ($depTables as $tableClass) {
                         $t = self::getTableFromString($tableClass, $this);
-                        $t->_cascadeDelete($tableClass, $row->getPrimaryKey());
+                        $t->_cascadeDelete(get_class($this), $row->getPrimaryKey());
                     }
                 }
             }
@@ -1102,6 +1117,7 @@ abstract class TableAbstract
         $rowsAffected = 0;
 
         foreach ($this->_getReferenceMapNormalized() as $map) {
+
             if ($map[self::REF_TABLE_CLASS] == $parentTableClassname && isset($map[self::ON_DELETE])) {
 
                 $where = array();
@@ -1142,6 +1158,7 @@ abstract class TableAbstract
 
             }
         }
+
         return $rowsAffected;
     }
 
@@ -1447,5 +1464,27 @@ abstract class TableAbstract
         $stmt = $this->_db->query($select);
         $data = $stmt->fetchAll(Database::FETCH_ASSOC);
         return $data;
+    }
+
+    /**
+     * @param string $tableName
+     * @param TableAbstract $referenceTable
+     * @throws \Exception
+     * @return \Micro\Database\Table\TableAbstract
+     */
+    public static function getTableFromString($tableName, TableAbstract $referenceTable = null)
+    {
+        // assume the tableName is the class name
+        if (!class_exists($tableName)) {
+            throw new Exception("Class '{$tableName}' does not exists");
+        }
+
+        $options = array();
+
+        if ($referenceTable instanceof TableAbstract) {
+            $options['db'] = $referenceTable->getAdapter();
+        }
+
+        return new $tableName($options);
     }
 }

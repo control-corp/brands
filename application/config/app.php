@@ -2,14 +2,15 @@
 
 return [
     'application' => [
-        'debug' => 0,
+        'debug' => 1,
         'perfomance' => 0
     ],
     'packages' => [
         'App' => 'application/packages/App',
         'Article' => 'application/packages/Article',
+        'Nomenclatures' => 'application/packages/Nomenclatures',
         // core packages
-        'UserManagement' => 'application/packages-core/UserManagement'
+        'UserManagement' => 'application/packages/UserManagement'
     ],
     'error' => [
         'route' => 'error'

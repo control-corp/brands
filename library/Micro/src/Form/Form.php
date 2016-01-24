@@ -64,29 +64,46 @@ class Form
      * @param array $config
      * @throws CoreException
      */
-    public function addElement($name, array $config = \null)
+    public function addElement($name, $config = \null)
     {
+        $instance = \null;
+
         if ($name instanceof Element) {
             $instance = $name;
         } else if (is_string($name) && is_array($config) && isset($config['type'])) {
-            $options = isset($config['options']) ? $config['options'] : [];
-            if (class_exists($config['type'])) {
-                $instance = $config['type'];
-            } else {
-                $instance = 'Micro\Form\Element\\' . ucfirst($config['type']);
-                if (!class_exists($instance, \true)) {
-                    throw new \Exception('Form element class "' . $instance . '" does not exists');
-                }
-            }
-            $instance = new $instance($name, $options);
-            if (!$instance instanceof Element) {
-                throw new \Exception('The element is not instance of Micro\\Form\\Element');
-            }
-        } else {
+            $instance = $this->createElement($name, $config['type'], (isset($config['options']) ? $config['options'] : []));
+        } else if (is_string($name) && is_string($config)) {
+            $instance = $this->createElement($name, $config, []);
+        }
+
+        if (!$instance instanceof Element) {
             throw new \Exception('The element is not instance of Micro\\Form\\Element');
         }
 
+        $instance->bindTo($this);
+
         $this->elements[$instance->getName()] = $instance;
+    }
+
+    /**
+     * @param string $name
+     * @param string $element
+     * @param array $options
+     * @throws \Exception
+     * @return \Micro\Form\Element
+     */
+    protected function createElement($name, $element, array $options)
+    {
+        if (class_exists($element, \true)) {
+            $instance = $element;
+        } else {
+            $instance = 'Micro\Form\Element\\' . ucfirst($element);
+            if (!class_exists($instance, \true)) {
+                throw new \Exception('[' . __METHOD__ . '] Element class [' . $instance . '] does not exists');
+            }
+        }
+
+        return new $instance($name, $options);
     }
 
     /**
@@ -105,8 +122,8 @@ class Form
     public function removeElement($name)
     {
         if (is_array($name)) {
-            foreach ($name as $n) {
-                $this->removeElement($n);
+            foreach ($name as $singleName) {
+                $this->removeElement($singleName);
             }
             return $this;
         }

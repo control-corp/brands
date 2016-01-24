@@ -15,7 +15,7 @@ class Select extends Element
     {
         $valid = parent::isValid($value, $context);
 
-        if ($this->isArray && !$this->getValue()) {
+        if ($this->isArray && empty($value)) {
             $this->setValue([]);
         }
 

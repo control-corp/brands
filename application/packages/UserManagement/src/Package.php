@@ -43,6 +43,14 @@ class Package extends BasePackage
                         'App\Controller\Index@profile' => \true,
                         'Article\Controller\Index@index' => \true,
                         'Article\Controller\Index@detail' => \true,
+                        'Article\Controller\Index@add' => \true,
+                        'Article\Controller\Index@delete' => \true,
+
+                        'Nomenclatures\Controller\Countries@index' => \true,
+                        'Nomenclatures\Controller\Countries@add' => \true,
+                        'Nomenclatures\Controller\Countries@edit' => \true,
+                        'Nomenclatures\Controller\Countries@delete' => \true,
+                        'Nomenclatures\Controller\Countries@view' => \true,
                     ],
                     'parent' => \null
                 ],

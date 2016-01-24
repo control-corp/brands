@@ -3,18 +3,34 @@
 return [
     'elements' => [
         'username' => [
-            'type'    => 'text',
+            'type' => 'text',
             'options' => [
                 'required' => 1,
-                'attributes' => ['placeholder' => 'username']
+                'attributes' => [
+                    'placeholder' => 'username'
+                ]
             ]
         ],
         'password' => [
-            'type'    => 'password',
+            'type' => 'password',
             'options' => [
                 'required' => 1,
-                'attributes' => ['placeholder' => 'password']
+                'attributes' => [
+                    'placeholder' => 'password'
+                ]
             ]
         ],
+        'enum' => [
+            'type' => 'select',
+            'options' => [
+                'required' => 1,
+                'emptyOption' => '---',
+                'multiOptions' => [
+                    '1' => 'Da',
+                    '2' => 'Ne'
+                ]
+            ]
+        ],
+        'protect' => 'csrf'
     ]
 ];

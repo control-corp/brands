@@ -9,9 +9,11 @@ abstract class ValidateAbstract implements ValidateInterface
     protected $messages  = array();
     protected $templates = array();
 
-    public function __construct(array $options)
+    public function __construct(array $options = \null)
     {
-        $this->setOptions($options);
+        if ($options !== \null) {
+            $this->setOptions($options);
+        }
     }
 
     public function setOptions(array $options)

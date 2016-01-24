@@ -1,0 +1,9 @@
+<?php $this->extend('layouts/default'); ?>
+
+<?php $this->section('title', $this->item['name']); ?>
+
+<h1><?php echo $this->item['name']; ?></h1>
+
+<div>
+    <a href="<?php echo route('default', ['action' => 'index', 'id' => \null]); ?>">back</a>
+</div>

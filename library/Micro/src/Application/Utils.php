@@ -17,6 +17,14 @@ class Utils
             $value = str_replace(' ', '', ucwords(str_replace('-', ' ', $value)));
         }
 
+        if (strpos($value, '_') !== false) {
+            $value = str_replace(' ', '', ucwords(str_replace('_', ' ', $value)));
+        }
+
+        if (strpos($value, '.') !== false) {
+            $value = str_replace(' ', '', ucwords(str_replace('.', ' ', $value)));
+        }
+
         return $value;
     }
 
@@ -55,30 +63,25 @@ class Utils
     {
         $options = '';
 
-        if ($emptyOption) {
-            $options .= '<option value="' . static::e($emptyOptionValue) . '">' . static::e($emptyOption) . '</option>';
-        }
-
         if (!is_array($value)) {
             $value = array($value);
         }
 
+        if ($emptyOption) {
+            $optionsInput = array(escape($emptyOptionValue) => escape($emptyOption)) + $optionsInput;
+        }
+
         foreach ($optionsInput as $optionGroup => $group) {
             if (is_array($group)) {
-                $options .= '<optgroup label="' . static::e($optionGroup) . '">';
+                $options .= '<optgroup label="' . escape($optionGroup) . '">';
                 $options .= self::buildOptions($group, $value, '', '');
                 $options .= '</optgroup>';
             } else {
                 $selected = (in_array($optionGroup, $value) ? ' selected="selected"' : '');
-                $options .= '<option' . $selected . ' value="' . static::e($optionGroup) . '">' . static::e($group) . '</option>';
+                $options .= '<option' . $selected . ' value="' . escape($optionGroup) . '">' . escape($group) . '</option>';
             }
         }
 
         return $options;
-    }
-
-    public static function e($value)
-    {
-        return htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
     }
 }

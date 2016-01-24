@@ -2,29 +2,39 @@
 
 namespace Micro\Form\Element;
 
-use Micro\Application\Utils;
 use Micro\Form\Element;
-use Micro\Session\SessionNamespace;
 use Micro\Validate;
 
 class Csrf extends Element
 {
-    protected $csrf;
+    protected $csrfValidator;
 
-    public function __construct($name, array $options)
+    public function getCsrfValidator()
     {
-        parent::__construct($name, $options);
+        if ($this->csrfValidator === \null) {
+            $this->csrfValidator = new Validate\Csrf(['name' => $this->name]);
+        }
 
-        $session = new SessionNamespace($name . '_form_csrf');
+        return $this->csrfValidator;
+    }
 
-        $this->setRequired(\true);
+    public function isValid($value, array $context = \null)
+    {
+        $this->setValue($value);
 
-        $this->addValidator(new Validate\Identical([
-            'value' => (isset($session->value) ? $session->value : \null),
-            'error' => 'Формата е невалидна'
-        ]));
+        $validator = $this->getCsrfValidator();
 
-        $this->csrf = $session->value = md5(Utils::randomSentence(10) . time());
+        $validator->isValid($value, $context);
+
+        foreach ($validator->getMessages() as $message) {
+            $this->addError($message);
+        }
+
+        if ($this->hasErrors()) {
+            return \false;
+        }
+
+        return \true;
     }
 
     public function render()
@@ -33,7 +43,7 @@ class Csrf extends Element
 
         $name = $this->getFullyName();
 
-        $tmp .= '<input type="hidden" name="' . $name . '" value="' . $this->csrf . '" />';
+        $tmp .= '<input type="hidden" name="' . $name . '" value="' . $this->getCsrfValidator()->getValue() . '" />';
 
         if ($this->showErrors === \true) {
             $tmp .= $this->renderErrors();

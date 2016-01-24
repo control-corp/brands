@@ -1,6 +1,7 @@
 <ul class="nav">
     <li><a href="<?php echo route('home'); ?>">home</a></li>
 <?php if (identity()) : ?>
+    <li><a href="<?php echo route('default', ['package' => 'nomenclatures', 'controller' => 'countries'], \true); ?>">countries</a></li>
     <li><a href="<?php echo route('article.list'); ?>">articles</a></li>
     <li><a href="<?php echo route('profile'); ?>">profile</a></li>
     <li><a href="<?php echo route('logout'); ?>">logout</a></li>

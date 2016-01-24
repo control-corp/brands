@@ -1,0 +1,28 @@
+<?php $this->extend('layouts/default'); ?>
+
+<?php $this->section('title', 'Добавяне'); ?>
+
+<h1>Добавяне на артикул</h1>
+
+<form method="post" action="<?php echo route('article.add'); ?>">
+    <?php echo $this->form->name; ?>
+    <?php echo $this->form->active; ?>
+    <?php echo $this->form->protect; ?>
+    <?php echo $this->form->btnSave; ?>
+</form>
+
+<div>
+    <a href="<?php echo route('article.list', [], \true); ?>">back</a>
+</div>
+
+<?php $this->start('styles'); ?>
+<style>
+input {
+   display: block;
+   margin-top: 5px;
+}
+input[type="checkbox"] {
+   margin: 5px 0 0 0;
+}
+</style>
+<?php $this->stop(); ?>

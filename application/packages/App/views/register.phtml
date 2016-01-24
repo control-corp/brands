@@ -4,7 +4,7 @@
     <form method="post">
         <?php echo $this->form->username; ?>
         <?php echo $this->form->password; ?>
-        <?php echo $this->form->accept; ?>
+        <?php echo $this->form->enum; ?>
         <?php echo $this->form->protect; ?>
         <input type="submit" name="register" value="register" />
     </form>
@@ -15,7 +15,8 @@
     .register {
     	margin-top: 10px;
     }
-    .register input {
+    .register input,
+    .register select {
 	   display: block;
        margin-top: 5px;
     }

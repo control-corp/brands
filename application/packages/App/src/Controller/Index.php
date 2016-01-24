@@ -62,6 +62,8 @@ class Index extends Controller
                 if ($user !== \null && Security::verity($data['password'], $user['password'])) {
                     Auth::getInstance()->setIdentity($user);
                     return new RedirectResponse(route('home'));
+                } else {
+                    $form->password->addError('Невалидни данни');
                 }
             }
         }

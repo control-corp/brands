@@ -1,0 +1,27 @@
+<?php $this->extend('layouts/default'); ?>
+
+<?php $this->section('title', 'Добавяне'); ?>
+
+<h1>Добавяне на държава</h1>
+
+<div style="margin-bottom: 10px">
+    <a href="<?php echo route('default', ['action' => 'index']); ?>">назад към списъка</a>
+</div>
+
+<form method="post" action="<?php echo route('default'); ?>">
+    <?php echo $this->form->name; ?>
+    <?php echo $this->form->protect; ?>
+    <?php echo $this->form->btnSave; ?>
+</form>
+
+<?php $this->start('styles'); ?>
+<style>
+input {
+   display: block;
+   margin-top: 5px;
+}
+input[type="checkbox"] {
+   margin: 5px 0 0 0;
+}
+</style>
+<?php $this->stop(); ?>

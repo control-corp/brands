@@ -2,9 +2,11 @@
 
 namespace Micro\Form;
 
+use Micro\Form\Form;
+use Micro\Validate;
 use Micro\Validate\ValidateInterface;
 
-class Element
+abstract class Element
 {
     protected $name;
     protected $value;
@@ -19,6 +21,9 @@ class Element
     protected $attributes = [];
     protected $isArray = \false;
     protected $translate = \false;
+    protected $form;
+
+    abstract public function render();
 
     /**
      * @param string $name
@@ -41,6 +46,13 @@ class Element
                 $this->$method($v);
             }
         }
+
+        return $this;
+    }
+
+    public function bindTo(Form $form)
+    {
+        $this->form = $form;
 
         return $this;
     }
@@ -351,23 +363,23 @@ class Element
 
         $value = $this->getValue();
 
-        if ((('' === $value) || (\null === $value)) && !$this->isRequired()) {
+        if ((('' === $value) || (\null === $value)) && $this->required === \false) {
             return \true;
         }
 
-        if ($this->isRequired()) {
-            $validators = $this->getValidators();
-            array_unshift($validators, 'NotEmpty');
-            $this->setValidators($validators);
+        if ($this->required === \true && !isset($this->validators[Validate\NotEmpty::class])) {
+            $this->prependValidator(new Validate\NotEmpty());
         }
 
         foreach ($this->getValidators() as $key => $validator) {
             if (!$validator->isValid($value, $context)) {
-                $this->errors = array_merge($this->errors, $validator->getMessages());
+                foreach ($validator->getMessages() as $message) {
+                    $this->addError($message);
+                }
             }
         }
 
-        if (!empty($this->errors)) {
+        if ($this->hasErrors()) {
             return \false;
         }
 
@@ -377,6 +389,10 @@ class Element
     public function addError($message)
     {
         $this->errors[] = $message;
+
+        if ($this->form instanceof Form) {
+            $this->form->markAsError();
+        }
 
         return $this;
     }
@@ -389,11 +405,6 @@ class Element
     public function hasErrors()
     {
         return !empty($this->errors);
-    }
-
-    public function render()
-    {
-        return '';
     }
 
     public function __toString()
@@ -439,7 +450,7 @@ class Element
     public function renderLabel()
     {
         if ($this->label) {
-            return '<label class="' . ($this->labelClass ? $this->labelClass : 'element-label') . ($this->required ? ' required' : '') . '">' . $this->translateData($this->label) . ($this->required ? ' <span class="asterisk">*</span>' : '') . '</label>';
+            return '<label class="' . $this->name . '-element-label' . ($this->labelClass ? ' ' . $this->labelClass : 'element-label') . ($this->required ? ' required' : '') . '">' . $this->translateData($this->label) . ($this->required ? ' <span class="asterisk">*</span>' : '') . '</label>';
         }
 
         return '';
@@ -450,7 +461,7 @@ class Element
         $tmp = '';
 
         foreach ($this->errors as $error) {
-            $tmp .= '<span class="element-errors">' . $this->translateData($error) . '</span>';
+            $tmp .= '<span class="' . $this->name . '-element-error element-error">' . $this->translateData($error) . '</span>';
         }
 
         return $tmp;

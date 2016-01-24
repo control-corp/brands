@@ -97,17 +97,17 @@ if (!function_exists('env')) {
 }
 
 if (!function_exists('route')) {
-    function route($name, array $data = [], $qsa = \false)
+    function route($name, array $data = [], $reset = \false, $qsa = \false)
     {
         static $cache = [];
 
-        $hash = md5($name . json_encode($data) . (string) $qsa);
+        $hash = md5($name . json_encode($data) . (string) $reset . (string) $qsa);
 
         if (isset($cache[$hash])) {
             return $cache[$hash];
         }
 
-        return $cache[$hash] = app('router')->assemble($name, $data, $qsa);
+        return $cache[$hash] = app('router')->assemble($name, $data, $reset, $qsa);
     }
 }
 
@@ -232,6 +232,9 @@ if (!function_exists('is_allowed')) {
                 return \true;
             }
             $resource = $route->getHandler();
+            if ($resource instanceof \Closure) {
+                $resource = $resource->__invoke($route, app());
+            }
         }
 
         return app('acl')->isAllowed($role, $resource, $privilege);

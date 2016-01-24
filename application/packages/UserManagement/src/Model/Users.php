@@ -2,13 +2,13 @@
 
 namespace UserManagement\Model;
 
-use Micro\Database\Table\TableAbstract;
+use Micro\Database\Model\ModelAbstract;
 
-class Users extends TableAbstract
+class Users extends ModelAbstract
 {
     protected $_name = 'users';
 
-    protected $_rowClass = 'UserManagement\Model\Entity\User';
+    protected $_rowClass = Entity\User::class;
 
     public function login($username, $password)
     {

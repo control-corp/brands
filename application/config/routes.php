@@ -1,5 +1,6 @@
 <?php
 
+use Micro\Application\Utils;
 return [
     'home' => [
         'pattern' => '/',
@@ -32,6 +33,24 @@ return [
     'article.detail' => [
         'pattern' => '/article/{id}',
         'handler' => 'Article\Controller\Index@detail',
+        'conditions' => ['id' => '\d+']
+    ],
+    'article.add' => [
+        'pattern' => '/article/add',
+        'handler' => 'Article\Controller\Index@add',
+    ],
+    'article.delete' => [
+        'pattern' => '/article/{id}/delete',
+        'handler' => 'Article\Controller\Index@delete',
+        'conditions' => ['id' => '\d+']
+    ],
+    'default' => [
+        'pattern' => '/{package}/{controller}/{action}[/{id}]',
+        'handler' => function ($route) {
+            $params = $route->getParams();
+            return ucfirst(Utils::camelize($params['package'])) . '\\Controller\\' . ucfirst(Utils::camelize($params['controller'])) . '@' . lcfirst(Utils::camelize($params['action']));
+        },
+        'defaults' => ['package' => 'App', 'controller' => 'index', 'action' => 'index'],
         'conditions' => ['id' => '\d+']
     ]
 ];
