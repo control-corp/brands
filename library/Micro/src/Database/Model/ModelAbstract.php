@@ -262,7 +262,7 @@ abstract class ModelAbstract extends TableAbstract
 
         /**
          * Check if primary key is a sequence and exclude it from data
-         * @todo \Light\Db\Table\TableAbstract seems to set sequence = true even
+         * @todo \Micro\Database\Table\TableAbstract seems to set sequence = true even
          *       if primary key is compound containing foreign sequence
          */
         if ($table->info(TableAbstract::SEQUENCE) && (count($primaryKeys) == 1)) {

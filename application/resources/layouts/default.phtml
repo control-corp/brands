@@ -6,26 +6,25 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo $this->renderSection('title', 'Home'); ?></title>
-    <style>
-    html, body { font-size: 16px; }
-    a { color: blue; }
-    a:hover { color: blue; text-decoration: none; }
-    ul.nav { margin: 0; padding: 0; }
-    ul.nav li { display: inline-block; }
-    ul.nav li:before { content: " / "; }
-    ul.nav li:first-child:before { content: ""; }
-    #content .flash { margin-top: 5px; }
-    </style>
+    <link rel="stylesheet" href="assets/templates/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/templates/bootstrap/extends/datepicker/css/bootstrap-datepicker3.standalone.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/templates/bootstrap/extends/font-awesome-4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/templates/bootstrap/extends/summernote/summernote.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/templates/bootstrap/extends/select/css/bootstrap-select.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/templates/bootstrap/css/custom.css" rel="stylesheet">
     <?php echo $this->renderSection('styles'); ?>
 </head>
-<body>
-    <div class="container">
-        <?php echo $this->partial('layouts/_menu'); ?>
-        <div id="content">
-            <?php echo $this->partial('layouts/_flash'); ?>
-            <?php echo $this->renderSection('content'); ?>
-        </div>
+<body role="document">
+    <?php echo $this->partial('layouts/includes/_menu'); ?>
+    <div class="container-fluid">
+        <?php echo $this->partial('layouts/includes/_flash'); ?>
+        <?php echo $this->renderSection('content'); ?>
     </div>
+    <footer class="footer">
+        <div class="container">
+            <p class="text-muted">Copyright © <?php echo date('Y'); ?></p>
+        </div>
+    </footer>
     <?php echo $this->renderSection('scripts'); ?>
 </body>
 </html>

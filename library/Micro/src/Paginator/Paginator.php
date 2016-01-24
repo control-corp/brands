@@ -4,6 +4,11 @@ namespace Micro\Paginator;
 
 use Micro\Paginator\Adapter\AdapterInterface;
 use Micro\Paginator\Adapter\AdapterArray;
+use Micro\Paginator\Adapter\DatabaseTableSelect;
+use Micro\Paginator\Adapter\DatabaseSelect;
+
+use Micro\Database\Select as Select;
+use Micro\Database\Table\Select as TableSelect;
 
 class Paginator implements \Countable, \IteratorAggregate
 {
@@ -48,6 +53,10 @@ class Paginator implements \Countable, \IteratorAggregate
             $this->model = $model;
         } else if (is_array($model)) {
             $this->model = new AdapterArray($model);
+        } else if ($model instanceof TableSelect) {
+            $this->model = new DatabaseTableSelect($model);
+        } else if ($model instanceof Select) {
+            $this->model = new DatabaseSelect($model);
         } else {
             $type = is_object($model) ? get_class($model) : gettype($model);
             throw new \Exception('No adapter for type ' . $type);

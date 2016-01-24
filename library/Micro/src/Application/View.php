@@ -113,11 +113,22 @@ class View
     public function setData($data)
     {
         $this->data = $data;
+
+        return $this;
+    }
+
+    public function addData($data)
+    {
+        $this->data = array_merge($this->data, $data);
+
+        return $this;
     }
 
     public function setTemplate($template)
     {
         $this->template = $template;
+
+        return $this;
     }
 
     public function getTemplate()
@@ -143,13 +154,13 @@ class View
             throw new \Exception('Recursion detected', 500);
         }
 
-        $view->setData($data);
+        $view->setSections([]);
 
-        $view->setTemplate($template);
+        $view->setData($data);
 
         $view->setParent(\null);
 
-        return $view->render();
+        return $view->render($template);
     }
 
     public function extend($template, array $data = [])

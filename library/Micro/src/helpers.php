@@ -206,6 +206,27 @@ if (!function_exists('escape')) {
     }
 }
 
+if (!function_exists('current_package')) {
+    function current_package()
+    {
+        $route = app('router')->getCurrentRoute();
+
+        if ($route === \null) {
+            throw new \Exception(sprintf('[' . __FUNCTION__ . '] There is no current route'));
+        }
+
+        $resource = $route->getHandler();
+
+        if ($resource instanceof \Closure) {
+            $resource = $resource->__invoke($route, app());
+        }
+
+        $parts = explode('\\', $resource);
+
+        return $parts[0];
+    }
+}
+
 if (!function_exists('is_allowed')) {
     function is_allowed($resource = \null, $role = \null, $privilege = \true)
     {
@@ -244,5 +265,26 @@ if (!function_exists('is_allowed')) {
         }
 
         return app('acl')->isAllowed($role, $resource, $privilege);
+    }
+}
+
+if (!function_exists('pagination')) {
+    function pagination(
+        Micro\Paginator\Paginator $paginator,
+        $partial = 'paginator',
+        array $params = \null,
+        Micro\Application\View $view = \null
+    ) {
+        $pages = array('pages' => $paginator->getPages());
+
+        if ($params !== \null) {
+            $pages = array_merge($pages, (array) $params);
+        }
+
+        if ($view === \null) {
+            $view = new Micro\Application\View(\null);
+        }
+
+        return $view->partial($partial, $pages);
     }
 }
