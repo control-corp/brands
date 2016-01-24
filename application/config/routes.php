@@ -36,7 +36,7 @@ return [
             $params = $route->getParams();
             return ucfirst(Utils::camelize($params['package'])) . '\\Controller\\' . ucfirst(Utils::camelize($params['controller'])) . '@' . lcfirst(Utils::camelize($params['action']));
         },
-        'defaults' => ['package' => 'App', 'controller' => 'index', 'action' => 'index'],
+        'defaults' => ['package' => 'app', 'controller' => 'index', 'action' => 'index'],
         'conditions' => ['id' => '\d+']
     ]
 ];
