@@ -467,7 +467,7 @@ class Grid
                 }
                 $routeParams = array_merge($requestParams, array('orderField' => $column->getName(),
                                                                  'orderDir'   => ($column->getSorted() == 'asc') ? 'desc' : 'asc'));
-                $title = '<div class="' . $sortedClass . '" data-url="' . route(\null, $routeParams) . '">' . $column->getTitle() . '</div>';
+                $title = '<div class="' . $sortedClass . '" data-url="' . route(\null, $routeParams, \false, \true) . '">' . $column->getTitle() . '</div>';
             } else {
                 $title = $column->getTitle();
             }
@@ -534,6 +534,9 @@ class Grid
         try {
             return $this->render();
         } catch (\Exception $e) {
+            if (env('development')) {
+                return $e->getMessage();
+            }
             return '';
         }
     }

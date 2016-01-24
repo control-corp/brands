@@ -4,27 +4,4 @@
 
 <h1>Градове</h1>
 
-<div class="item-add">
-    <a href="<?php echo route('default', ['action' => 'add']); ?>">Добавяне</a>
-</div>
-
-<?php foreach ($this->items as $item) : ?>
-<div class="item">
-    <a href="<?php echo route('default', ['action' => 'edit', 'id' => $item['id']]); ?>"><?php echo $item['name']; ?></a>
-    <div style="margin-top: 5px;">Delete: <a href="<?php echo route('default', ['action' => 'delete', 'id' => $item['id']]); ?>">x</a></div>
-</div>
-<?php endforeach; ?>
-
-<?php $this->start('styles'); ?>
-<style>
-.item {
-    background-color: #f2f2f2;
-	padding: 5px;
-	border: 1px solid #ccc;
-	margin-bottom: 5px;
-}
-.item-add {
-	margin-bottom: 10px;
-}
-</style>
-<?php $this->stop(); ?>
+<?php echo $this->grid; ?>

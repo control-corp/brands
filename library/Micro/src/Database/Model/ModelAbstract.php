@@ -20,6 +20,24 @@ abstract class ModelAbstract extends TableAbstract
         return $this;
     }
 
+    public function getColumns()
+    {
+        $columns = [];
+
+        foreach ($this->info('cols') as $column) {
+            $columns[$column] = $column;
+        }
+
+        foreach ($this->getDependentTables() as $dependentTable) {
+            $dependentTableInstance = $this->getDependentTableInstance($dependentTable);
+            foreach ($dependentTableInstance->info('cols') as $column) {
+                $columns[$column] = $column;
+            }
+        }
+
+        return $columns;
+    }
+
     public function createEntity($data)
     {
         $primaries = [];

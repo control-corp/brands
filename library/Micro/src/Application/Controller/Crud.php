@@ -7,11 +7,14 @@ use Micro\Application\View;
 use Micro\Http\Response\RedirectResponse;
 use Micro\Database\Table\Row;
 use Micro\Form\Form;
+use Micro\Grid;
 use Micro\Application\Utils;
 use Micro\Database\Model\ModelAbstract;
 
 class Crud extends Controller
 {
+    protected $ipp = 10;
+
     protected $model;
 
     /**
@@ -47,6 +50,7 @@ class Crud extends Controller
 
     public function index()
     {
+        $package = $this->request->getParam('package');
         $controller = $this->request->getParam('controller');
 
         if ($this->request->isPost()) {
@@ -56,9 +60,39 @@ class Crud extends Controller
             }
         }
 
+        $defaultOrderField = current($this->getModel()->info('primary'));
+        $defaultOrderDir = 'desc';
+
+        $orderField = $this->request->getParam('orderField', $defaultOrderField);
+        $orderDir = strtolower($this->request->getParam('orderDir', $defaultOrderDir));
+
+        $columns = $this->getModel()->getColumns();
+
+        if (!isset($columns[$orderField])) {
+            $orderField = $defaultOrderField;
+        }
+
+        if ($orderDir !== 'asc' && $orderDir !== 'desc') {
+            $orderDir = $defaultOrderDir;
+        }
+
+        $grid = new Grid\Grid(
+            $this->getModel()->buildSelect(\null, $orderField . ' ' . $orderDir),
+            package_path(ucfirst(Utils::camelize($package)), 'grids/' . $controller . '.php')
+        );
+
+        $column = $grid->getColumn($orderField);
+
+        if ($column instanceof Grid\Column) {
+            $column->setSorted($orderDir);
+        }
+
+        $grid->setIpp(max($this->ipp, $this->request->getParam('ipp', $this->ipp)));
+        $grid->setPageNumber(max(1, $this->request->getParam('page', 1)));
+
         return new View(
             $controller . '/index',
-            ['items' => $this->getModel()->getItems()]
+            ['grid' => $grid]
         );
     }
 
@@ -88,7 +122,7 @@ class Crud extends Controller
 
                 $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index'], \false, \true));
 
-                return $redirectResponse->withFlash(sprintf('Записът е %s', ($entity ? 'редактиран' : 'добавен')));
+                return $redirectResponse->withFlash(sprintf('Информацията е записана'));
             }
         }
 
@@ -126,7 +160,7 @@ class Crud extends Controller
 
         $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index', 'id' => \null, 'ids' => \null], \false, \true));
 
-        return $redirectResponse->withFlash('Записът е изтрит');
+        return $redirectResponse->withFlash('Информацията е записана');
     }
 
     public function view()
