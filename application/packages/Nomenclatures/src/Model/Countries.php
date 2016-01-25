@@ -2,11 +2,11 @@
 
 namespace Nomenclatures\Model;
 
-use Micro\Database\Model\ModelAbstract;
+use Micro\Model\ModelAbstract;
 
 class Countries extends ModelAbstract
 {
-    protected $_name = 'nom_countries';
+    protected $table = Table\Countries::class;
 
-    protected $_dependentTables = array(CountriesLang::class);
+    protected $entity = Entity\Country::class;
 }

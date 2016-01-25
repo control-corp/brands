@@ -1,10 +1,10 @@
 <?php
 
-namespace Nomenclatures\Model;
+namespace Nomenclatures\Model\Table;
 
-use Micro\Database\Model\ModelAbstract;
+use Micro\Database\Table\TableAbstract;
 
-class CountriesLang extends ModelAbstract
+class CountriesLang extends TableAbstract
 {
     protected $_name = 'nom_countries_lang';
 

@@ -2,11 +2,11 @@
 
 namespace Nomenclatures\Model;
 
-use Micro\Database\Model\ModelAbstract;
+use Micro\Model\ModelAbstract;
 
 class Cities extends ModelAbstract
 {
-    protected $_name = 'nom_cities';
+    protected $table = Table\Cities::class;
 
-    protected $_dependentTables = array(CitiesLang::class);
+    protected $entity = Entity\City::class;
 }

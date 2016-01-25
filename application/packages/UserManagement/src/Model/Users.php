@@ -2,40 +2,27 @@
 
 namespace UserManagement\Model;
 
-use Micro\Database\Model\ModelAbstract;
+use Micro\Model\ModelAbstract;
+use Micro\Application\Security;
+use Micro\Auth\Auth;
 
 class Users extends ModelAbstract
 {
-    protected $_name = 'users';
+    protected $table = Table\Users::class;
+
+    protected $entity = Entity\User::class;
 
     public function login($username, $password)
     {
-        $select = $this->getUserSelect();
+        $this->addWhere('username', $username);
 
-        $select->where('username = ?', $username);
+        $user = $this->getItem();
 
-        if ($password !== \null) {
-            $select->where('password = ?', $password);
+        if ($user !== \null && Security::verity($password, $user['password'])) {
+            Auth::getInstance()->setIdentity($user['id']);
+            return \true;
         }
 
-        return $this->fetchRow($select);
-    }
-
-    public function findUser($id)
-    {
-        $select = $this->getUserSelect();
-
-        $select->where('users.id = ?', (int) $id);
-
-        return $this->fetchRow($select);
-    }
-
-    protected function getUserSelect()
-    {
-        $select = $this->select(\true)
-                       ->setIntegrityCheck(\false)
-                       ->joinInner('groups', 'users.group_id = groups.id', array('groups.alias as group'));
-
-        return $select;
+        return \false;
     }
 }

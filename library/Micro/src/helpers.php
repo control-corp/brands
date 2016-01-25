@@ -240,9 +240,9 @@ if (!function_exists('is_allowed')) {
 
             $role = 'guest';
 
-            if ($identity !== \null && $identity instanceof Micro\Database\Table\Row) {
+            if ($identity !== \null && $identity instanceof Micro\Acl\RoleInterface) {
                 try {
-                    $role = $identity['group'];
+                    $role = $identity->getRoleId();
                 } catch (\Exception $e) {
                     trigger_error($e->getMessage(), E_USER_WARNING);
                 }
