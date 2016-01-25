@@ -63,7 +63,13 @@ abstract class ModelAbstract implements AdapterInterface
      */
     public function createEntity()
     {
-        return new $this->entity;
+        $entity = new $this->entity;
+
+        if (!$entity instanceof EntityAbstract) {
+            throw new \Exception(get_class($this) . ' Entity is not instanceof ' . EntityAbstract::class);
+        }
+
+        return $entity;
     }
 
     public function getTableByColumn($column)
@@ -157,6 +163,8 @@ abstract class ModelAbstract implements AdapterInterface
 
     public function setOrder(array $order)
     {
+        $this->selectIsDirty = \true;
+
         $this->order = array();
 
         foreach ($order as $key => $value) {
@@ -167,13 +175,13 @@ abstract class ModelAbstract implements AdapterInterface
             }
         }
 
-        $this->selectIsDirty = \true;
-
         return $this;
     }
 
     public function resetSelect($all = \false)
     {
+        $this->selectIsDirty = \true;
+
         $all = (bool) $all;
 
         if ($all) {
@@ -183,8 +191,6 @@ abstract class ModelAbstract implements AdapterInterface
         $this->order = array();
         $this->where = array();
         $this->join  = array();
-
-        $this->selectIsDirty = \true;
 
         return $this;
     }
@@ -240,7 +246,6 @@ abstract class ModelAbstract implements AdapterInterface
     {
         if (\null === $this->select || $this->selectIsDirty === \true) {
             $this->select = $this->buildSelect();
-            $this->selectIsDirty = \false;
         }
 
         return $this->select;
@@ -253,19 +258,15 @@ abstract class ModelAbstract implements AdapterInterface
         return $this;
     }
 
-    public function getItems($offset = null, $itemCountPerPage = null)
+    public function getItems($offset = \null, $itemCountPerPage = \null)
     {
         $select = $this->getJoinSelect();
 
         $select->limit($itemCountPerPage, $offset);
 
-        try {
-            $result = $this->rowsetToObjects(
-                $this->table->fetchAll($select)
-            );
-        } catch (\Exception $e) {
-            throw $e;
-        }
+        $result = $this->rowsetToObjects(
+            $this->table->fetchAll($select)
+        );
 
         return $result;
     }
@@ -285,6 +286,8 @@ abstract class ModelAbstract implements AdapterInterface
 
     public function buildSelect()
     {
+        $this->selectIsDirty = \false;
+
         $select = $this->table
                        ->select($this->table)
                        ->setIntegrityCheck(\false);
@@ -347,8 +350,6 @@ abstract class ModelAbstract implements AdapterInterface
             $select->order((string) $condition);
         }
 
-        $this->selectIsDirty = \false;
-
         return $select;
     }
 
@@ -378,10 +379,6 @@ abstract class ModelAbstract implements AdapterInterface
 
     public function save(EntityAbstract $entity)
     {
-        if (is_null($entity)) {
-            throw new \Exception('Cannot save null object');
-        }
-
         $this->trigger('beforesave', compact('entity'));
 
         $data = $entity->toArray();
@@ -430,7 +427,7 @@ abstract class ModelAbstract implements AdapterInterface
          */
         $primaryKeys = (array) $table->info(TableAbstract::PRIMARY);
 
-        $primaryValues = [];
+        $primaryValues = array();
 
         $primaryValuesFilled = \false;
 
@@ -495,34 +492,34 @@ abstract class ModelAbstract implements AdapterInterface
         return $data;
     }
 
-    public function rowToObject(RowAbstract $row = null)
+    public function rowToObject($row )
     {
-        if (!$row) {
-            return null;
-        }
-
-        if (!$this->entity || empty($this->entity)) {
-            throw new \Exception('No entity class defined');
+        if (!is_array($row) && !$row instanceof RowAbstract) {
+            return \null;
         }
 
         $entity = $this->createEntity();
 
-        if (!$entity instanceof EntityAbstract) {
-            throw new \Exception($this->entityClass . ' does not extend \Light\Model\Entity\EntityAbstract');
-        }
+        $entity->setFromArray(
+            is_array($row)
+            ? $row
+            : $row->toArray()
+        );
 
-        $entity->setFromArray($row->toArray());
-
-        $this->trigger('load', array('target' => $entity));
+        $this->trigger('load', compact('entity'));
 
         return $entity;
     }
 
-    public function rowsetToObjects(RowsetAbstract $rowset)
+    public function rowsetToObjects($rowset)
     {
         $results = array();
 
-        if ($rowset->count() === 0) {
+        if (!is_array($rowset) && !$rowset instanceof RowsetAbstract) {
+            return array();
+        }
+
+        if (count($rowset) === 0) {
             return array();
         }
 
