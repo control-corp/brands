@@ -113,6 +113,12 @@ class Crud extends Controller
 
             if ($form->isValid($post)) {
 
+                if (\null !== ($table = $model->getTableByColumn('language_id'))) {
+                    if (!isset($post['language_id'])) {
+                        $post['language_id'] = app('language');
+                    }
+                }
+
                 $model->save($entity->setFromArray($post));
 
                 $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index'], \false, \true));

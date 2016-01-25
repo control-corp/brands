@@ -33,7 +33,7 @@ return array(
             'options' => array(
                 'title' => '#',
                 'sourceField' => 'id',
-                'style' => 'width: 5%'
+                'headStyle' => 'width: 5%'
             )
         ),
         'name' => array(
@@ -54,7 +54,7 @@ return array(
             'options' => array(
                 'text' => ' ',
                 'class' => 'text-center',
-                'style' => 'width: 5%',
+                'headStyle' => 'width: 5%',
                 'hrefClass' => 'remove glyphicon glyphicon-trash',
                 'reset' => 0,
                 'params' => array(
