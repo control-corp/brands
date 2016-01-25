@@ -76,8 +76,14 @@ class Crud extends Controller
             $orderDir = $defaultOrderDir;
         }
 
+        if (isset($columns['language_id'])) {
+            $this->getModel()->setDependentWhere(['language_id' => app('language')]);
+        }
+
+        $modelSelect = $this->getModel()->buildSelect(\null, $orderField . ' ' . $orderDir);
+
         $grid = new Grid\Grid(
-            $this->getModel()->buildSelect(\null, $orderField . ' ' . $orderDir),
+            $modelSelect,
             package_path(ucfirst(Utils::camelize($package)), 'grids/' . $controller . '.php')
         );
 
@@ -114,7 +120,15 @@ class Crud extends Controller
             if ($form->isValid($post)) {
 
                 if ($entity === \null) {
-                    $this->getModel()->save($post + ['language_id' => 2]);
+
+                    $columns = $this->getModel()->getColumns();
+
+                    if (isset($columns['language_id'])) {
+                        $post += ['language_id' => app('language')];
+                    }
+
+                    $this->getModel()->save($post);
+
                 } else {
                     $this->getModel()->save(
                         $entity->setFromArray($post)
@@ -135,6 +149,12 @@ class Crud extends Controller
 
     public function edit()
     {
+        $columns = $this->getModel()->getColumns();
+
+        if (isset($columns['language_id'])) {
+            $this->getModel()->setDependentWhere(['language_id' => app('language')]);
+        }
+
         $item = $this->getModel()->getEntity((int) $this->request->getParam('id', 0));
 
         if ($item === \null) {
@@ -166,6 +186,12 @@ class Crud extends Controller
 
     public function view()
     {
+        $columns = $this->getModel()->getColumns();
+
+        if (isset($columns['language_id'])) {
+            $this->getModel()->setDependentWhere(['language_id' => app('language')]);
+        }
+
         $item = $this->getModel()->getEntity((int) $this->request->getParam('id', 0));
 
         if ($item === \null) {

@@ -13,7 +13,7 @@ abstract class ModelAbstract extends TableAbstract
 
     protected static $transactionLevel = 0;
 
-    public function setDependentWhere($where)
+    public function setDependentWhere(array $where)
     {
         $this->dependentWhere = $where;
 
@@ -112,11 +112,9 @@ abstract class ModelAbstract extends TableAbstract
                 $onCondition[] = $this->_db->quoteIdentifier($this->_name) . '.' . $this->_db->quoteIdentifier($refColumn) . ' = ' . $this->_db->quoteIdentifier($dependentTableInfo['name']) . '.' . $this->_db->quoteIdentifier($column);
             }
 
-            if (isset($this->dependentWhere[$dependentTableInfo['name']])) {
-                foreach ($this->dependentWhere[$dependentTableInfo['name']] as $k => $v) {
-                    if (in_array($k, $dependentTableInfo['cols'])) {
-                        $onCondition[] = $this->_db->quoteIdentifier($dependentTableInfo['name']) . '.' . $this->_db->quoteIdentifier($k) . ' = ' . $this->_db->quote($v);
-                    }
+            foreach ($this->dependentWhere as $k => $v) {
+                if (in_array($k, $dependentTableInfo['cols'])) {
+                    $onCondition[] = $this->_db->quoteIdentifier($dependentTableInfo['name']) . '.' . $this->_db->quoteIdentifier($k) . ' = ' . $this->_db->quote($v);
                 }
             }
 

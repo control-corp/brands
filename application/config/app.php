@@ -2,13 +2,12 @@
 
 return [
     'application' => [
-        'debug' => 0,
+        'debug' => 1,
         'perfomance' => 0
     ],
     'packages' => [
         'App' => 'application/packages/App',
         'Nomenclatures' => 'application/packages/Nomenclatures',
-        // core packages
         'UserManagement' => 'application/packages/UserManagement'
     ],
     'error' => [

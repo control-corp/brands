@@ -18,6 +18,8 @@ if ((file_exists($classes = 'application/data/classes.php')) === \true) {
 
 $app = new Application(include 'application/config/app.php');
 
+$app['language'] = 2;
+
 /**
  * Create router with routes
  */
