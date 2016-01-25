@@ -116,8 +116,9 @@ class Crud extends Controller
                 if ($entity === \null) {
                     $this->getModel()->save($post + ['language_id' => 2]);
                 } else {
-                    $entity->setFromArray($post);
-                    $this->getModel()->save($entity);
+                    $this->getModel()->save(
+                        $entity->setFromArray($post)
+                    );
                 }
 
                 $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index'], \false, \true));
@@ -134,7 +135,7 @@ class Crud extends Controller
 
     public function edit()
     {
-        $item = $this->getModel()->getItem((int) $this->request->getParam('id', 0));
+        $item = $this->getModel()->getEntity((int) $this->request->getParam('id', 0));
 
         if ($item === \null) {
             throw new \Exception(sprintf('Записът не е намерен'), 404);
@@ -165,7 +166,7 @@ class Crud extends Controller
 
     public function view()
     {
-        $item = $this->getModel()->getItem((int) $this->request->getParam('id', 0));
+        $item = $this->getModel()->getEntity((int) $this->request->getParam('id', 0));
 
         if ($item === \null) {
             throw new \Exception(sprintf('Записът не е намерен'), 404);

@@ -38,18 +38,13 @@ abstract class ModelAbstract extends TableAbstract
         return $columns;
     }
 
-    public function createEntity($data)
+    public function createEntity(array $data = [])
     {
-        $primaries = [];
+        $entityData = [];
 
-        foreach ($this->info('primary') as $primaryKey) {
-            $primaries[$primaryKey] = \null;
-        }
-
-        foreach ($this->getDependentTables() as $dependentTable) {
-            $dependentTableInstance = $this->getDependentTableInstance($dependentTable);
-            foreach ($dependentTableInstance->info('primary') as $primaryKey) {
-                $primaries[$primaryKey] = \null;
+        foreach ($this->getColumns() as $column) {
+            if (!array_key_exists($column, $entityData)) {
+                $entityData[$column] = \null;
             }
         }
 
@@ -57,7 +52,7 @@ abstract class ModelAbstract extends TableAbstract
 
         $row = new $rowClass(array(
             'table'    => $this,
-            'data'     => $data + $primaries,
+            'data'     => $data + $entityData,
             'readOnly' => false,
             'stored'   => false
         ));
@@ -153,29 +148,37 @@ abstract class ModelAbstract extends TableAbstract
      * @throws \Exception
      * @return \Micro\Database\Table\Rowset\RowsetAbstract
      */
-    public function getItems($where = \null, $order = \null, $count = \null, $offset = \null)
+    public function getEntities($where = \null, $order = \null, $count = \null, $offset = \null)
     {
         return $this->fetchAll(
             $this->buildSelect($where, $order, $count, $offset)
         );
     }
 
-    public function getItem()
+    public function getEntity()
     {
         $primary = $this->info('primary');
         $args = func_get_args();
 
-        $where = array();
+        $where = [];
 
         foreach (array_values($primary) as $k => $key) {
-            $where[$key . ' = ?'] = $args[$k];
+            if (isset($args[$k])) {
+                $where[$key . ' = ?'] = $args[$k];
+            }
         }
 
-        $items = $this->getItems($where, \null, 1, 0);
+        if (empty($where)) {
+            return \null;
+        }
 
-        return $items->current();
+        return $this->getEntities($where, \null, 1, 0)->current();
     }
 
+    /**
+     * @param \Micro\Database\Table\Row | array $entity
+     * @return array
+     */
     public function save($entity)
     {
         if (is_array($entity)) {
@@ -185,7 +188,7 @@ abstract class ModelAbstract extends TableAbstract
         return $this->saveEntity($entity);
     }
 
-    protected function saveEntity(RowAbstract $entity)
+    public function saveEntity(RowAbstract $entity)
     {
         $this->trigger('beforesave', compact('entity'));
 
@@ -245,7 +248,7 @@ abstract class ModelAbstract extends TableAbstract
         return array_intersect_key($entity->toArray(), $pkData);
     }
 
-    protected function saveToTable(TableAbstract $table, $data)
+    public function saveToTable(TableAbstract $table, array $data)
     {
         /**
          * Force primary keys as array in case we use compound primary key
@@ -359,7 +362,7 @@ abstract class ModelAbstract extends TableAbstract
         self::$transactionLevel--;
     }
 
-    protected function trigger($event, array $params = null)
+    public function trigger($event, array $params = null)
     {
         $event = str_replace('\\', '.', get_class($this)) . '.' . ucfirst($event);
 
