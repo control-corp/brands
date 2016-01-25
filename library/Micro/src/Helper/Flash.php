@@ -25,9 +25,9 @@ class Flash
      * @param string $type
      * @return \Micro\Helper\FlashMessage
      */
-    public function setMessage($message = null, $type = 'success')
+    public function setMessage($message = \null, $type = 'success')
     {
-        if ($message === null) {
+        if ($message === \null) {
             $message = 'Информацията е записана';
         }
 

@@ -5,11 +5,11 @@ namespace Micro\Application\Controller;
 use Micro\Application\Controller;
 use Micro\Application\View;
 use Micro\Http\Response\RedirectResponse;
-use Micro\Database\Table\Row;
 use Micro\Form\Form;
 use Micro\Grid;
 use Micro\Application\Utils;
-use Micro\Database\Model\ModelAbstract;
+use Micro\Model\ModelAbstract;
+use Micro\Model\EntityAbstract;
 
 class Crud extends Controller
 {
@@ -19,7 +19,7 @@ class Crud extends Controller
 
     /**
      * @throws \Exception
-     * @return \Micro\Database\Model\ModelAbstract
+     * @return \Micro\Model\ModelAbstract
      */
     public function getModel()
     {
@@ -39,8 +39,9 @@ class Crud extends Controller
         if (!is_object($this->model) || !$this->model instanceof ModelAbstract) {
             throw new \Exception(
                 sprintf(
-                    'Model [%s] must be instanceof Micro\\Database\\Model\\ModelAbstract',
-                    (is_object($this->model) ? get_class($this->model) : gettype($this->model))
+                    'Model [%s] must be instanceof %s',
+                    (is_object($this->model) ? get_class($this->model) : gettype($this->model)),
+                    ModelAbstract::class
                 )
             );
         }
@@ -60,30 +61,19 @@ class Crud extends Controller
             }
         }
 
-        $defaultOrderField = current($this->getModel()->info('primary'));
-        $defaultOrderDir = 'desc';
+        $model = $this->getModel();
 
-        $orderField = $this->request->getParam('orderField', $defaultOrderField);
-        $orderDir = strtolower($this->request->getParam('orderDir', $defaultOrderDir));
+        $model->addJoinCondition('language_id', app('language'));
 
-        $columns = $this->getModel()->getColumns();
+        $ipp = max($this->ipp, $this->request->getParam('ipp', $this->ipp));
+        $page = max(1, $this->request->getParam('page', 1));
+        $orderField = $this->request->getParam('orderField', current($model->getTable()->info('primary')));
+        $orderDir = strtoupper($this->request->getParam('orderDir', 'desc'));
 
-        if (!isset($columns[$orderField])) {
-            $orderField = $defaultOrderField;
-        }
-
-        if ($orderDir !== 'asc' && $orderDir !== 'desc') {
-            $orderDir = $defaultOrderDir;
-        }
-
-        if (isset($columns['language_id'])) {
-            $this->getModel()->setDependentWhere(['language_id' => app('language')]);
-        }
-
-        $modelSelect = $this->getModel()->buildSelect(\null, $orderField . ' ' . $orderDir);
+        $model->addOrder($orderField, $orderDir);
 
         $grid = new Grid\Grid(
-            $modelSelect,
+            $model,
             package_path(ucfirst(Utils::camelize($package)), 'grids/' . $controller . '.php')
         );
 
@@ -93,8 +83,8 @@ class Crud extends Controller
             $column->setSorted($orderDir);
         }
 
-        $grid->setIpp(max($this->ipp, $this->request->getParam('ipp', $this->ipp)));
-        $grid->setPageNumber(max(1, $this->request->getParam('page', 1)));
+        $grid->setIpp($ipp);
+        $grid->setPageNumber($page);
 
         return new View(
             $controller . '/index',
@@ -102,15 +92,19 @@ class Crud extends Controller
         );
     }
 
-    public function add(Row $entity = \null)
+    public function add(EntityAbstract $entity = \null)
     {
         $package = $this->request->getParam('package');
         $controller = $this->request->getParam('controller');
 
         $form = new Form(package_path(ucfirst(Utils::camelize($package)), 'forms/' . $controller . '-add.php'));
 
+        $model = $this->getModel();
+
         if ($entity !== \null) {
             $form->populate($entity->toArray());
+        } else {
+            $entity = $model->createEntity();
         }
 
         if ($this->request->isPost()) {
@@ -119,21 +113,7 @@ class Crud extends Controller
 
             if ($form->isValid($post)) {
 
-                if ($entity === \null) {
-
-                    $columns = $this->getModel()->getColumns();
-
-                    if (isset($columns['language_id'])) {
-                        $post += ['language_id' => app('language')];
-                    }
-
-                    $this->getModel()->save($post);
-
-                } else {
-                    $this->getModel()->save(
-                        $entity->setFromArray($post)
-                    );
-                }
+                $model->save($entity->setFromArray($post));
 
                 $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index'], \false, \true));
 
@@ -149,13 +129,11 @@ class Crud extends Controller
 
     public function edit()
     {
-        $columns = $this->getModel()->getColumns();
+        $model = $this->getModel();
 
-        if (isset($columns['language_id'])) {
-            $this->getModel()->setDependentWhere(['language_id' => app('language')]);
-        }
+        $model->addJoinCondition('language_id', app('language'));
 
-        $item = $this->getModel()->getEntity((int) $this->request->getParam('id', 0));
+        $item = $model->find((int) $this->request->getParam('id', 0));
 
         if ($item === \null) {
             throw new \Exception(sprintf('Записът не е намерен'), 404);
@@ -176,7 +154,7 @@ class Crud extends Controller
         $ids = array_filter($ids);
 
         if (!empty($ids)) {
-            $this->getModel()->delete(array('id IN (?)' => array_map('intval', $ids)));
+            $this->getModel()->getTable()->delete(array('id IN (?)' => array_map('intval', $ids)));
         }
 
         $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index', 'id' => \null, 'ids' => \null], \false, \true));
@@ -186,13 +164,7 @@ class Crud extends Controller
 
     public function view()
     {
-        $columns = $this->getModel()->getColumns();
-
-        if (isset($columns['language_id'])) {
-            $this->getModel()->setDependentWhere(['language_id' => app('language')]);
-        }
-
-        $item = $this->getModel()->getEntity((int) $this->request->getParam('id', 0));
+        $item = $this->getModel()->find((int) $this->request->getParam('id', 0));
 
         if ($item === \null) {
             throw new \Exception(sprintf('Записът не е намерен'), 404);

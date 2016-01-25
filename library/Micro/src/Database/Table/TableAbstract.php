@@ -183,7 +183,6 @@ abstract class TableAbstract
 
     protected $dependentTableInstances = array();
 
-
     protected $_defaultSource = self::DEFAULT_NONE;
 
     protected $_defaultValues = array();
