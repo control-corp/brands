@@ -6,5 +6,4 @@ use Micro\Application\Controller\Crud;
 
 class Countries extends Crud
 {
-
 }
