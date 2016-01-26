@@ -24,9 +24,9 @@ class Package extends BasePackage
         /**
          * Acl
          */
-        $this->container['acl'] = function () {
-            return new Acl(include __DIR__ . '/../rights.php');
-        };
+        Acl::setResolver(function () {
+            return include __DIR__ . '/../rights.php';
+        });
 
         /**
          * Auth

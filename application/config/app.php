@@ -10,6 +10,7 @@ return [
         'Nomenclatures' => 'application/packages/Nomenclatures',
         'UserManagement' => 'application/packages/UserManagement'
     ],
+    'routes' => include 'application/config/routes.php',
     'error' => [
         'route' => 'error'
     ],
@@ -42,7 +43,7 @@ return [
                     'adapter' => 'Core',
                     'options' => [
                         'lifetime' => (3600 * 24),
-                        'automatic_serialization' => true
+                        'automatic_serialization' => \true
                     ]
                 ],
                 'backend' => [

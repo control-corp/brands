@@ -7,6 +7,9 @@ use Micro\Event;
 use Micro\Container\Container;
 use Micro\Container\ContainerAwareInterface;
 use Micro\Cache\Cache;
+use Micro\Session\Session;
+use Micro\Database\Database;
+use Micro\Acl\Acl;
 
 class Application extends Container
 {
@@ -87,6 +90,12 @@ class Application extends Container
             };
         }
 
+        if (!isset($this['acl'])) {
+            $this['acl'] = function () {
+                return new Acl();
+            };
+        }
+
         if (!isset($this['caches'])) {
             $this['caches'] = function ($app) {
                 $adapters = $app['config']->get('cache.adapters', []);
@@ -108,6 +117,33 @@ class Application extends Container
                 return isset($adapters[$default]) ? $adapters[$default] : \null;
             };
         }
+
+        /**
+         * Create router with routes
+         */
+        if (!isset($this['router'])) {
+            $this['router'] = function ($app) {
+                $router = new Router($app['request']);
+                $router->mapFromConfig($app['config']->get('routes', []));
+                return $router;
+            };
+        }
+
+        /**
+         * Create default db adapter
+         */
+        if (!isset($this['db'])) {
+            $this['db'] = function ($app) {
+                $default  = $app['config']->get('db.default');
+                $adapters = $app['config']->get('db.adapters', []);
+                return Database::factory($adapters[$default]['adapter'], $adapters[$default]);
+            };
+        }
+
+        /**
+         * Register session config
+         */
+        Session::register($this['config']->get('session', []));
 
         return $this;
     }
