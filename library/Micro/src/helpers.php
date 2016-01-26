@@ -198,7 +198,7 @@ if (!function_exists('flash')) {
 if (!function_exists('escape')) {
     function escape($var, $encoding = 'UTF-8', $escape = 'htmlspecialchars')
     {
-        if (in_array($escape, array('htmlspecialchars', 'htmlentities'))) {
+        if (in_array($escape, ['htmlspecialchars', 'htmlentities'])) {
             return call_user_func($escape, $var, ENT_COMPAT, $encoding);
         }
 
@@ -275,7 +275,7 @@ if (!function_exists('pagination')) {
         array $params = \null,
         Micro\Application\View $view = \null
     ) {
-        $pages = array('pages' => $paginator->getPages());
+        $pages = ['pages' => $paginator->getPages()];
 
         if ($params !== \null) {
             $pages = array_merge($pages, (array) $params);

@@ -90,7 +90,7 @@ class Response
         $this->sendBody();
 
         if ('cli' !== PHP_SAPI) {
-            static::closeOutputBuffers(0, true);
+            static::closeOutputBuffers(0, \true);
         }
 
         return $this;
@@ -108,7 +108,7 @@ class Response
             }
         }
 
-        header(sprintf('HTTP/%s %s %s', $this->version, $this->code, $this->getStatus()), true, $this->code);
+        header(sprintf('HTTP/%s %s %s', $this->version, $this->code, $this->getStatus()), \true, $this->code);
 
         return $this;
     }
@@ -192,7 +192,7 @@ class Response
 
     public static function closeOutputBuffers($targetLevel, $flush)
     {
-        $status = ob_get_status(true);
+        $status = ob_get_status(\true);
         $level = count($status);
 
         // PHP_OUTPUT_HANDLER_* are not defined on HHVM 3.3

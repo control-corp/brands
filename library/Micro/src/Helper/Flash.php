@@ -16,7 +16,7 @@ class Flash
         self::$session = new SessionNamespace('flashMessage');
 
         if (!isset(self::$session->messages)) {
-            self::$session->messages = array();
+            self::$session->messages = [];
         }
     }
 
@@ -31,10 +31,10 @@ class Flash
             $message = 'Информацията е записана';
         }
 
-        self::$session->messages[] = array(
+        self::$session->messages[] = [
             'message' => $message,
             'type'    => $type
-        );
+        ];
 
         return $this;
     }

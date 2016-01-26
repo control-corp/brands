@@ -154,13 +154,13 @@ class Crud extends Controller
         $ids = $this->request->getParam('ids', []);
 
         if ($id) {
-            $ids = array($id);
+            $ids = [$id];
         }
 
         $ids = array_filter($ids);
 
         if (!empty($ids)) {
-            $this->getModel()->getTable()->delete(array('id IN (?)' => array_map('intval', $ids)));
+            $this->getModel()->getTable()->delete(['id IN (?)' => array_map('intval', $ids)]);
         }
 
         $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index', 'id' => \null, 'ids' => \null], \false, \true));

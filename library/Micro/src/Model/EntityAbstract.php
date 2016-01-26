@@ -24,7 +24,7 @@ abstract class EntityAbstract implements \ArrayAccess
 
     public function toArray()
     {
-        $data = array();
+        $data = [];
 
         $reflection = new \ReflectionClass($this);
 

@@ -6,7 +6,7 @@ class Date extends \DateTime
 {
     protected static $defaultFormat = 'Y-m-d H:i:s';
 
-    public static function now($timezone = null)
+    public static function now($timezone = \null)
     {
         return new self(null, $timezone);
     }

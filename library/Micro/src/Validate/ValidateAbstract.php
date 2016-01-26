@@ -6,8 +6,8 @@ abstract class ValidateAbstract implements ValidateInterface
 {
     const ERROR = 'error';
 
-    protected $messages  = array();
-    protected $templates = array();
+    protected $messages  = [];
+    protected $templates = [];
 
     public function __construct(array $options = \null)
     {
@@ -40,7 +40,7 @@ abstract class ValidateAbstract implements ValidateInterface
 
     public function isValid($value)
     {
-        return true;
+        return \true;
     }
 
     public function getMessages()

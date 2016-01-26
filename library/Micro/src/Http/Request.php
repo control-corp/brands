@@ -20,7 +20,7 @@ class Request
      * Allowed parameter sources
      * @var array
      */
-    protected $paramSources = array('_GET', '_POST');
+    protected $paramSources = ['_GET', '_POST'];
 
     /**
      * REQUEST_URI
@@ -32,13 +32,13 @@ class Request
      * Base URL of request
      * @var string
      */
-    protected $baseUrl = null;
+    protected $baseUrl = \null;
 
     /**
      * Base path of request
      * @var string
      */
-    protected $basePath = null;
+    protected $basePath = \null;
 
     /**
      * PATH_INFO
@@ -50,7 +50,7 @@ class Request
      * Instance parameters
      * @var array
      */
-    protected $params = array();
+    protected $params = [];
 
     /**
      * Raw request body
@@ -62,7 +62,7 @@ class Request
      * Alias keys for request parameters
      * @var array
      */
-    protected $aliases = array();
+    protected $aliases = [];
 
     /**
      * Constructor
@@ -83,7 +83,7 @@ class Request
      */
     public function __get($key)
     {
-        switch (true) {
+        switch (\true) {
             case isset($this->params[$key]):
                 return $this->params[$key];
             case isset($_GET[$key]):
@@ -101,7 +101,7 @@ class Request
             case isset($_ENV[$key]):
                 return $_ENV[$key];
             default:
-                return null;
+                return \null;
         }
     }
 
@@ -153,21 +153,21 @@ class Request
      */
     public function __isset($key)
     {
-        switch (true) {
+        switch (\true) {
             case isset($this->params[$key]):
-                return true;
+                return \true;
             case isset($_GET[$key]):
-                return true;
+                return \true;
             case isset($_POST[$key]):
-                return true;
+                return \true;
             case isset($_COOKIE[$key]):
-                return true;
+                return \true;
             case isset($_SERVER[$key]):
-                return true;
+                return \true;
             case isset($_ENV[$key]):
-                return true;
+                return \true;
             default:
-                return false;
+                return \false;
         }
     }
 
@@ -189,13 +189,13 @@ class Request
      * @param  null|mixed $value
      * @return \Micro\Http\Request
      */
-    public function setQuery($spec, $value = null)
+    public function setQuery($spec, $value = \null)
     {
-        if ((null === $value) && !is_array($spec)) {
+        if ((\null === $value) && !is_array($spec)) {
             throw new \Exception('Invalid value passed to setQuery(); must be either array of values or key/value pair');
         }
 
-        if ((null === $value) && is_array($spec)) {
+        if ((\null === $value) && is_array($spec)) {
             foreach ($spec as $key => $value) {
                 $this->setQuery($key, $value);
             }
@@ -216,9 +216,9 @@ class Request
      * @param mixed $default Default value to use if key not found
      * @return mixed Returns null if key does not exist
      */
-    public function getQuery($key = null, $default = null)
+    public function getQuery($key = \null, $default = \null)
     {
-        if (null === $key) {
+        if (\null === $key) {
             return $_GET;
         }
 
@@ -232,13 +232,13 @@ class Request
      * @param  null|mixed $value
      * @return \Micro\Http\Request
      */
-    public function setPost($spec, $value = null)
+    public function setPost($spec, $value = \null)
     {
-        if ((null === $value) && !is_array($spec)) {
+        if ((\null === $value) && !is_array($spec)) {
             throw new \Exception('Invalid value passed to setPost(); must be either array of values or key/value pair');
         }
 
-        if ((null === $value) && is_array($spec)) {
+        if ((\null === $value) && is_array($spec)) {
             foreach ($spec as $key => $value) {
                 $this->setPost($key, $value);
             }
@@ -259,9 +259,9 @@ class Request
      * @param mixed $default Default value to use if key not found
      * @return mixed Returns null if key does not exist
      */
-    public function getPost($key = null, $default = null)
+    public function getPost($key = \null, $default = \null)
     {
-        if (null === $key) {
+        if (\null === $key) {
             return $_POST;
         }
 
@@ -277,9 +277,9 @@ class Request
      * @param mixed $default Default value to use if key not found
      * @return mixed Returns null if key does not exist
      */
-    public function getCookie($key = null, $default = null)
+    public function getCookie($key = \null, $default = \null)
     {
-        if (null === $key) {
+        if (\null === $key) {
             return $_COOKIE;
         }
 
@@ -295,9 +295,9 @@ class Request
      * @param mixed $default Default value to use if key not found
      * @return mixed Returns null if key does not exist
      */
-    public function getServer($key = null, $default = null)
+    public function getServer($key = \null, $default = \null)
     {
-        if (null === $key) {
+        if (\null === $key) {
             return $_SERVER;
         }
 
@@ -313,9 +313,9 @@ class Request
      * @param mixed $default Default value to use if key not found
      * @return mixed Returns null if key does not exist
      */
-    public function getEnv($key = null, $default = null)
+    public function getEnv($key = \null, $default = \null)
     {
-        if (null === $key) {
+        if (\null === $key) {
             return $_ENV;
         }
 
@@ -331,9 +331,9 @@ class Request
      * @param string $requestUri
      * @return \Micro\Http\Request
      */
-    public function setRequestUri($requestUri = null)
+    public function setRequestUri($requestUri = \null)
     {
-        if ($requestUri === null) {
+        if ($requestUri === \null) {
             if (isset($_SERVER['HTTP_X_ORIGINAL_URL'])) {
                 // IIS with Microsoft Rewrite Module
                 $requestUri = $_SERVER['HTTP_X_ORIGINAL_URL'];
@@ -414,13 +414,13 @@ class Request
      * @param mixed $baseUrl
      * @return \Micro\Http\Request
      */
-    public function setBaseUrl($baseUrl = null)
+    public function setBaseUrl($baseUrl = \null)
     {
-        if ((null !== $baseUrl) && !is_string($baseUrl)) {
+        if ((\null !== $baseUrl) && !is_string($baseUrl)) {
             return $this;
         }
 
-        if ($baseUrl === null) {
+        if ($baseUrl === \null) {
             $filename = (isset($_SERVER['SCRIPT_FILENAME'])) ? basename($_SERVER['SCRIPT_FILENAME']) : '';
 
             if (isset($_SERVER['SCRIPT_NAME']) && basename($_SERVER['SCRIPT_NAME']) === $filename) {
@@ -443,7 +443,7 @@ class Request
                     $seg     = $segs[$index];
                     $baseUrl = '/' . $seg . $baseUrl;
                     ++$index;
-                } while (($last > $index) && (false !== ($pos = strpos($path, $baseUrl))) && (0 != $pos));
+                } while (($last > $index) && (\false !== ($pos = strpos($path, $baseUrl))) && (0 != $pos));
             }
 
             // Does the baseUrl have anything in common with the request_uri?
@@ -462,7 +462,7 @@ class Request
             }
 
             $truncatedRequestUri = $requestUri;
-            if (($pos = strpos($requestUri, '?')) !== false) {
+            if (($pos = strpos($requestUri, '?')) !== \false) {
                 $truncatedRequestUri = substr($requestUri, 0, $pos);
             }
 
@@ -477,7 +477,7 @@ class Request
             // out of baseUrl. $pos !== 0 makes sure it is not matching a value
             // from PATH_INFO or QUERY_STRING
             if ((strlen($requestUri) >= strlen($baseUrl))
-                && ((false !== ($pos = strpos($requestUri, $baseUrl))) && ($pos !== 0)))
+                && ((\false !== ($pos = strpos($requestUri, $baseUrl))) && ($pos !== 0)))
             {
                 $baseUrl = substr($requestUri, 0, $pos + strlen($baseUrl));
             }
@@ -493,13 +493,13 @@ class Request
      *
      * @return string
      */
-    public function getBaseUrl($raw = false)
+    public function getBaseUrl($raw = \false)
     {
-        if (null === $this->baseUrl) {
+        if (\null === $this->baseUrl) {
             $this->setBaseUrl();
         }
 
-        return (($raw == false) ? urldecode($this->baseUrl) : $this->baseUrl);
+        return (($raw == \false) ? urldecode($this->baseUrl) : $this->baseUrl);
     }
 
     /**
@@ -508,9 +508,9 @@ class Request
      * @param string|null $basePath
      * @return \Micro\Http\Request
      */
-    public function setBasePath($basePath = null)
+    public function setBasePath($basePath = \null)
     {
-        if ($basePath === null) {
+        if ($basePath === \null) {
             $filename = (isset($_SERVER['SCRIPT_FILENAME']))
                       ? basename($_SERVER['SCRIPT_FILENAME'])
                       : '';
@@ -542,7 +542,7 @@ class Request
      */
     public function getBasePath()
     {
-        if (null === $this->basePath) {
+        if (\null === $this->basePath) {
             $this->setBasePath();
         }
 
@@ -555,19 +555,19 @@ class Request
      * @param string|null $pathInfo
      * @return \Micro\Http\Request
      */
-    public function setPathInfo($pathInfo = null)
+    public function setPathInfo($pathInfo = \null)
     {
-        if ($pathInfo === null) {
+        if ($pathInfo === \null) {
             $baseUrl = $this->getBaseUrl(); // this actually calls setBaseUrl() & setRequestUri()
-            $baseUrlRaw = $this->getBaseUrl(false);
+            $baseUrlRaw = $this->getBaseUrl(\false);
             $baseUrlEncoded = urlencode($baseUrlRaw);
 
-            if (null === ($requestUri = $this->getRequestUri())) {
+            if (\null === ($requestUri = $this->getRequestUri())) {
                 return $this;
             }
 
             // Remove the query string from REQUEST_URI
-            if (($pos = strpos($requestUri, '?') ) !== false) {
+            if (($pos = strpos($requestUri, '?') ) !== \false) {
                 $requestUri = substr($requestUri, 0, $pos);
             }
 
@@ -615,7 +615,7 @@ class Request
      * @param  array $paramSoures
      * @return \Micro\Http\Request
      */
-    public function setParamSources(array $paramSources = array())
+    public function setParamSources(array $paramSources = [])
     {
         $this->paramSources = $paramSources;
         return $this;
@@ -643,7 +643,7 @@ class Request
      */
     public function setParam($key, $value)
     {
-        $key = (null !== ($alias = $this->getAlias($key))) ? $alias : $key;
+        $key = (\null !== ($alias = $this->getAlias($key))) ? $alias : $key;
 
         $this->params[$key] = $value;
 
@@ -663,9 +663,9 @@ class Request
      * @param mixed $default Default value to use if key not found
      * @return mixed
      */
-    public function getParam($key, $default = null)
+    public function getParam($key, $default = \null)
     {
-        $keyName = (null !== ($alias = $this->getAlias($key))) ? $alias : $key;
+        $keyName = (\null !== ($alias = $this->getAlias($key))) ? $alias : $key;
 
         $paramSources = $this->getParamSources();
         if (isset($this->params[$keyName])) {
@@ -754,7 +754,7 @@ class Request
             return $this->aliases[$name];
         }
 
-        return null;
+        return \null;
     }
 
     /**
@@ -785,10 +785,10 @@ class Request
     public function isPost()
     {
         if ('POST' == $this->getMethod()) {
-            return true;
+            return \true;
         }
 
-        return false;
+        return \false;
     }
 
     /**
@@ -799,10 +799,10 @@ class Request
     public function isGet()
     {
         if ('GET' == $this->getMethod()) {
-            return true;
+            return \true;
         }
 
-        return false;
+        return \false;
     }
 
     /**
@@ -813,10 +813,10 @@ class Request
     public function isPut()
     {
         if ('PUT' == $this->getMethod()) {
-            return true;
+            return \true;
         }
 
-        return false;
+        return \false;
     }
 
     /**
@@ -827,10 +827,10 @@ class Request
     public function isDelete()
     {
         if ('DELETE' == $this->getMethod()) {
-            return true;
+            return \true;
         }
 
-        return false;
+        return \false;
     }
 
     /**
@@ -841,10 +841,10 @@ class Request
     public function isHead()
     {
         if ('HEAD' == $this->getMethod()) {
-            return true;
+            return \true;
         }
 
-        return false;
+        return \false;
     }
 
     /**
@@ -855,10 +855,10 @@ class Request
     public function isOptions()
     {
         if ('OPTIONS' == $this->getMethod()) {
-            return true;
+            return \true;
         }
 
-        return false;
+        return \false;
     }
 
     /**
@@ -887,7 +887,7 @@ class Request
     public function isFlashRequest()
     {
         $header = strtolower($this->getHeader('USER_AGENT'));
-        return (strstr($header, ' flash')) ? true : false;
+        return (strstr($header, ' flash')) ? \true : \false;
     }
 
     /**
@@ -907,13 +907,13 @@ class Request
      */
     public function getRawBody()
     {
-        if (null === $this->rawBody) {
+        if (\null === $this->rawBody) {
             $body = file_get_contents('php://input');
 
             if (strlen(trim($body)) > 0) {
                 $this->rawBody = $body;
             } else {
-                $this->rawBody = false;
+                $this->rawBody = \false;
             }
         }
         return $this->rawBody;
@@ -956,7 +956,7 @@ class Request
             }
         }
 
-        return false;
+        return \false;
     }
 
     /**
@@ -989,10 +989,9 @@ class Request
         $name   = $this->getServer('SERVER_NAME');
         $port   = $this->getServer('SERVER_PORT');
 
-        if(null === $name) {
+        if (\null === $name) {
             return '';
-        }
-        elseif (($scheme == self::SCHEME_HTTP && $port == 80) || ($scheme == self::SCHEME_HTTPS && $port == 443)) {
+        } elseif (($scheme == self::SCHEME_HTTP && $port == 80) || ($scheme == self::SCHEME_HTTPS && $port == 443)) {
             return $name;
         } else {
             return $name . ':' . $port;
@@ -1005,11 +1004,11 @@ class Request
      * @param  boolean $checkProxy
      * @return string
      */
-    public function getClientIp($checkProxy = true)
+    public function getClientIp($checkProxy = \true)
     {
-        if ($checkProxy && $this->getServer('HTTP_CLIENT_IP') != null) {
+        if ($checkProxy && $this->getServer('HTTP_CLIENT_IP') != \null) {
             $ip = $this->getServer('HTTP_CLIENT_IP');
-        } else if ($checkProxy && $this->getServer('HTTP_X_FORWARDED_FOR') != null) {
+        } else if ($checkProxy && $this->getServer('HTTP_X_FORWARDED_FOR') != \null) {
             $ip = $this->getServer('HTTP_X_FORWARDED_FOR');
         } else {
             $ip = $this->getServer('REMOTE_ADDR');

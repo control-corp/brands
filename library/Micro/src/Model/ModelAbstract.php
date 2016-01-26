@@ -28,11 +28,11 @@ abstract class ModelAbstract implements AdapterInterface
 
     protected $selectIsDirty = \true;
 
-    protected $where = array();
+    protected $where = [];
 
-    protected $order = array();
+    protected $order = [];
 
-    protected $join  = array();
+    protected $join  = [];
 
     protected static $transactionLevel = 0;
 
@@ -124,9 +124,9 @@ abstract class ModelAbstract implements AdapterInterface
 
         $alias = $table->info(TableAbstract::NAME);
 
-        if ($value === null) {
+        if ($value === \null) {
             $this->where[] = new Expr($field . ' IS NULL');
-        } else if (!is_scalar($value) || (strpos($value, '%') === false)) {
+        } else if (!is_scalar($value) || (strpos($value, '%') === \false)) {
             $this->where["{$alias}.{$field}"] = $value;
         } else {
             $this->where[] = new Expr("lower({$alias}.{$field}) LIKE " . mb_strtolower($table->getAdapter()->quote($value), 'UTF-8'));
@@ -144,7 +144,7 @@ abstract class ModelAbstract implements AdapterInterface
             return $this;
         }
 
-        if (!in_array(strtolower($direction), array('asc', 'desc'))) {
+        if (!in_array(strtolower($direction), ['asc', 'desc'])) {
             return $this;
         }
 
@@ -165,7 +165,7 @@ abstract class ModelAbstract implements AdapterInterface
     {
         $this->selectIsDirty = \true;
 
-        $this->order = array();
+        $this->order = [];
 
         foreach ($order as $key => $value) {
             if (is_numeric($key)) {
@@ -188,9 +188,9 @@ abstract class ModelAbstract implements AdapterInterface
             $this->select = \null;
         }
 
-        $this->order = array();
-        $this->where = array();
-        $this->join  = array();
+        $this->order = [];
+        $this->where = [];
+        $this->join  = [];
 
         return $this;
     }
@@ -208,7 +208,7 @@ abstract class ModelAbstract implements AdapterInterface
         $alias = $table->info(TableAbstract::NAME);
 
         if (!isset($this->join[$alias])) {
-            $this->join[$alias] = array();
+            $this->join[$alias] = [];
         }
 
         foreach ($this->join[$alias] as $key => $oldValue) {
@@ -218,7 +218,7 @@ abstract class ModelAbstract implements AdapterInterface
             }
         }
 
-        $this->join[$alias][] = array($field, $value);
+        $this->join[$alias][] = [$field, $value];
 
         return $this;
     }
@@ -281,7 +281,7 @@ abstract class ModelAbstract implements AdapterInterface
             return current($items);
         }
 
-        return null;
+        return \null;
     }
 
     public function buildSelect()
@@ -306,7 +306,7 @@ abstract class ModelAbstract implements AdapterInterface
 
             $reference = $dependentTableInstance->getReference(get_class($this->table));
 
-            $onCondition = array();
+            $onCondition = [];
 
             foreach ($reference['columns'] as $k => $column) {
 
@@ -427,7 +427,7 @@ abstract class ModelAbstract implements AdapterInterface
          */
         $primaryKeys = (array) $table->info(TableAbstract::PRIMARY);
 
-        $primaryValues = array();
+        $primaryValues = [];
 
         $primaryValuesFilled = \false;
 
@@ -450,7 +450,7 @@ abstract class ModelAbstract implements AdapterInterface
          * Try to find row from primary table based on primary key(s) value(s)
          */
         if ($primaryValuesFilled) {
-            $rowSet = call_user_func_array(array($table, 'find'), $primaryValues);
+            $rowSet = call_user_func_array([$table, 'find'], $primaryValues);
         }
 
         /**
@@ -513,14 +513,14 @@ abstract class ModelAbstract implements AdapterInterface
 
     public function rowsetToObjects($rowset)
     {
-        $results = array();
+        $results = [];
 
         if (!is_array($rowset) && !$rowset instanceof RowsetAbstract) {
-            return array();
+            return [];
         }
 
         if (count($rowset) === 0) {
-            return array();
+            return [];
         }
 
         $primary = $this->table->info('primary');
@@ -537,7 +537,7 @@ abstract class ModelAbstract implements AdapterInterface
     {
         $this->resetSelect(\true);
 
-        if ($where !== null) {
+        if ($where !== \null) {
             foreach ($where as $k => $v) {
                 if ($v instanceof Expr) {
                     $this->addWhere($v);
@@ -547,7 +547,7 @@ abstract class ModelAbstract implements AdapterInterface
             }
         }
 
-        if ($order !== null) {
+        if ($order !== \null) {
             foreach ($order as $k => $v) {
                 $this->addOrder($k, $v);
             }
@@ -555,18 +555,21 @@ abstract class ModelAbstract implements AdapterInterface
             $this->addOrder('id', 'DESC');
         }
 
-        if ($fields !== null) {
+        if ($fields !== \null) {
             $key = $fields[0];
             $value = $fields[1];
         } else {
             $key = 'id';
+            $value = 'id';
             $table = $this->getTableByColumn('name');
-            $value = $table->info('name') . '.name';
+            if ($table) {
+                $value = $table->info('name') . '.name';
+            }
         }
 
         $select = $this->getJoinSelect();
 
-        $select->reset('columns')->columns(array($key, $value));
+        $select->reset('columns')->columns([$key, $value]);
 
         return $this->table->getAdapter()->fetchPairs($select);
     }
@@ -607,7 +610,7 @@ abstract class ModelAbstract implements AdapterInterface
         self::$transactionLevel--;
     }
 
-    public function trigger($event, array $params = null)
+    public function trigger($event, array $params = \null)
     {
         $event = str_replace('\\', '.', get_class($this)) . '.' . ucfirst($event);
 

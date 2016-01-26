@@ -48,23 +48,23 @@ class Files
         $namespace = $class = "";
 
         //Set helper values to know that we have found the namespace/class token and need to collect the string values after them
-        $getting_namespace = $getting_class = false;
+        $getting_namespace = $getting_class = \false;
 
         //Go through each token and evaluate it as necessary
         foreach (token_get_all($contents) as $token) {
 
             //If this token is the namespace declaring, then flag that the next tokens will be the namespace name
             if (is_array($token) && $token[0] == T_NAMESPACE) {
-                $getting_namespace = true;
+                $getting_namespace = \true;
             }
 
             //If this token is the class declaring, then flag that the next tokens will be the class name
             if (is_array($token) && $token[0] == T_CLASS) {
-                $getting_class = true;
+                $getting_class = \true;
             }
 
             //While we're grabbing the namespace name...
-            if ($getting_namespace === true) {
+            if ($getting_namespace === \true) {
 
                 //If the token is a string or the namespace separator...
                 if(is_array($token) && in_array($token[0], [T_STRING, T_NS_SEPARATOR])) {
@@ -76,13 +76,13 @@ class Files
                 else if ($token === ';') {
 
                     //If the token is the semicolon, then we're done with the namespace declaration
-                    $getting_namespace = false;
+                    $getting_namespace = \false;
 
                 }
             }
 
             //While we're grabbing the class name...
-            if ($getting_class === true) {
+            if ($getting_class === \true) {
 
                 //If the token is a string, it's the name of the class
                 if (is_array($token) && $token[0] == T_STRING) {

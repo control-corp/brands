@@ -12,18 +12,18 @@ class Message
     /**
      * @var mixed
      */
-    protected $params;
+    protected $params = [];
 
     /**
      * @var bool
      */
-    protected $stopPropagation = false;
+    protected $stopPropagation = \false;
 
     /**
      * @param string $event
      * @param mixed $params
      */
-    public function __construct($event, $params)
+    public function __construct($event, array $params = [])
     {
         $this->setEvent($event);
         $this->setParams($params);
@@ -65,14 +65,14 @@ class Message
             return $this->params[$name];
         }
 
-        return null;
+        return \null;
     }
 
 	/**
      * @param mixed $params
      * @return \Micro\Event\Message
      */
-    public function setParams ($params)
+    public function setParams (array $params)
     {
         $this->params = $params;
 
@@ -95,7 +95,7 @@ class Message
      */
     public function stop()
     {
-        $this->setStopPropagation(true);
+        $this->setStopPropagation(\true);
 
         return $this;
     }

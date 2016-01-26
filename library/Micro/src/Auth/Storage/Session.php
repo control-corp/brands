@@ -23,7 +23,7 @@ class Session implements StorageInterface
 
     public function read()
     {
-        return isset($this->session->{$this->namespace}) ? Utils::safeUnserialize($this->session->{$this->namespace}) : null;
+        return isset($this->session->{$this->namespace}) ? Utils::safeUnserialize($this->session->{$this->namespace}) : \null;
     }
 
     public function clear()

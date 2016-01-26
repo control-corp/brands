@@ -30,7 +30,7 @@ abstract class Package implements ContainerAwareInterface
      */
     final public function initName ()
     {
-        if ($this->name === null) {
+        if ($this->name === \null) {
             $module = get_class($this);
             $module = explode('\\', $module);
             $this->name = $module[0];
@@ -54,7 +54,7 @@ abstract class Package implements ContainerAwareInterface
      */
     final public function initDir ()
     {
-        if ($this->dir === null) {
+        if ($this->dir === \null) {
             $r = new \ReflectionClass($this);
             $this->dir = dirname($r->getFileName());
         }

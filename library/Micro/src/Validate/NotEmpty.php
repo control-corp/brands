@@ -4,17 +4,17 @@ namespace Micro\Validate;
 
 class NotEmpty extends ValidateAbstract
 {
-    protected $templates = array(
+    protected $templates = [
         self::ERROR => 'Полето е задължително'
-    );
+    ];
 
     public function isValid($value)
     {
-        if (('' === $value) || (null === $value)) {
+        if (('' === $value) || (\null === $value)) {
             $this->messages[] = $this->templates[self::ERROR];
-            return false;
+            return \false;
         }
 
-        return true;
+        return \true;
     }
 }

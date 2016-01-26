@@ -4,9 +4,9 @@ namespace Micro\Validate;
 
 class Identical extends ValidateAbstract
 {
-    protected $templates = array(
+    protected $templates = [
         self::ERROR => 'Полетата не съвпадат'
-    );
+    ];
 
     protected $field;
     protected $value;
@@ -21,18 +21,18 @@ class Identical extends ValidateAbstract
         $this->value = $value;
     }
 
-    public function isValid($value, $context = null)
+    public function isValid($value, $context = \null)
     {
-        if ($this->field === null && $this->value === null) {
-            return true;
+        if ($this->field === \null && $this->value === \null) {
+            return \true;
         }
 
-        if ($this->value !== null) {
+        if ($this->value !== \null) {
             if ($value !== $this->value) {
                 $this->messages[] = $this->templates[self::ERROR];
-                return false;
+                return \false;
             }
-            return true;
+            return \true;
         }
 
         if (!isset($context[$this->field])) {
@@ -41,9 +41,9 @@ class Identical extends ValidateAbstract
 
         if ($value !== $context[$this->field]) {
             $this->messages[] = $this->templates[self::ERROR];
-            return false;
+            return \false;
         }
 
-        return true;
+        return \true;
     }
 }

@@ -13,15 +13,15 @@ class Utils
     {
         $value = preg_replace('/[^a-z0-9-]/ius', '', $value);
 
-        if (strpos($value, '-') !== false) {
+        if (strpos($value, '-') !== \false) {
             $value = str_replace(' ', '', ucwords(str_replace('-', ' ', $value)));
         }
 
-        if (strpos($value, '_') !== false) {
+        if (strpos($value, '_') !== \false) {
             $value = str_replace(' ', '', ucwords(str_replace('_', ' ', $value)));
         }
 
-        if (strpos($value, '.') !== false) {
+        if (strpos($value, '.') !== \false) {
             $value = str_replace(' ', '', ucwords(str_replace('.', ' ', $value)));
         }
 
@@ -56,7 +56,6 @@ class Utils
         }
 
         return $string;
-
     }
 
     public static function buildOptions($optionsInput, $value = 0, $emptyOption = '', $emptyOptionValue = "")
@@ -64,11 +63,11 @@ class Utils
         $options = '';
 
         if (!is_array($value)) {
-            $value = array($value);
+            $value = [$value];
         }
 
         if ($emptyOption) {
-            $optionsInput = array(escape($emptyOptionValue) => escape($emptyOption)) + $optionsInput;
+            $optionsInput = [escape($emptyOptionValue) => escape($emptyOption)] + $optionsInput;
         }
 
         foreach ($optionsInput as $optionGroup => $group) {
@@ -85,7 +84,7 @@ class Utils
         return $options;
     }
 
-    public static function iteratorToArray($iterator, $recursive = true)
+    public static function iteratorToArray($iterator, $recursive = \true)
     {
         if (!is_array($iterator) && !$iterator instanceof \Traversable) {
             throw new \InvalidArgumentException(__METHOD__ . ' expects an array or Traversable object');

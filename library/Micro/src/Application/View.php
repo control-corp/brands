@@ -70,7 +70,7 @@ class View
                 if ($renderParent === \true && $this->parent !== \null) {
                     $this->parent->setSections(array_merge(
                         $this->getSections(),
-                        array('content' => $content)
+                        ['content' => $content]
                     ));
                     $content = $this->parent->render();
                 }

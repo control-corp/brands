@@ -7,7 +7,7 @@ class Manager
     /**
      * @var array
      */
-    protected $events = array();
+    protected $events = [];
 
     /**
      * @var int
@@ -36,7 +36,7 @@ class Manager
 
         $this->events[$event]->insert(
             $callable,
-            array($priority, $this->serial--)
+            [$priority, $this->serial--]
         );
 
         return $this;
@@ -53,7 +53,7 @@ class Manager
             $this->events[$event] = new \SplPriorityQueue();
         }
 
-        $r = null;
+        $r = \null;
 
         foreach (clone $this->events[$event] as $callback) {
 
