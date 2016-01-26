@@ -12,7 +12,7 @@ class Navigation extends AbstractContainer
      * @param  array|Traversable $pages    [optional] pages to add
      * @throws \InvalidArgumentException  if $pages is invalid
      */
-    public function __construct($pages = null)
+    public function __construct($pages = \null)
     {
         if ($pages && (!is_array($pages) && !$pages instanceof Traversable)) {
             throw new \InvalidArgumentException(

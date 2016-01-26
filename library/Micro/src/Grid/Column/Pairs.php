@@ -8,7 +8,7 @@ class Pairs extends Column
 {
     protected $pairs;
     protected $callable;
-    protected $params = array();
+    protected $params = [];
 
     public function setCallable($value)
     {
@@ -29,14 +29,14 @@ class Pairs extends Column
     {
         $value = parent::__toString();
 
-        $pairs = array();
+        $pairs = [];
 
-        if ($this->callable !== null && is_callable($this->callable)) {
-            if ($this->pairs === null) {
+        if ($this->callable !== \null && is_callable($this->callable)) {
+            if ($this->pairs === \null) {
                 $this->pairs = call_user_func_array($this->callable, $this->params);
             }
         } else {
-            $this->pairs = array();
+            $this->pairs = [];
         }
 
         return isset($this->pairs[$value]) ? $this->pairs[$value] : '';

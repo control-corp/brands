@@ -9,9 +9,9 @@ class DatabaseTableSelect extends DatabaseSelect
      *
      * @var \Micro\Database\Table\Select
      */
-    protected $_select = null;
+    protected $_select = \null;
 
-    public function getItems($offset = null, $itemCountPerPage = null)
+    public function getItems($offset = \null, $itemCountPerPage = \null)
     {
         $this->_select->limit($itemCountPerPage, $offset);
 

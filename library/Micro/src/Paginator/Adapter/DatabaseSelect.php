@@ -20,21 +20,21 @@ class DatabaseSelect implements AdapterInterface
      *
      * @var \Micro\Database\Select
      */
-    protected $_countSelect = null;
+    protected $_countSelect = \null;
 
     /**
      * Database query
      *
      * @var \Micro\Database\Select
      */
-    protected $_select = null;
+    protected $_select = \null;
 
     /**
      * Total item count
      *
      * @var integer
      */
-    protected $_rowCount = null;
+    protected $_rowCount = \null;
 
     /**
      * Constructor.
@@ -100,7 +100,7 @@ class DatabaseSelect implements AdapterInterface
      * @param  integer $itemCountPerPage Number of items per page
      * @return array
      */
-    public function getItems($offset = null, $itemCountPerPage = null)
+    public function getItems($offset = \null, $itemCountPerPage = \null)
     {
         $this->_select->limit($itemCountPerPage, $offset);
 
@@ -114,7 +114,7 @@ class DatabaseSelect implements AdapterInterface
      */
     public function count()
     {
-        if ($this->_rowCount === null) {
+        if ($this->_rowCount === \null) {
             $this->setRowCount(
                 $this->getCountSelect()
             );
@@ -138,7 +138,7 @@ class DatabaseSelect implements AdapterInterface
          * We only need to generate a COUNT query once. It will not change for
          * this instance.
          */
-        if ($this->_countSelect !== null) {
+        if ($this->_countSelect !== \null) {
             return $this->_countSelect;
         }
 
@@ -149,7 +149,7 @@ class DatabaseSelect implements AdapterInterface
 
         $countColumn = $db->quoteIdentifier($db->foldCase(self::ROW_COUNT_COLUMN));
         $countPart   = 'COUNT(1) AS ';
-        $groupPart   = null;
+        $groupPart   = \null;
         $unionParts  = $rowCount->getPart(Select::UNION);
 
         /**
@@ -183,16 +183,16 @@ class DatabaseSelect implements AdapterInterface
                 $part = $columnParts[0];
 
                 if ($part[1] !== Select::SQL_WILDCARD && !($part[1] instanceof Expr)) {
-                    $column = $db->quoteIdentifier($part[1], true);
+                    $column = $db->quoteIdentifier($part[1], \true);
 
                     if (!empty($part[0])) {
-                        $column = $db->quoteIdentifier($part[0], true) . '.' . $column;
+                        $column = $db->quoteIdentifier($part[0], \true) . '.' . $column;
                     }
 
                     $groupPart = $column;
                 }
             } else if (!empty($groupParts)) {
-                $groupPart = $db->quoteIdentifier($groupParts[0], true);
+                $groupPart = $db->quoteIdentifier($groupParts[0], \true);
             }
 
             /**

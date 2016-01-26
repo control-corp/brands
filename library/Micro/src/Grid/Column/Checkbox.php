@@ -6,9 +6,9 @@ use Micro\Grid\Column;
 
 class Checkbox extends Column
 {
-    protected $checkAll = false;
+    protected $checkAll = \false;
 
-    public function __construct($name, array $options = array())
+    public function __construct($name, array $options = [])
     {
         parent::__construct($name, $options);
 

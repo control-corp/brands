@@ -115,14 +115,14 @@ abstract class AbstractPage extends AbstractContainer
      *
      * @var bool
      */
-    protected $active = false;
+    protected $active = \false;
 
     /**
      * Whether this page should be considered visible
      *
      * @var bool
      */
-    protected $visible = true;
+    protected $visible = \true;
 
     /**
      * Parent container
@@ -206,7 +206,7 @@ abstract class AbstractPage extends AbstractContainer
      *                                    null, which should set defaults.
      * @throws \InvalidArgumentException if invalid options are given
      */
-    public function __construct($options = null)
+    public function __construct($options = \null)
     {
         if ($options instanceof Traversable) {
             $options = Utils::iteratorToArray($options);
@@ -261,7 +261,7 @@ abstract class AbstractPage extends AbstractContainer
      */
     public function setLabel($label)
     {
-        if (null !== $label && !is_string($label)) {
+        if (\null !== $label && !is_string($label)) {
             throw new \InvalidArgumentException(
                 'Invalid argument: $label must be a string or null'
             );
@@ -290,7 +290,7 @@ abstract class AbstractPage extends AbstractContainer
      */
     public function setFragment($fragment)
     {
-        if (null !== $fragment && !is_string($fragment)) {
+        if (\null !== $fragment && !is_string($fragment)) {
             throw new \InvalidArgumentException(
                 'Invalid argument: $fragment must be a string or null'
             );
@@ -318,15 +318,15 @@ abstract class AbstractPage extends AbstractContainer
      * @return AbstractPage fluent interface, returns self
      * @throws \InvalidArgumentException  if not given string or null
      */
-    public function setId($id = null)
+    public function setId($id = \null)
     {
-        if (null !== $id && !is_string($id) && !is_numeric($id)) {
+        if (\null !== $id && !is_string($id) && !is_numeric($id)) {
             throw new \InvalidArgumentException(
                 'Invalid argument: $id must be a string, number or null'
             );
         }
 
-        $this->id = null === $id ? $id : (string) $id;
+        $this->id = \null === $id ? $id : (string) $id;
 
         return $this;
     }
@@ -349,9 +349,9 @@ abstract class AbstractPage extends AbstractContainer
      * @return AbstractPage fluent interface, returns self
      * @throws \InvalidArgumentException  if not given string or null
      */
-    public function setClass($class = null)
+    public function setClass($class = \null)
     {
-        if (null !== $class && !is_string($class)) {
+        if (\null !== $class && !is_string($class)) {
             throw new \InvalidArgumentException(
                 'Invalid argument: $class must be a string or null'
             );
@@ -379,9 +379,9 @@ abstract class AbstractPage extends AbstractContainer
      * @return AbstractPage fluent interface, returns self
      * @throws \InvalidArgumentException if not given string or null
      */
-    public function setTitle($title = null)
+    public function setTitle($title = \null)
     {
-        if (null !== $title && !is_string($title)) {
+        if (\null !== $title && !is_string($title)) {
             throw new \InvalidArgumentException(
                 'Invalid argument: $title must be a non-empty string'
             );
@@ -410,9 +410,9 @@ abstract class AbstractPage extends AbstractContainer
      * @return AbstractPage fluent interface, returns self
      * @throws \InvalidArgumentException if target is not string or null
      */
-    public function setTarget($target = null)
+    public function setTarget($target = \null)
     {
-        if (null !== $target && !is_string($target)) {
+        if (\null !== $target && !is_string($target)) {
             throw new \InvalidArgumentException(
                 'Invalid argument: $target must be a string or null'
             );
@@ -446,11 +446,11 @@ abstract class AbstractPage extends AbstractContainer
      *                                            or Traversable object
      * @return AbstractPage fluent interface, returns self
      */
-    public function setRel($relations = null)
+    public function setRel($relations = \null)
     {
         $this->rel = [];
 
-        if (null !== $relations) {
+        if (\null !== $relations) {
             if ($relations instanceof Traversable) {
                 $relations = Utils::iteratorToArray($relations);
             }
@@ -486,12 +486,12 @@ abstract class AbstractPage extends AbstractContainer
      *                          specified, all relations will be returned in
      *                          an associative array.
      */
-    public function getRel($relation = null)
+    public function getRel($relation = \null)
     {
-        if (null !== $relation) {
+        if (\null !== $relation) {
             return isset($this->rel[$relation])
                 ? $this->rel[$relation]
-                : null;
+                : \null;
         }
 
         return $this->rel;
@@ -512,11 +512,11 @@ abstract class AbstractPage extends AbstractContainer
      *                                            or Traversable object
      * @return AbstractPage fluent interface, returns self
      */
-    public function setRev($relations = null)
+    public function setRev($relations = \null)
     {
         $this->rev = [];
 
-        if (null !== $relations) {
+        if (\null !== $relations) {
             if ($relations instanceof Traversable) {
                 $relations = Utils::iteratorToArray($relations);
             }
@@ -553,14 +553,14 @@ abstract class AbstractPage extends AbstractContainer
      *                           specified, all relations will be returned in
      *                           an associative array.
      */
-    public function getRev($relation = null)
+    public function getRev($relation = \null)
     {
-        if (null !== $relation) {
+        if (\null !== $relation) {
             return isset($this->rev[$relation])
                 ?
                 $this->rev[$relation]
                 :
-                null;
+                \null;
         }
 
         return $this->rev;
@@ -575,7 +575,7 @@ abstract class AbstractPage extends AbstractContainer
      * @return AbstractPage fluent interface, returns self
      * @throws \InvalidArgumentException if order is not integer or null
      */
-    public function setOrder($order = null)
+    public function setOrder($order = \null)
     {
         if (is_string($order)) {
             $temp = (int) $order;
@@ -584,7 +584,7 @@ abstract class AbstractPage extends AbstractContainer
             }
         }
 
-        if (null !== $order && !is_int($order)) {
+        if (\null !== $order && !is_int($order)) {
             throw new \InvalidArgumentException(
                 'Invalid argument: $order must be an integer or null, ' .
                 'or a string that casts to an integer'
@@ -620,9 +620,9 @@ abstract class AbstractPage extends AbstractContainer
      * @return AbstractPage fluent interface, returns self
      * @throws \InvalidArgumentException if $resource is invalid
      */
-    public function setResource($resource = null)
+    public function setResource($resource = \null)
     {
-        if (null === $resource
+        if (\null === $resource
             || is_string($resource)
         ) {
             $this->resource = $resource;
@@ -655,9 +655,9 @@ abstract class AbstractPage extends AbstractContainer
      *
      * @return AbstractPage fluent interface, returns self
      */
-    public function setPrivilege($privilege = null)
+    public function setPrivilege($privilege = \null)
     {
-        $this->privilege = is_string($privilege) ? $privilege : null;
+        $this->privilege = is_string($privilege) ? $privilege : \null;
         return $this;
     }
 
@@ -680,7 +680,7 @@ abstract class AbstractPage extends AbstractContainer
      *
      * @return AbstractPage fluent interface, returns self
      */
-    public function setPermission($permission = null)
+    public function setPermission($permission = \null)
     {
         $this->permission = $permission;
         return $this;
@@ -705,9 +705,9 @@ abstract class AbstractPage extends AbstractContainer
      *
      * @return AbstractPage fluent interface, returns self
      */
-    public function setTextDomain($textDomain = null)
+    public function setTextDomain($textDomain = \null)
     {
-        if (null !== $textDomain) {
+        if (\null !== $textDomain) {
             $this->textDomain = $textDomain;
         }
         return $this;
@@ -731,7 +731,7 @@ abstract class AbstractPage extends AbstractContainer
      *
      * @return AbstractPage fluent interface, returns self
      */
-    public function setActive($active = true)
+    public function setActive($active = \true)
     {
         $this->active = (bool) $active;
         return $this;
@@ -745,15 +745,15 @@ abstract class AbstractPage extends AbstractContainer
      *                          false.
      * @return bool             whether page should be considered active
      */
-    public function isActive($recursive = false)
+    public function isActive($recursive = \false)
     {
         if (!$this->active && $recursive) {
             foreach ($this->pages as $page) {
-                if ($page->isActive(true)) {
-                    return true;
+                if ($page->isActive(\true)) {
+                    return \true;
                 }
             }
-            return false;
+            return \false;
         }
 
         return $this->active;
@@ -768,7 +768,7 @@ abstract class AbstractPage extends AbstractContainer
      *
      * @return bool             whether page should be considered active
      */
-    public function getActive($recursive = false)
+    public function getActive($recursive = \false)
     {
         return $this->isActive($recursive);
     }
@@ -780,10 +780,10 @@ abstract class AbstractPage extends AbstractContainer
      *                       considered visible or not. Default is true.
      * @return AbstractPage fluent interface, returns self
      */
-    public function setVisible($visible = true)
+    public function setVisible($visible = \true)
     {
         if (is_string($visible) && 'false' == strtolower($visible)) {
-            $visible = false;
+            $visible = \false;
         }
         $this->visible = (bool) $visible;
         return $this;
@@ -798,14 +798,14 @@ abstract class AbstractPage extends AbstractContainer
      *
      * @return bool             whether page should be considered visible
      */
-    public function isVisible($recursive = false)
+    public function isVisible($recursive = \false)
     {
         if ($recursive
             && isset($this->parent)
             && $this->parent instanceof self
         ) {
-            if (!$this->parent->isVisible(true)) {
-                return false;
+            if (!$this->parent->isVisible(\true)) {
+                return \false;
             }
         }
 
@@ -823,7 +823,7 @@ abstract class AbstractPage extends AbstractContainer
      *
      * @return bool             whether page should be considered visible
      */
-    public function getVisible($recursive = false)
+    public function getVisible($recursive = \false)
     {
         return $this->isVisible($recursive);
     }
@@ -836,7 +836,7 @@ abstract class AbstractPage extends AbstractContainer
      * @throws \InvalidArgumentException
      * @return AbstractPage fluent interface, returns self
      */
-    public function setParent(AbstractContainer $parent = null)
+    public function setParent(AbstractContainer $parent = \null)
     {
         if ($parent === $this) {
             throw new \InvalidArgumentException(
@@ -850,7 +850,7 @@ abstract class AbstractPage extends AbstractContainer
         }
 
         // remove from old parent
-        if (null !== $this->parent) {
+        if (\null !== $this->parent) {
             $this->parent->removePage($this);
         }
 
@@ -858,7 +858,7 @@ abstract class AbstractPage extends AbstractContainer
         $this->parent = $parent;
 
         // add to parent if page and not already a child
-        if (null !== $this->parent && !$this->parent->hasPage($this, false)) {
+        if (\null !== $this->parent && !$this->parent->hasPage($this, false)) {
             $this->parent->addPage($this);
         }
 
@@ -983,7 +983,7 @@ abstract class AbstractPage extends AbstractContainer
     {
         $method = 'get' . static::normalizePropertyName($name);
         if (method_exists($this, $method)) {
-            return true;
+            return \true;
         }
 
         return isset($this->properties[$name]);

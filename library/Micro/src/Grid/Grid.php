@@ -14,21 +14,21 @@ class Grid
     const PLACEMENT_TOP    = 0x2;
     const PLACEMENT_BOTH   = 0x3;
 
-    protected $columns = array();
-    protected $buttons = array();
+    protected $columns = [];
+    protected $buttons = [];
 
     protected $paginator;
     protected $view;
     protected $gridClass;
     protected $paginationViewScript = 'paginator';
-    protected $paginatorAlways = true;
+    protected $paginatorAlways = \true;
     protected $paginatorPlacement = self::PLACEMENT_BOTTOM;
     protected $buttonsPlacement = self::PLACEMENT_TOP;
     protected $sortedColumn;
 
     public function __construct($paginator, $options)
     {
-        if ($paginator !== null && !($paginator instanceof Paginator)) {
+        if ($paginator !== \null && !($paginator instanceof Paginator)) {
             try {
                 $paginator = new Paginator($paginator);
             } catch (\Exception $e) {
@@ -40,7 +40,7 @@ class Grid
 
         if (is_string($options) && file_exists($options)) {
             $options = include $options;
-            $options = is_array($options) ? $options : array();
+            $options = is_array($options) ? $options : [];
         }
 
         if (!is_array($options)) {
@@ -133,14 +133,14 @@ class Grid
         $column = $this->getColumn($columnName);
 
         if (!$column instanceof Column || !$column->isSortable()) {
-            return false;
+            return \false;
         }
 
         if ($this->getSortedColumn()) {
             $this->getSortedColumn()->clearSorted();
         }
 
-        $column->setSortable(true);
+        $column->setSortable(\true);
 
         $column->setSorted($direction);
 
@@ -199,7 +199,7 @@ class Grid
             return $this->columns[$name];
         }
 
-        return null;
+        return \null;
     }
 
     public function getColumns()
@@ -220,7 +220,7 @@ class Grid
     {
         foreach ($columns as $key => $spec) {
 
-            $name = null;
+            $name = \null;
 
             if (!is_numeric($key)) {
                 $name = $key;
@@ -231,7 +231,7 @@ class Grid
                 continue;
             }
 
-            $options = array();
+            $options = [];
 
             $type = 'column';
 
@@ -255,23 +255,23 @@ class Grid
         return $this;
     }
 
-    public function addColumn($type, $name = null, $options = null)
+    public function addColumn($type, $name = \null, $options = \null)
     {
-        $columnObj = null;
+        $columnObj = \null;
 
         if (is_string($type)) {
-            if (null === $name) {
+            if (\null === $name) {
                 throw new CoreException('Columns specified by string must have an accompanying name');
             }
             $columnObj = $this->createColumn($type, $name, $options);
         } elseif ($type instanceof Column) {
-            if (null === $name) {
+            if (\null === $name) {
                 $name = $type->getName();
             }
             $columnObj = $type;
         }
 
-        if (null === $columnObj) {
+        if (\null === $columnObj) {
             throw new CoreException('Cannot add NULL column to grid');
         }
 
@@ -286,14 +286,14 @@ class Grid
         return $this;
     }
 
-    public function createColumn($type, $name, array $options = null)
+    public function createColumn($type, $name, array $options = \null)
     {
         if (!is_string($type)) {
             throw new CoreException('Column type must be a string indicating type');
         }
 
-        if ($options === null) {
-            $options = array();
+        if ($options === \null) {
+            $options = [];
         }
 
         if (class_exists($type)) {
@@ -326,7 +326,7 @@ class Grid
 
     public function clearColumns()
     {
-        $this->columns = array();
+        $this->columns = [];
 
         return $this;
     }
@@ -363,10 +363,10 @@ class Grid
         return $this;
     }
 
-    public function addButton($name, array $options = null)
+    public function addButton($name, array $options = \null)
     {
-        if ($options === null) {
-            $options = array();
+        if ($options === \null) {
+            $options = [];
         }
 
         $this->buttons[$name] = $options;
@@ -376,7 +376,7 @@ class Grid
 
     public function clearButtons()
     {
-        $this->buttons = array();
+        $this->buttons = [];
 
         return $this;
     }
@@ -465,8 +465,8 @@ class Grid
                 if ($column->isSorted()) {
                     $sortedClass = 'sorting_' . $column->getSorted();
                 }
-                $routeParams = array_merge($requestParams, array('orderField' => $column->getName(),
-                                                                 'orderDir'   => ($column->getSorted() == 'asc') ? 'desc' : 'asc'));
+                $routeParams = array_merge($requestParams, ['orderField' => $column->getName(),
+                                                            'orderDir'   => ($column->getSorted() == 'asc') ? 'desc' : 'asc']);
                 $title = '<div class="' . $sortedClass . '" data-url="' . route(\null, $routeParams, \false, \true) . '">' . $column->getTitle() . '</div>';
             } else {
                 $title = $column->getTitle();

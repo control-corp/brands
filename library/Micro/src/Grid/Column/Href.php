@@ -6,8 +6,9 @@ use Micro\Grid\Column;
 
 class Href extends Column
 {
-    protected $params  = array();
-    protected $reset   = true;
+    protected $params = [];
+    protected $reset = \true;
+    protected $qsa = \false;
     protected $hrefClass = '';
 
     public function setParams(array $params)
@@ -20,6 +21,11 @@ class Href extends Column
         $this->reset = (bool) $value;
     }
 
+    public function setQsa($value)
+    {
+        $this->qsa = (bool) $value;
+    }
+
     public function setHrefClass($value)
     {
         $this->hrefClass = $value;
@@ -28,7 +34,7 @@ class Href extends Column
     public function __toString()
     {
         $params = $this->params;
-        $route  = isset($params['route']) ? $params['route'] : null;
+        $route  = isset($params['route']) ? $params['route'] : \null;
 
         unset($params['route']);
 
@@ -39,6 +45,6 @@ class Href extends Column
             }
         }
 
-        return '<a' . ($this->hrefClass ? ' class="' . $this->hrefClass . '"' : '') . ' href="' . app('router')->assemble($route, $params, $this->reset) . '">' . parent::__toString() . '</a>';
+        return '<a' . ($this->hrefClass ? ' class="' . $this->hrefClass . '"' : '') . ' href="' . app('router')->assemble($route, $params, $this->reset, $this->qsa) . '">' . parent::__toString() . '</a>';
     }
 }

@@ -19,10 +19,10 @@ class Column
     protected $partial;
     protected $filter;
 
-    protected $sortable = false;
+    protected $sortable = \false;
     protected $sorted;
 
-    public function __construct($name, array $options = array())
+    public function __construct($name, array $options = [])
     {
         if (!is_string($name)) {
             throw new CoreException('Column name must be string');
@@ -133,7 +133,7 @@ class Column
 
     public function getSourceField()
     {
-        if (empty($this->sourceField) && $this->text === null) {
+        if (empty($this->sourceField) && $this->text === \null) {
             throw new CoreException('Column is not bound to any source field');
         }
 
@@ -177,12 +177,12 @@ class Column
 
     public function isSorted()
     {
-        return ($this->sorted !== null);
+        return ($this->sorted !== \null);
     }
 
     public function clearSorted()
     {
-        $this->sorted = null;
+        $this->sorted = \null;
 
         return $this;
     }
@@ -204,13 +204,13 @@ class Column
         return $this->getGrid()->getPaginator()->getIterator()->current();
     }
 
-    public function getCurrentValue($field = null)
+    public function getCurrentValue($field = \null)
     {
-        if ($this->text !== null && $field === null) {
+        if ($this->text !== \null && $field === \null) {
             return $this->text;
         }
 
-        if ($field === null) {
+        if ($field === \null) {
             $field = $this->getSourceField();
         }
 
@@ -238,7 +238,7 @@ class Column
             if (is_callable($this->filter)) {
                 $value = call_user_func($this->filter, $value);
             } else if (is_array($this->filter) && isset($this->filter['callback']) && is_callable($this->filter['callback'])) {
-                $value = call_user_func_array($this->filter['callback'], array('value' => $value) + (isset($this->filter['params']) ? $this->filter['params'] : array()));
+                $value = call_user_func_array($this->filter['callback'], ['value' => $value] + (isset($this->filter['params']) ? $this->filter['params'] : []));
             }
         }
 
@@ -255,10 +255,10 @@ class Column
 
                 $view = $this->getGrid()->getView();
 
-                $data = array(
+                $data = [
                     'value' => $value,
                     'item'  => $this->getCurrentItem()
-                );
+                ];
 
                 if ($this->partial) {
                     $value = (string) $view->partial($this->viewScript, $data);

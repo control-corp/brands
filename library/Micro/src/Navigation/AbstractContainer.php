@@ -28,7 +28,7 @@ abstract class AbstractContainer implements Countable, RecursiveIterator
      *
      * @var bool
      */
-    protected $dirtyIndex = false;
+    protected $dirtyIndex = \false;
 
     // Internal methods:
 
@@ -48,7 +48,7 @@ abstract class AbstractContainer implements Countable, RecursiveIterator
 
         foreach ($this->pages as $hash => $page) {
             $order = $page->getOrder();
-            if ($order === null) {
+            if ($order === \null) {
                 $newIndex[$hash] = $index;
                 $index++;
             } else {
@@ -58,7 +58,7 @@ abstract class AbstractContainer implements Countable, RecursiveIterator
 
         asort($newIndex);
         $this->index      = $newIndex;
-        $this->dirtyIndex = false;
+        $this->dirtyIndex = \false;
     }
 
     // Public methods:
@@ -70,7 +70,7 @@ abstract class AbstractContainer implements Countable, RecursiveIterator
      */
     public function notifyOrderUpdated()
     {
-        $this->dirtyIndex = true;
+        $this->dirtyIndex = \true;
     }
 
     /**
@@ -111,7 +111,7 @@ abstract class AbstractContainer implements Countable, RecursiveIterator
         // adds page to container and sets dirty flag
         $this->pages[$hash] = $page;
         $this->index[$hash] = $page->getOrder();
-        $this->dirtyIndex = true;
+        $this->dirtyIndex = \true;
 
         // inject self as page parent
         $page->setParent($this);
@@ -146,7 +146,7 @@ abstract class AbstractContainer implements Countable, RecursiveIterator
         }
 
         foreach ($pages as $page) {
-            if (null === $page) {
+            if (\null === $page) {
                 continue;
             }
             $this->addPage($page);
@@ -185,37 +185,37 @@ abstract class AbstractContainer implements Countable, RecursiveIterator
      * @param  bool                  $recursive [optional] whether to remove recursively
      * @return bool whether the removal was successful
      */
-    public function removePage($page, $recursive = false)
+    public function removePage($page, $recursive = \false)
     {
         if ($page instanceof Page\AbstractPage) {
             $hash = $page->hashCode();
         } elseif (is_int($page)) {
             $this->sort();
             if (!$hash = array_search($page, $this->index)) {
-                return false;
+                return \false;
             }
         } else {
-            return false;
+            return \false;
         }
 
         if (isset($this->pages[$hash])) {
             unset($this->pages[$hash]);
             unset($this->index[$hash]);
-            $this->dirtyIndex = true;
-            return true;
+            $this->dirtyIndex = \true;
+            return \true;
         }
 
         if ($recursive) {
             /** @var \Micro\Navigation\Page\AbstractPage $childPage */
             foreach ($this->pages as $childPage) {
-                if ($childPage->hasPage($page, true)) {
-                    $childPage->removePage($page, true);
-                    return true;
+                if ($childPage->hasPage($page, \true)) {
+                    $childPage->removePage($page, \true);
+                    return \true;
                 }
             }
         }
 
-        return false;
+        return \false;
     }
 
     /**
@@ -238,19 +238,19 @@ abstract class AbstractContainer implements Countable, RecursiveIterator
      *                         Default is false.
      * @return bool whether page is in container
      */
-    public function hasPage(Page\AbstractPage $page, $recursive = false)
+    public function hasPage(Page\AbstractPage $page, $recursive = \false)
     {
         if (array_key_exists($page->hashCode(), $this->index)) {
-            return true;
+            return \true;
         } elseif ($recursive) {
             foreach ($this->pages as $childPage) {
-                if ($childPage->hasPage($page, true)) {
-                    return true;
+                if ($childPage->hasPage($page, \true)) {
+                    return \true;
                 }
             }
         }
 
-        return false;
+        return \false;
     }
 
     /**
@@ -259,16 +259,16 @@ abstract class AbstractContainer implements Countable, RecursiveIterator
      * @param  bool $onlyVisible whether to check only visible pages
      * @return bool  whether container has any pages
      */
-    public function hasPages($onlyVisible = false)
+    public function hasPages($onlyVisible = \false)
     {
         if ($onlyVisible) {
             foreach ($this->pages as $page) {
                 if ($page->isVisible()) {
-                    return true;
+                    return \true;
                 }
             }
             // no visible pages found
-            return false;
+            return \false;
         }
         return count($this->index) > 0;
     }
@@ -329,7 +329,7 @@ abstract class AbstractContainer implements Countable, RecursiveIterator
      *                           Default is false.
      * @return Page\AbstractPage|null  matching page or null
      */
-    public function findBy($property, $value, $all = false)
+    public function findBy($property, $value, $all = \false)
     {
         if ($all) {
             return $this->findAllBy($property, $value);
@@ -457,7 +457,7 @@ abstract class AbstractContainer implements Countable, RecursiveIterator
     public function valid()
     {
         $this->sort();
-        return current($this->index) !== false;
+        return current($this->index) !== \false;
     }
 
     /**
