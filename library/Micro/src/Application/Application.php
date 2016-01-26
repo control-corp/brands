@@ -261,79 +261,85 @@ class Application extends Container
             return $eventResponse;
         }
 
-        $package = \null;
-        $action = \null;
-
         $handler = $route->getHandler();
 
         if ($handler instanceof \Closure) {
-            $handlerResponse = $handler->__invoke($route, $this);
-        } else {
-            $handlerResponse = $handler;
+            $handler = $handler->__invoke($route, $this);
         }
 
-        if (is_string($handlerResponse) && strpos($handlerResponse, '@') !== \false) {
-
-            list($package, $action) = explode('@', $handlerResponse);
-
-            $parts = explode('\\', $package);
-
-            if (!class_exists($package)) {
-                throw new \Exception('[' . __METHOD__ . '] Package class "' . $package . '" not found');
-            }
-
-            $packageInstance = new $package($this['request'], $this['response']);
-
-            if (!method_exists($packageInstance, $action)) {
-                throw new \Exception('[' . __METHOD__ . '] Method "' . $action . '" not found in "' . $package . '"', 404);
-            }
-
-            if ($packageInstance instanceof ContainerAwareInterface) {
-                $packageInstance->setContainer($this);
-            }
-
-            if ($packageInstance instanceof Controller) {
-                $packageInstance->init();
-            }
-
-            if (($eventResponse = $this['event']->trigger('dispatch.start', ['route' => $route, 'package_instance' => $packageInstance])) instanceof Http\Response) {
-                return $eventResponse;
-            }
-
-            $packageResponse = $packageInstance->$action();
-
-            if (($eventResponse = $this['event']->trigger('dispatch.end', ['route' => $route, 'package_instance' => $packageInstance, 'package_response' => $packageResponse])) instanceof Http\Response) {
-                return $eventResponse;
-            }
-
-            if (is_array($packageResponse) || $packageResponse === \null) {
-                $packageResponse = new View(\null, $packageResponse);
-            }
-
-            if ($packageResponse instanceof View) {
-                if ($packageResponse->getTemplate() === \null) {
-                    $packageResponse->setTemplate(Utils::decamelize($action));
-                }
-                try {
-                    $paths = (array) package_path($parts[0], 'views');
-                } catch (\Exception $e) {
-                    $paths = [];
-                }
-                $packageResponse = $packageResponse->injectPaths($paths)->render();
-            }
-
-            $handlerResponse = $packageResponse;
+        if (is_string($handler) && strpos($handler, '@') !== \false) {
+            $handler = $this->resolve($handler, $this['request'], $this['response']);
         }
 
-        if ($handlerResponse instanceof Http\Response) {
-            $response = $handlerResponse;
+        if ($handler instanceof Http\Response) {
+            $response = $handler;
         } else {
-            $response = $this['response']->setBody((string) $handlerResponse);
+            $response = $this['response']->setBody((string) $handler);
         }
 
         if (($eventResponse = $this['event']->trigger('unpackage.end', compact('response'))) instanceof Http\Response) {
             return $eventResponse;
         }
+
+        return $response;
+    }
+
+    /**
+     * @param string $package
+     * @param Http\Request $request
+     * @param Http\Response $response
+     * @param bool $subRequest
+     * @throws \Exception
+     * @return \Micro\Http\Response
+     */
+    public function resolve($package, Http\Request $request, Http\Response $response, $subRequest = \false)
+    {
+        list($package, $action) = explode('@', $package);
+
+        $parts = explode('\\', $package);
+
+        if (!class_exists($package)) {
+            throw new \Exception('[' . __METHOD__ . '] Package class "' . $package . '" not found');
+        }
+
+        $packageInstance = new $package($request, $response);
+
+        if (!method_exists($packageInstance, $action)) {
+            throw new \Exception('[' . __METHOD__ . '] Method "' . $action . '" not found in "' . $package . '"', 404);
+        }
+
+        if ($packageInstance instanceof ContainerAwareInterface) {
+            $packageInstance->setContainer($this);
+        }
+
+        if ($packageInstance instanceof Controller) {
+            $packageInstance->init();
+        }
+
+        $packageResponse = $packageInstance->$action();
+
+        if (is_array($packageResponse) || $packageResponse === \null) {
+            $packageResponse = new View(\null, $packageResponse);
+        }
+
+        if ($packageResponse instanceof View) {
+            if ($packageResponse->getTemplate() === \null) {
+                $packageResponse->setTemplate(Utils::decamelize($action));
+            }
+            try {
+                $paths = (array) package_path($parts[0], 'views');
+            } catch (\Exception $e) {
+                $paths = [];
+            }
+            $packageResponse->injectPaths($paths);
+            $packageResponse = $packageResponse->render(\null, ($subRequest ? \false : \true));
+        }
+
+        if ($packageResponse instanceof Http\Response) {
+            return $packageResponse;
+        }
+
+        $response->setBody((string) $packageResponse);
 
         return $response;
     }

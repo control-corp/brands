@@ -46,10 +46,8 @@ class View
         return $this;
     }
 
-    public function render($template = \null)
+    public function render($template = \null, $renderParent = \true)
     {
-        $renderParent = \true;
-
         if ($template !== \null) {
             $file = $template;
             $renderParent = \false;

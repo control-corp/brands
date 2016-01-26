@@ -5,6 +5,7 @@ namespace Micro\Application;
 use Micro\Http;
 use Micro\Container\ContainerAwareInterface;
 use Micro\Container\ContainerAwareTrait;
+use Micro\Application\Utils;
 
 class Controller implements ContainerAwareInterface
 {
@@ -39,5 +40,22 @@ class Controller implements ContainerAwareInterface
         if (!is_allowed()) {
             throw new \Exception('Access denied', 403);
         }
+    }
+
+    public function forward($package, array $params = [], $subRequest = \false)
+    {
+        $req = clone $this->request;
+
+        list($packageParts, $action) = explode('@', $package);
+
+        $packageParts = explode('\\', $packageParts);
+
+        $params['package'] = Utils::decamelize($packageParts[0]);
+        $params['controller'] = Utils::decamelize($packageParts[count($packageParts) - 1]);
+        $params['action'] = Utils::decamelize($action);
+
+        $req->setParams($params);
+
+        return $this->container->resolve($package, $req, clone $this->response, $subRequest);
     }
 }
