@@ -8,14 +8,11 @@ class Package extends BasePackage
 {
     public function boot()
     {
-        $handlers = [
-            new Handler\FirePHP,
-            new Handler\Performance,
-            new Handler\DevTools,
-        ];
+        (new Handler\FirePHP)->boot();
+        (new Handler\Performance)->boot();
 
-        foreach ($handlers as $handler) {
-            $handler->boot();
+        if (!$this->container['request']->isAjax()) {
+            (new Handler\DevTools)->boot();
         }
     }
 }

@@ -18,6 +18,8 @@ class View
 
     protected $cloned = \false;
 
+    protected $renderParent = \true;
+
     protected static $helpers = [];
 
     public function __construct($template, array $data = \null, $injectPaths = \false)
@@ -46,8 +48,10 @@ class View
         return $this;
     }
 
-    public function render($template = \null, $renderParent = \true)
+    public function render($template = \null)
     {
+        $renderParent = $this->renderParent;
+
         if ($template !== \null) {
             $file = $template;
             $renderParent = \false;
@@ -274,6 +278,13 @@ class View
     public function isCloned()
     {
         return $this->cloned;
+    }
+
+    public function setRenderParent($flag)
+    {
+        $this->renderParent = (bool) $flag;
+
+        return $this;
     }
 
     public function injectPaths(array $paths = [])

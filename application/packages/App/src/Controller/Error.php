@@ -8,16 +8,25 @@ use Micro\Http\Response\JsonResponse;
 
 class Error extends Controller
 {
+    const ERROR = 'Моля, опитайте по-късно!';
+
     public function index()
     {
         $exception = $this->request->getParam('exception');
 
-        if ($this->request->isAjax()) {
-            return new JsonResponse($exception->getMessage());
+        if (!$exception instanceof \Exception) {
+            return '';
         }
 
-        $this->response->setCode($exception->getCode() ?: 404);
+        $code = $exception->getCode() ?: 404;
+        $message = (env('development') || $code === 403 ? $exception->getMessage() : static::ERROR);
 
-        return new View('error', ['exception' => $exception]);
+        if ($this->request->isAjax()) {
+            return new JsonResponse(['error' => $message], $code);
+        }
+
+        $this->response->setCode($code);
+
+        return new View('error', ['exception' => $exception, 'message' => $message]);
     }
 }

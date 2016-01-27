@@ -329,13 +329,20 @@ class Application extends Container
 
         $parts = explode('\\', $package);
 
-        $packageResponse->injectPaths((array) package_path($parts[0], 'views'));
-
-        if (($eventResponse = $this['event']->trigger('render.start', ['view' => $packageResponse])) instanceof Http\Response) {
-            return $eventResponse;
+        if ($packageResponse instanceof View) {
+            $packageResponse->injectPaths((array) package_path($parts[0], 'views'));
+            if (($eventResponse = $this['event']->trigger('render.start', ['view' => $packageResponse])) instanceof Http\Response) {
+                return $eventResponse;
+            }
+            if ($subRequest) {
+                $packageResponse->setRenderParent(\false);
+            }
+            $response->setBody((string) $packageResponse->render());
+        } else {
+            $response->setBody((string) $packageResponse);
         }
 
-        return $response->setBody((string) $packageResponse->render(\null, ($subRequest ? \false : \true)));
+        return $response;
     }
 
     /**
