@@ -1,6 +1,6 @@
 <?php
 
-namespace Debug\Handler\FirePHP;
+namespace MicroDebug\Handler\FirePHP;
 
 /**
  * *** BEGIN LICENSE BLOCK *****

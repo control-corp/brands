@@ -1,6 +1,6 @@
 <?php
 
-namespace Debug\Handler;
+namespace MicroDebug\Handler;
 
 use Micro\Container\ContainerInterface;
 use Micro\Event\Message;

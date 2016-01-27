@@ -13,7 +13,7 @@ return [
         'App' => 'application/packages/App',
         'Nomenclatures' => 'application/packages/Nomenclatures',
         'UserManagement' => 'application/packages/UserManagement',
-        'Debug' => 'library/Micro/packages/Debug'
+        'MicroDebug' => 'library/Micro/packages/MicroDebug'
     ],
     'routes' => include 'application/config/routes.php',
     'error' => [

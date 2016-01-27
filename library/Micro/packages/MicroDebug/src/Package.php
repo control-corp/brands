@@ -1,6 +1,6 @@
 <?php
 
-namespace Debug;
+namespace MicroDebug;
 
 use Micro\Application\Package as BasePackage;
 
