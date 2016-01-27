@@ -2,39 +2,28 @@
 
 namespace MicroDebug\Handler;
 
-use Micro\Container\ContainerInterface;
 use Micro\Event\Message;
 
 class FirePHP
 {
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-    }
-
     public function boot()
     {
         if (!config('debug.handlers.fire_php', 0)) {
             return;
         }
 
-        $this->container['event']->attach('application.start', array($this, 'onApplicationStart'));
-        $this->container['event']->attach('application.end', array($this, 'onApplicationEnd'));
+        app('event')->attach('application.start', array($this, 'onApplicationStart'));
+        app('event')->attach('application.end', array($this, 'onApplicationEnd'));
     }
 
     public function onApplicationStart()
     {
-        $this->container['db']->setProfiler(\true);
+        app('db')->setProfiler(\true);
     }
 
     public function onApplicationEnd(Message $message)
     {
-        $profiler = $this->container['db']->getProfiler();
+        $profiler = app('db')->getProfiler();
 
         if ($profiler->getEnabled()) {
 

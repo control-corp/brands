@@ -13,9 +13,9 @@ class Package extends BasePackage
         }
 
         $handlers = [
-            new Handler\FirePHP($this->container),
-            new Handler\Performance($this->container),
-            new Handler\DevTools($this->container),
+            new Handler\FirePHP,
+            new Handler\Performance,
+            new Handler\DevTools,
         ];
 
         foreach ($handlers as $handler) {

@@ -2,28 +2,17 @@
 
 namespace MicroDebug\Handler;
 
-use Micro\Container\ContainerInterface;
 use Micro\Event\Message;
 
 class Performance
 {
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-    }
-
     public function boot()
     {
         if (!config('debug.handlers.perfomance', 0)) {
             return;
         }
 
-        $this->container['event']->attach('application.end', array($this, 'onApplicationEnd'));
+        app('event')->attach('application.end', array($this, 'onApplicationEnd'));
     }
 
     public function onApplicationEnd(Message $message)

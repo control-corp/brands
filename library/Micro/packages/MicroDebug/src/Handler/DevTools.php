@@ -2,7 +2,6 @@
 
 namespace MicroDebug\Handler;
 
-use Micro\Container\ContainerInterface;
 use Micro\Event\Message;
 use Micro\Application\View;
 
@@ -13,30 +12,20 @@ class DevTools
      */
     protected $view;
 
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-    }
-
     public function boot()
     {
         if (!config('debug.handlers.dev_tools', 0)) {
             return;
         }
 
-        $this->container['event']->attach('render.start', array($this, 'onRenderStart'));
-        $this->container['event']->attach('application.end', array($this, 'onApplicationEnd'));
+        app('event')->attach('render.start', array($this, 'onRenderStart'));
+        app('event')->attach('application.end', array($this, 'onApplicationEnd'));
     }
 
     public function onRenderStart(Message $message)
     {
         $this->view = new View('debug');
-        $this->view->addPath(package_path('Debug', 'views'));
+        $this->view->addPath(package_path('MicroDebug', 'views'));
 
         $view = $message->getParam('view');
         $view->section('styles', (string) $this->view->partial('css'));
