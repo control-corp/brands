@@ -32,8 +32,7 @@ class Package extends BasePackage
          * Auth
          */
         Auth::setResolver(function ($identity) {
-            $usersModel = new \UserManagement\Model\Users();
-            return $usersModel->find($identity);
+            return \UserManagement\Model\Users::callFind((int) $identity);
         });
     }
 }

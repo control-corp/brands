@@ -616,4 +616,15 @@ abstract class ModelAbstract implements AdapterInterface
 
         app('event')->trigger($event, $params);
     }
+
+    public static function __callstatic($name, $args)
+    {
+        $called = get_called_class();
+
+        if (($pos = strpos($name, 'call')) !== 0) {
+            throw new \Exception(__METHOD__, 500);
+        }
+
+        return call_user_func_array([new $called, substr($name, 4)], $args);
+    }
 }

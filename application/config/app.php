@@ -20,7 +20,8 @@ return [
         ]
     ],
     'session' => [
-        'name' => 'TEST'
+        'name' => 'TEST',
+        'save_path' => 'application/data/session'
     ],
     'db' => [
         'default' => 'localhost',

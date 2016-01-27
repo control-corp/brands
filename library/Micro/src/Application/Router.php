@@ -236,8 +236,8 @@ class Router
         }
 
         if (!isset($this->routes['admin'])) {
-            $this->map('admin', '/admin[/{package}][/{controller}][/{action}][/{id}]', function (Route $route) {
-                $params = $route->getParams() + $route->getDefaults();
+            $this->map('admin', '/admin[/{package}][/{controller}][/{action}][/{id}]', function () {
+                $params = $this->getParams() + $this->getDefaults();
                 return ucfirst(Utils::camelize($params['package']))
                         . '\\Controller\\Admin\\'
                         . ucfirst(Utils::camelize($params['controller']))
@@ -247,8 +247,8 @@ class Router
         }
 
         if (!isset($this->routes['default'])) {
-            $this->map('default', '/{package}[/{controller}][/{action}][/{id}]', function (Route $route) {
-                $params = $route->getParams() + $route->getDefaults();
+            $this->map('default', '/{package}[/{controller}][/{action}][/{id}]', function () {
+                $params = $this->getParams() + $this->getDefaults();
                 return ucfirst(Utils::camelize($params['package']))
                         . '\\Controller\\'
                         . ucfirst(Utils::camelize($params['controller']))

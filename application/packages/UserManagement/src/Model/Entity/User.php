@@ -4,8 +4,9 @@ namespace UserManagement\Model\Entity;
 
 use Micro\Model\EntityAbstract;
 use Micro\Acl\RoleInterface;
+use Micro\Auth\Identity;
 
-class User extends EntityAbstract implements RoleInterface
+class User extends EntityAbstract implements RoleInterface, Identity
 {
     protected $id;
     protected $group_id;
@@ -21,5 +22,35 @@ class User extends EntityAbstract implements RoleInterface
         }
 
         return $roleId;
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    public function getEmail()
+    {
+        return \null;
+    }
+
+    public function getGroups()
+    {
+        return [$this->group_id];
+    }
+
+    public function isActive()
+    {
+        return \true;
     }
 }

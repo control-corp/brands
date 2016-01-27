@@ -137,11 +137,7 @@ class Page extends AbstractPage
 
         $resource = $route->getHandler();
 
-        if ($resource instanceof \Closure) {
-            $resource = $resource->__invoke($route, app());
-        }
-
-        if (is_allowed($resource)) {
+        if (!is_string($resource) || is_allowed($resource)) {
             return \true;
         }
 

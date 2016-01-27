@@ -50,6 +50,11 @@ class Route
     {
         $this->name    = $name;
         $this->pattern = $pattern;
+
+        if ($handler instanceof \Closure) {
+            $handler = $handler->bindTo($this);
+        }
+
         $this->handler = $handler;
     }
 
@@ -190,6 +195,10 @@ class Route
      */
     public function getHandler()
     {
+        if ($this->handler instanceof \Closure) {
+            return $this->handler->__invoke();
+        }
+
         return $this->handler;
     }
 

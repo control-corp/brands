@@ -119,15 +119,17 @@ class Auth
 
         $identity = static::getInstance()->getIdentity();
 
-        if ($identity === \null || static::$resolver === \null) {
-            return \null;
+        if ($identity instanceof Identity || $identity === \null) {
+            return $cache = $identity;
         }
 
-        if ($identity !== \null && static::$resolver === \null) {
-            return $identity;
+        if (static::$resolver !== \null) {
+            if (($identity = call_user_func(static::$resolver, $identity)) instanceof Identity) {
+                return $cache = $identity;
+            }
         }
 
-        return $cache = call_user_func(static::$resolver, $identity);
+        throw new \Exception('Auth resolver must returns instance of Micro\Auth\Identity', 500);
     }
 
     /**

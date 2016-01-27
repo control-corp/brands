@@ -4,8 +4,6 @@ use Micro\Application\Application;
 
 require 'library/Micro/autoload.php';
 
-require __DIR__ . '/helpers.php';
-
 /**
  * Cached mapped classes / dirs
  */

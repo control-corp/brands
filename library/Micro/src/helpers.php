@@ -1,9 +1,19 @@
 <?php
 
+use Micro\Container\Container;
+use Micro\Application\Utils;
+use Micro\Application\View;
+use Micro\Http\Response\JsonResponse;
+use Micro\Http\Response\RedirectResponse;
+use Micro\Paginator\Paginator;
+use Micro\Acl\RoleInterface;
+use Micro\Auth\Auth;
+use Micro\Helper\Flash;
+
 if (!function_exists('app')) {
     function app($service = \null)
     {
-        $container = Micro\Container\Container::getInstance();
+        $container = Container::getInstance();
 
         if ($service !== \null) {
             return $container[$service];
@@ -138,19 +148,7 @@ if (!function_exists('json')) {
      */
     function json($body = '', $code = 200)
     {
-        return new Micro\Http\Response\JsonResponse($body, $code);
-    }
-}
-
-if (!function_exists('html')) {
-    /**
-     * @param string $body
-     * @param int $code
-     * @return \Micro\Http\Response\HtmlResponse
-     */
-    function html($body = '', $code = 200)
-    {
-        return new Micro\Http\Response\HtmlResponse($body, $code);
+        return new JsonResponse($body, $code);
     }
 }
 
@@ -162,7 +160,7 @@ if (!function_exists('redirect')) {
      */
     function redirect($url, $code = 302)
     {
-        return new Micro\Http\Response\RedirectResponse($url, $code);
+        return new RedirectResponse($url, $code);
     }
 }
 
@@ -175,21 +173,25 @@ if (!function_exists('view')) {
      */
     function view($template, array $data = \null, $injectPaths = \false)
     {
-        return new Micro\Application\View($template, $data, $injectPaths);
+        return new View($template, $data, $injectPaths);
     }
 }
 
 if (!function_exists('identity')) {
+    /**
+     * @param unknown $force
+     * @return \Micro\Auth\Identity
+     */
     function identity($force = \false)
     {
-        return Micro\Auth\Auth::identity($force);
+        return Auth::identity($force);
     }
 }
 
 if (!function_exists('flash')) {
     function flash()
     {
-        $flash = new Micro\Helper\Flash();
+        $flash = new Flash();
 
         return $flash;
     }
@@ -217,8 +219,8 @@ if (!function_exists('current_package')) {
 
         $resource = $route->getHandler();
 
-        if ($resource instanceof \Closure) {
-            $resource = $resource->__invoke($route, app());
+        if (!is_string($resource)) {
+            return \null;
         }
 
         $parts = explode('\\', $resource);
@@ -240,7 +242,7 @@ if (!function_exists('is_allowed')) {
 
             $role = 'guest';
 
-            if ($identity !== \null && $identity instanceof Micro\Acl\RoleInterface) {
+            if ($identity !== \null && $identity instanceof RoleInterface) {
                 try {
                     $role = $identity->getRoleId();
                 } catch (\Exception $e) {
@@ -259,8 +261,8 @@ if (!function_exists('is_allowed')) {
 
             $resource = $route->getHandler();
 
-            if ($resource instanceof \Closure) {
-                $resource = $resource->__invoke($route, app());
+            if (!is_string($resource)) {
+                return \true;
             }
         }
 
@@ -268,13 +270,27 @@ if (!function_exists('is_allowed')) {
     }
 }
 
+if (!function_exists('forward')) {
+    function forward($package, array $params = [], $subRequest = \false)
+    {
+        $req = clone app('request');
+
+        list($packageParts, $action) = explode('@', $package);
+
+        $packageParts = explode('\\', $packageParts);
+
+        $params['package'] = Utils::decamelize($packageParts[0]);
+        $params['controller'] = Utils::decamelize($packageParts[count($packageParts) - 1]);
+        $params['action'] = Utils::decamelize($action);
+
+        $req->setParams($params);
+
+        return app()->resolve($package, $req, clone app('response'), $subRequest);
+    }
+}
 if (!function_exists('pagination')) {
-    function pagination(
-        Micro\Paginator\Paginator $paginator,
-        $partial = 'paginator',
-        array $params = \null,
-        Micro\Application\View $view = \null
-    ) {
+    function pagination(Paginator $paginator, $partial = 'paginator', array $params = \null, View $view = \null)
+    {
         $pages = ['pages' => $paginator->getPages()];
 
         if ($params !== \null) {
@@ -282,7 +298,7 @@ if (!function_exists('pagination')) {
         }
 
         if ($view === \null) {
-            $view = new Micro\Application\View(\null);
+            $view = new View(\null);
         }
 
         return $view->partial($partial, $pages);

@@ -261,20 +261,16 @@ class Application extends Container
             return $eventResponse;
         }
 
-        $handler = $route->getHandler();
+        $routeHandler = $route->getHandler();
 
-        if ($handler instanceof \Closure) {
-            $handler = $handler->__invoke($route, $this);
+        if (is_string($routeHandler) && strpos($routeHandler, '@') !== \false) { // package format
+            $routeHandler = $this->resolve($routeHandler, $this['request'], $this['response']);
         }
 
-        if (is_string($handler) && strpos($handler, '@') !== \false) {
-            $handler = $this->resolve($handler, $this['request'], $this['response']);
-        }
-
-        if ($handler instanceof Http\Response) {
-            $response = $handler;
+        if ($routeHandler instanceof Http\Response) {
+            $response = $routeHandler;
         } else {
-            $response = $this['response']->setBody((string) $handler);
+            $response = $this['response']->setBody((string) $routeHandler);
         }
 
         if (($eventResponse = $this['event']->trigger('unpackage.end', compact('response'))) instanceof Http\Response) {
@@ -294,12 +290,14 @@ class Application extends Container
      */
     public function resolve($package, Http\Request $request, Http\Response $response, $subRequest = \false)
     {
+        if (!is_string($package) || strpos($package, '@') === \false) {
+            throw new \Exception('[' . __METHOD__ . '] Package must be Package\Handler@action format', 500);
+        }
+
         list($package, $action) = explode('@', $package);
 
-        $parts = explode('\\', $package);
-
-        if (!class_exists($package)) {
-            throw new \Exception('[' . __METHOD__ . '] Package class "' . $package . '" not found');
+        if (!class_exists($package, \true)) {
+            throw new \Exception('[' . __METHOD__ . '] Package class "' . $package . '" not found', 404);
         }
 
         $packageInstance = new $package($request, $response);
@@ -316,32 +314,24 @@ class Application extends Container
             $packageInstance->init();
         }
 
-        $packageResponse = $packageInstance->$action();
-
-        if (is_array($packageResponse) || $packageResponse === \null) {
-            $packageResponse = new View(\null, $packageResponse);
-        }
-
-        if ($packageResponse instanceof View) {
-            if ($packageResponse->getTemplate() === \null) {
-                $packageResponse->setTemplate(Utils::decamelize($action));
-            }
-            try {
-                $paths = (array) package_path($parts[0], 'views');
-            } catch (\Exception $e) {
-                $paths = [];
-            }
-            $packageResponse->injectPaths($paths);
-            $packageResponse = $packageResponse->render(\null, ($subRequest ? \false : \true));
-        }
-
-        if ($packageResponse instanceof Http\Response) {
+        if (($packageResponse = $packageInstance->$action()) instanceof Http\Response) {
             return $packageResponse;
         }
 
-        $response->setBody((string) $packageResponse);
+        if (is_object($packageResponse) && !$packageResponse instanceof View) {
+            throw new \Exception('[' . __METHOD__ . '] Package response is object and must be instance of View', 500);
+        }
 
-        return $response;
+        if (is_array($packageResponse) || $packageResponse === \null) {
+            $packageResponse = new View(\null, $packageResponse);
+            $packageResponse->setTemplate(Utils::decamelize($action));
+        }
+
+        $parts = explode('\\', $package);
+
+        $packageResponse->injectPaths((array) package_path($parts[0], 'views'));
+
+        return $response->setBody((string) $packageResponse->render(\null, ($subRequest ? \false : \true)));
     }
 
     /**

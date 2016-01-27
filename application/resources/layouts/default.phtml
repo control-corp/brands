@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?php echo $this->renderSection('title', 'Home'); ?></title>
+    <title><?php echo $this->renderSection('title', 'Начало'); ?></title>
     <link rel="stylesheet" href="assets/templates/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/templates/bootstrap/extends/datepicker/css/bootstrap-datepicker3.standalone.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/templates/bootstrap/extends/font-awesome-4.4.0/css/font-awesome.min.css">
@@ -26,7 +26,7 @@
         </div>
     </footer>
     <script>var siteLanguage = {code: 'bg'}; </script>
-    <script>var siteConfig = <?php echo json_encode(config('config.js', array())); ?>; </script>
+    <script>var siteConfig = <?php echo json_encode(config('config.js', [])); ?>; </script>
     <script type="text/javascript" src="assets/js/jquery/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="assets/js/jquery/jquery.migrate.1.2.1.min.js"></script>
     <script type="text/javascript" src="assets/js/jquery/jquery-ui.min.js"></script>

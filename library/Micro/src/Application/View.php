@@ -165,7 +165,7 @@ class View
     {
         $view = clone $this;
 
-        $view->setData($data);
+        $view->addData($data);
 
         $view->setTemplate($template);
 

@@ -23,7 +23,7 @@ class Index extends Controller
 
             if ($password) {
                 $usersModel = new Users();
-                $user = $usersModel->find(identity()->id);
+                $user = $usersModel->find(identity()->getId());
                 if ($user) {
                     $user->password = Security::hash($password);
                     $usersModel->save($user);
