@@ -3,5 +3,35 @@
 <?php $this->section('title', 'Градове'); ?>
 
 <h1>Градове</h1>
-
-<?php echo $this->grid; ?>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Филтри</div>
+            <div class="panel-body">
+                <form class="form-horizontal filter" action="<?php echo route(); ?>" method="post">
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <?php echo $this->form->name->renderLabel(); ?>
+                            <?php echo $this->form->name; ?>
+                        </div>
+                        <div class="col-md-6">
+                            <?php echo $this->form->country_id->renderLabel(); ?>
+                            <?php echo $this->form->country_id; ?>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <input class="btn btn-primary" type="submit" name="filters[filter]" value="Филтриране" />
+                            <input class="btn btn-default" type="submit" name="filters[reset]" value="Нулиране" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <?php echo $this->grid; ?>
+    </div>
+</div>

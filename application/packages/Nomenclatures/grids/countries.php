@@ -42,13 +42,21 @@ return array(
                 'sourceField' => 'name',
                 'sortable' => 1,
                 'title' => 'Име',
-                'reset' => 0,
                 'params' => array(
                     'action' => 'edit',
                     'id' => ':id'
                 )
             )
         ),
+        'country_id' => [
+            'type' => 'pairs',
+            'options' => [
+                'sourceField' => 'country_id',
+                'title' => 'Държава',
+                'headStyle' => 'width: 15%',
+                'callable' => array(new \Nomenclatures\Model\Countries(), 'fetchPairs')
+            ]
+        ],
         'delete' => array(
             'type' => 'href',
             'options' => array(

@@ -107,7 +107,7 @@ class Router
      * @throws \Exception
      * @return string
      */
-    public function assemble($name, array $data = [], $reset = \false, $qsa = \false)
+    public function assemble($name, array $data = [], $reset = \false, $qsa = \true)
     {
         if ($name === \null && $this->currentRoute instanceof Route) {
             $name = $this->currentRoute->getName();
@@ -236,25 +236,25 @@ class Router
         }
 
         if (!isset($this->routes['admin'])) {
-            $this->map('admin', '/admin[/{package}][/{controller}][/{action}][/{id}]', function () {
+            $route = $this->map('admin', '/admin[/{package}][/{controller}][/{action}][/{id}]', function () {
                 $params = $this->getParams() + $this->getDefaults();
                 return ucfirst(Utils::camelize($params['package']))
-                        . '\\Controller\\Admin\\'
-                        . ucfirst(Utils::camelize($params['controller']))
-                        . '@'
-                        . lcfirst(Utils::camelize($params['action']));
-            })->setDefaults(['package' => 'App', 'controller' => 'Index', 'action' => 'index', 'id' => null]);
+                        . '\\Controller\\Admin\\' . ucfirst(Utils::camelize($params['controller']))
+                        . '@' . lcfirst(Utils::camelize($params['action']));
+            });
+            $route->setDefaults(['package' => 'App', 'controller' => 'Index', 'action' => 'index', 'id' => null]);
+            $route->setConditions(['package' => '[\w._-]+', 'controller' => '[\w._-]+', 'action' => '[\w._-]+']);
         }
 
         if (!isset($this->routes['default'])) {
-            $this->map('default', '/{package}[/{controller}][/{action}][/{id}]', function () {
+            $route = $this->map('default', '/{package}[/{controller}][/{action}][/{id}]', function () {
                 $params = $this->getParams() + $this->getDefaults();
                 return ucfirst(Utils::camelize($params['package']))
-                        . '\\Controller\\'
-                        . ucfirst(Utils::camelize($params['controller']))
-                        . '@'
-                        . lcfirst(Utils::camelize($params['action']));
-            })->setDefaults(['package' => 'App', 'controller' => 'Index', 'action' => 'index', 'id' => null]);
+                        . '\\Controller\\' . ucfirst(Utils::camelize($params['controller']))
+                        . '@' . lcfirst(Utils::camelize($params['action']));
+            });
+            $route->setDefaults(['package' => 'App', 'controller' => 'Index', 'action' => 'index', 'id' => null]);
+            $route->setConditions(['package' => '[\w._-]+', 'controller' => '[\w._-]+', 'action' => '[\w._-]+']);
         }
     }
 }

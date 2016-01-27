@@ -107,7 +107,7 @@ if (!function_exists('env')) {
 }
 
 if (!function_exists('route')) {
-    function route($name = \null, array $data = [], $reset = \false, $qsa = \false)
+    function route($name = \null, array $data = [], $reset = \false, $qsa = \true)
     {
         return app('router')->assemble($name, $data, $reset, $qsa);
     }

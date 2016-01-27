@@ -10,6 +10,7 @@ use Micro\Grid;
 use Micro\Application\Utils;
 use Micro\Model\ModelAbstract;
 use Micro\Model\EntityAbstract;
+use Micro\Http\Response;
 
 class Crud extends Controller
 {
@@ -57,8 +58,14 @@ class Crud extends Controller
         if ($this->request->isPost()) {
             $post = $this->request->getPost();
             if (isset($post['btnAdd'])) {
-                return new RedirectResponse(route(\null, ['action' => 'add', 'page' => \null]));
+                return new RedirectResponse(route(\null, ['action' => 'add', 'id' => \null, 'page' => \null]));
             }
+        }
+
+        $filters = $this->handleFilters();
+
+        if ($filters instanceof Response) {
+            return $filters;
         }
 
         $model = $this->getModel();
@@ -71,6 +78,8 @@ class Crud extends Controller
         $orderDir = strtoupper($this->request->getParam('orderDir', 'desc'));
 
         $model->addOrder($orderField, $orderDir);
+
+        $model->addFilters($filters);
 
         $grid = new Grid\Grid(
             $model,
@@ -88,7 +97,7 @@ class Crud extends Controller
 
         return new View(
             $controller . '/index',
-            ['grid' => $grid]
+            ['grid' => $grid, 'filters' => $filters]
         );
     }
 
@@ -121,7 +130,7 @@ class Crud extends Controller
 
                 $model->save($entity->setFromArray($post));
 
-                $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index'], \false, \true));
+                $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index', 'id' => \null]));
 
                 return $redirectResponse->withFlash(sprintf('Информацията е записана'));
             }
@@ -163,7 +172,7 @@ class Crud extends Controller
             $this->getModel()->getTable()->delete(['id IN (?)' => array_map('intval', $ids)]);
         }
 
-        $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index', 'id' => \null, 'ids' => \null], \false, \true));
+        $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index', 'id' => \null, 'ids' => \null]));
 
         return $redirectResponse->withFlash('Информацията е записана');
     }
@@ -179,5 +188,44 @@ class Crud extends Controller
         $controller = $this->request->getParam('controller');
 
         return new View($controller . '/view', ['item' => $item]);
+    }
+
+    protected function handleFilters($key = 'filters')
+    {
+        $filters = $this->request->getParam($key);
+
+        if ($this->request->isPost()) {
+
+            $post = $this->request->getPost($key, []);
+
+            if (isset($post['reset'])) {
+                return new RedirectResponse(route(\null, [$key => \null, 'id' => \null, 'page' => \null, 'orderDir' => \null, 'orderField' => \null]));
+            }
+
+            if (isset($post['filter'])) {
+                unset($post['filter']);
+                foreach ($post as $k => $v) {
+                    if (\trim((string) $v) === '') {
+                        unset($post[$k]);
+                    }
+                }
+                if (!empty($post)) {
+                    return new RedirectResponse(route(\null, [$key => Utils::base64urlEncode(http_build_query($post)), 'id' => \null, 'page' => \null, 'orderDir' => \null, 'orderField' => \null]));
+                } else {
+                    return new RedirectResponse(route(\null, [$key => \null, 'id' => \null, 'page' => \null, 'orderDir' => \null, 'orderField' => \null]));
+                }
+            }
+        }
+
+        if ($filters) {
+            parse_str(Utils::base64urlDecode($filters, \true), $filters);
+            if (empty($filters)) {
+                $filters = [];
+            }
+        } else {
+            $filters = [];
+        }
+
+        return $filters;
     }
 }

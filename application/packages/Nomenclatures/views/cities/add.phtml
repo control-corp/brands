@@ -1,14 +1,14 @@
 <?php $this->extend('layouts/default'); ?>
 
-<?php $this->section('title', ($this->item ? 'Редактиране' : 'Добавяне')); ?>
+<?php $this->section('title', ($this->item['id'] ? 'Редактиране' : 'Добавяне')); ?>
 
 <h1><?php echo ($this->item ? 'Редактиране' : 'Добавяне'); ?></h1>
 
 <div style="margin-bottom: 10px">
-    <a href="<?php echo route('default', ['action' => 'index']); ?>">назад към списъка</a>
+    <a href="<?php echo route(\null, ['action' => 'index', 'id' => \null]); ?>">назад към списъка</a>
 </div>
 
-<form method="post" action="<?php echo route('default'); ?>">
+<form method="post" action="<?php echo route(); ?>">
     <?php echo $this->form->name; ?>
     <?php echo $this->form->country_id; ?>
     <?php echo $this->form->protect; ?>

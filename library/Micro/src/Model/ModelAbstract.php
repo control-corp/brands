@@ -258,6 +258,33 @@ abstract class ModelAbstract implements AdapterInterface
         return $this;
     }
 
+    public function addFilters(array $params)
+    {
+        foreach ($params as $key => $value) {
+
+            $table = $this->getTableByColumn($key);
+
+            if (!$table) {
+                continue;
+            }
+
+            $metadata = $table->info('metadata');
+
+            switch ($metadata[$key]['DATA_TYPE']) {
+                case 'char':
+                case 'varchar':
+                case 'text':
+                    $this->addWhere($key, "{$value}%");
+                    break;
+                default:
+                    $this->addWhere($key, $value);
+                    break;
+            }
+        }
+
+        return $this;
+    }
+
     public function getItems($offset = \null, $itemCountPerPage = \null)
     {
         $select = $this->getJoinSelect();
@@ -535,8 +562,6 @@ abstract class ModelAbstract implements AdapterInterface
 
     public function fetchPairs(array $where = \null, array $fields = \null, array $order = \null)
     {
-        $this->resetSelect(\true);
-
         if ($where !== \null) {
             foreach ($where as $k => $v) {
                 if ($v instanceof Expr) {

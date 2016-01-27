@@ -7,8 +7,8 @@ use Micro\Grid\Column;
 class Href extends Column
 {
     protected $params = [];
-    protected $reset = \true;
-    protected $qsa = \false;
+    protected $reset = \false;
+    protected $qsa = \true;
     protected $hrefClass = '';
 
     public function setParams(array $params)

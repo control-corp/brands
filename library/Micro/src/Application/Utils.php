@@ -11,7 +11,7 @@ class Utils
 
     public static function camelize($value)
     {
-        $value = preg_replace('/[^a-z0-9-]/ius', '', $value);
+        $value = preg_replace('/[^a-z0-9-._]/ius', '', $value);
 
         if (strpos($value, '-') !== \false) {
             $value = str_replace(' ', '', ucwords(str_replace('-', ' ', $value)));
@@ -36,6 +36,17 @@ class Utils
     public static function safeUnserialize($s)
     {
         return unserialize(base64_decode($s));
+    }
+
+    public static function base64urlEncode($data)
+    {
+        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    }
+
+    public static function base64urlDecode($data, $strict = \false)
+    {
+        $mod = strlen($data) % 4;
+        return base64_decode(strtr($data, '-_', '+/') . ($mod ? substr('====', $mod) : ''), $strict);
     }
 
     public static function randomSentence($length, $alphabet = "abchefghjkmnpqrstuvwxyz0123456789")

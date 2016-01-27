@@ -30,7 +30,7 @@ class Index extends Controller
                 }
             }
 
-            $redirect = new RedirectResponse(route('profile'));
+            $redirect = new RedirectResponse(route());
 
             return $redirect->withFlash();
         }
