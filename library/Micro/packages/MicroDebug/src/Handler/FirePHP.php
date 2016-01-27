@@ -12,8 +12,8 @@ class FirePHP
             return;
         }
 
-        app('event')->attach('application.start', array($this, 'onApplicationStart'));
-        app('event')->attach('application.end', array($this, 'onApplicationEnd'));
+        app('event')->attach('application.start', [$this, 'onApplicationStart']);
+        app('event')->attach('application.end', [$this, 'onApplicationEnd']);
     }
 
     public function onApplicationStart()
@@ -30,14 +30,14 @@ class FirePHP
             $totalTime    = $profiler->getTotalElapsedSecs();
             $queryCount   = $profiler->getTotalNumQueries();
             $longestTime  = 0;
-            $longestQuery = null;
+            $longestQuery = \null;
 
-            $total = sprintf('%.6f', microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']);
+            $total = sprintf('%.6f', microtime(\true) - $_SERVER['REQUEST_TIME_FLOAT']);
 
             if ($profiler->getQueryProfiles()) {
                 $label = 'Executed ' . $queryCount . ' queries in ' . sprintf('%.6f', $totalTime) . ' seconds. (' . ($total ? round(($totalTime / $total) * 100, 2) : 0) . '%)';
-                $table = array();
-                $table[] = array('Time', 'Event', 'Parameters');
+                $table = [];
+                $table[] = ['Time', 'Event', 'Parameters'];
                 foreach ($profiler->getQueryProfiles() as $k => $query) {
                     if ($query->getElapsedSecs() > $longestTime) {
                         $longestTime  = $query->getElapsedSecs();
@@ -45,7 +45,7 @@ class FirePHP
                     }
                 }
                 foreach ($profiler->getQueryProfiles() as $k => $query) {
-                    $table[] = array(sprintf('%.6f', $query->getElapsedSecs()) . ($k == $longestQuery ? ' !!!' : ''), $query->getQuery(), ($params = $query->getQueryParams()) ? $params : null);
+                    $table[] = [sprintf('%.6f', $query->getElapsedSecs()) . ($k == $longestQuery ? ' !!!' : ''), $query->getQuery(), ($params = $query->getQueryParams()) ? $params : \null];
                 }
                 FirePHP\FirePHP::getInstance()->table('DB - ' . $label, $table);
             }

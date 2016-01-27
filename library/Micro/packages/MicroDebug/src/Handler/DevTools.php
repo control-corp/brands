@@ -18,8 +18,8 @@ class DevTools
             return;
         }
 
-        app('event')->attach('render.start', array($this, 'onRenderStart'));
-        app('event')->attach('application.end', array($this, 'onApplicationEnd'));
+        app('event')->attach('render.start', [$this, 'onRenderStart']);
+        app('event')->attach('application.end', [$this, 'onApplicationEnd']);
     }
 
     public function onRenderStart(Message $message)

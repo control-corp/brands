@@ -12,11 +12,11 @@ class Performance
             return;
         }
 
-        app('event')->attach('application.end', array($this, 'onApplicationEnd'));
+        app('event')->attach('application.end', [$this, 'onApplicationEnd']);
     }
 
     public function onApplicationEnd(Message $message)
     {
-        file_put_contents('application/data/classes.php', "<?php\nreturn " . var_export(\MicroLoader::getFiles(), true) . ";", LOCK_EX);
+        file_put_contents('application/data/classes.php', "<?php\nreturn " . var_export(\MicroLoader::getFiles(), \true) . ";", LOCK_EX);
     }
 }
