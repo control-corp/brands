@@ -2,7 +2,6 @@
 
 return [
     'debug' => [
-        'enabled' => 1,
         'handlers' => [
             'dev_tools' => 1,
             'fire_php' => 1,
@@ -13,7 +12,7 @@ return [
         'App' => 'application/packages/App',
         'Nomenclatures' => 'application/packages/Nomenclatures',
         'UserManagement' => 'application/packages/UserManagement',
-        'MicroDebug' => 'library/Micro/packages/MicroDebug'
+        //'MicroDebug' => 'library/Micro/packages/MicroDebug'
     ],
     'routes' => include 'application/config/routes.php',
     'error' => [

@@ -8,10 +8,6 @@ class Package extends BasePackage
 {
     public function boot()
     {
-        if (!config('debug.enabled', 0)) {
-            return;
-        }
-
         $handlers = [
             new Handler\FirePHP,
             new Handler\Performance,
