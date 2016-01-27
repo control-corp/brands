@@ -15,20 +15,22 @@ class Config
 
     public function load(array $data)
     {
-        static::$config = array_replace_recursive(static::$config, $data);
+        static::$config = \array_replace_recursive(static::$config, $data);
 
         return $this;
     }
 
-    public function get($prop, $default = \null)
+    public function get($prop = \null, $default = \null)
     {
         $config = static::$config;
 
-        foreach (explode('.', $prop) as $key) {
-            if (!isset($config[$key])) {
-                return $default;
+        if ($prop !== \null && \is_string($prop)) {
+            foreach (explode('.', $prop) as $key) {
+                if (!isset($config[$key])) {
+                    return $default;
+                }
+                $config = &$config[$key];
             }
-            $config = &$config[$key];
         }
 
         return $config;

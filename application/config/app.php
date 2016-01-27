@@ -1,14 +1,19 @@
 <?php
 
 return [
-    'application' => [
-        'debug' => 1,
-        'perfomance' => 0
+    'debug' => [
+        'enabled' => 1,
+        'handlers' => [
+            'dev_tools' => 1,
+            'fire_php' => 1,
+            'performance' => 0
+        ],
     ],
     'packages' => [
         'App' => 'application/packages/App',
         'Nomenclatures' => 'application/packages/Nomenclatures',
-        'UserManagement' => 'application/packages/UserManagement'
+        'UserManagement' => 'application/packages/UserManagement',
+        'Debug' => 'library/Micro/packages/Debug'
     ],
     'routes' => include 'application/config/routes.php',
     'error' => [

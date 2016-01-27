@@ -50,7 +50,15 @@ class Application extends Container
 
             $this->boot();
 
-            $response = $this->start();
+            if (($eventResponse = $this['event']->trigger('application.start', ['request' => $this['request']])) instanceof Http\Response) {
+                $response = $eventResponse;
+            } else {
+                $response = $this->start();
+            }
+
+            if (($eventResponse = $this['event']->trigger('application.end', ['response' => $response])) instanceof Http\Response) {
+                $response = $eventResponse;
+            }
 
             $response->send();
 
@@ -156,10 +164,6 @@ class Application extends Container
     {
         $response = $this['response'];
 
-        if (($eventResponse = $this['event']->trigger('application.start', compact('request', 'response'))) instanceof Http\Response) {
-            return $eventResponse;
-        }
-
         try {
 
             if (($route = $this['router']->match()) === \null) {
@@ -188,10 +192,6 @@ class Application extends Container
                     $response->setBody($e->getMessage());
                 }
             }
-        }
-
-        if (($eventResponse = $this['event']->trigger('application.end', compact('response'))) instanceof Http\Response) {
-            return $eventResponse;
         }
 
         return $response;
@@ -330,6 +330,10 @@ class Application extends Container
         $parts = explode('\\', $package);
 
         $packageResponse->injectPaths((array) package_path($parts[0], 'views'));
+
+        if (($eventResponse = $this['event']->trigger('render.start', ['view' => $packageResponse])) instanceof Http\Response) {
+            return $eventResponse;
+        }
 
         return $response->setBody((string) $packageResponse->render(\null, ($subRequest ? \false : \true)));
     }

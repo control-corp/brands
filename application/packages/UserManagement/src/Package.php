@@ -5,8 +5,6 @@ namespace UserManagement;
 use Micro\Application\Package as BasePackage;
 use Micro\Acl\Acl;
 use Micro\Auth\Auth;
-use Micro\Event\Message;
-use Micro\Database\Table\TableAbstract;
 
 class Package extends BasePackage
 {
@@ -15,12 +13,8 @@ class Package extends BasePackage
         $this->container['event']->attach('application.start', array($this, 'onApplicationStart'));
     }
 
-    public function onApplicationStart(Message $message)
+    public function onApplicationStart()
     {
-        TableAbstract::setDefaultAdapter($this->container['db']);
-
-        TableAbstract::setDefaultMetadataCache($this->container['cache']);
-
         /**
          * Acl
          */

@@ -69,7 +69,7 @@ if (!function_exists('package_path')) {
 }
 
 if (!function_exists('config')) {
-    function config($key, $value = \null)
+    function config($key = \null, $value = \null)
     {
         static $cache = [];
 
