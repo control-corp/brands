@@ -18,15 +18,19 @@ class DevTools
             return;
         }
 
+        app('event')->attach('application.start', [$this, 'onApplicationStart']);
         app('event')->attach('render.start', [$this, 'onRenderStart']);
         app('event')->attach('application.end', [$this, 'onApplicationEnd']);
     }
 
-    public function onRenderStart(Message $message)
+    public function onApplicationStart(Message $message)
     {
         $this->view = new View('debug');
         $this->view->addPath(package_path('MicroDebug', 'views'));
+    }
 
+    public function onRenderStart(Message $message)
+    {
         $view = $message->getParam('view');
         $view->section('styles', (string) $this->view->partial('css'));
     }
