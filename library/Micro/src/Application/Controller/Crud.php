@@ -8,7 +8,7 @@ use Micro\Http\Response\RedirectResponse;
 use Micro\Form\Form;
 use Micro\Grid;
 use Micro\Application\Utils;
-use Micro\Model\EntityAbstract;
+use Micro\Model\EntityInterface;
 use Micro\Http\Response;
 use Micro\Translator\Language\LanguageInterface;
 use Micro\Model\ModelInterface;
@@ -107,7 +107,7 @@ class Crud extends Controller
         );
     }
 
-    public function add(EntityAbstract $entity = \null)
+    public function add(EntityInterface $entity = \null)
     {
         $package = $this->request->getParam('package');
         $controller = $this->request->getParam('controller');

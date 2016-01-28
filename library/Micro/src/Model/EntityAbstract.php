@@ -4,7 +4,7 @@ namespace Micro\Model;
 
 use Micro\Application\Utils;
 
-abstract class EntityAbstract implements \ArrayAccess
+abstract class EntityAbstract implements EntityInterface
 {
     public function setFromArray(array $data)
     {
@@ -87,11 +87,19 @@ abstract class EntityAbstract implements \ArrayAccess
         }
     }
 
+    /**
+     * @param string $offset
+     * @return \null
+     */
     public function __get($offset)
     {
         return $this->offsetGet($offset);
     }
 
+    /**
+     * @param string $offset
+     * @param mixed $value
+     */
     public function __set($offset, $value)
     {
         if ($this->offsetExists($offset)) {

@@ -20,7 +20,7 @@ interface ModelInterface extends \Countable
 
     public function getItem();
 
-    public function save(EntityAbstract $entity);
+    public function save(EntityInterface $entity);
 
-    public function delete(EntityAbstract $entity);
+    public function delete(EntityInterface $entity);
 }

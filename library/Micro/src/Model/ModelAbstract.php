@@ -17,7 +17,7 @@ abstract class ModelAbstract implements AdapterInterface, ModelInterface
     protected $table;
 
     /**
-     * @var EntityAbstract
+     * @var EntityInterface
      */
     protected $entity;
 
@@ -59,14 +59,14 @@ abstract class ModelAbstract implements AdapterInterface, ModelInterface
     }
 
     /**
-     * @return EntityAbstract
+     * @return EntityInterface
      */
     public function createEntity()
     {
         $entity = new $this->entity;
 
-        if (!$entity instanceof EntityAbstract) {
-            throw new \Exception(get_class($this) . ' Entity is not instanceof ' . EntityAbstract::class);
+        if (!$entity instanceof EntityInterface) {
+            throw new \Exception(get_class($this) . ' Entity is not instanceof ' . EntityInterface::class);
         }
 
         return $entity;
@@ -408,7 +408,7 @@ abstract class ModelAbstract implements AdapterInterface, ModelInterface
         return $count;
     }
 
-    public function save(EntityAbstract $entity)
+    public function save(EntityInterface $entity)
     {
         $this->trigger('beforesave', compact('entity'));
 
@@ -528,7 +528,7 @@ abstract class ModelAbstract implements AdapterInterface, ModelInterface
         return current($this->getTable()->info('primary'));
     }
 
-    public function delete(EntityAbstract $entity)
+    public function delete(EntityInterface $entity)
     {
         return $this->getTable()->delete(['id = ?' => $entity[$this->getIdentifier()]]);
     }
