@@ -9,4 +9,5 @@ class Country extends EntityAbstract
     protected $id;
     protected $language_id;
     protected $name;
+    protected $active = 1;
 }

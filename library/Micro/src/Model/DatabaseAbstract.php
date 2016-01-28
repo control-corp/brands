@@ -533,6 +533,25 @@ abstract class DatabaseAbstract implements AdapterInterface, ModelInterface
         return $this->getTable()->delete(['id = ?' => $entity[$this->getIdentifier()]]);
     }
 
+    /**
+     * @param $ids
+     * @param $active
+     * @return int
+     * @throws \Exception
+     */
+    public function activate(EntityInterface $entity, $active)
+    {
+        $cols = $this->getTable()->info('cols');
+
+        if (!in_array('active', $cols)) {
+            return 0;
+        }
+
+        $affected = $this->getTable()->update(array('active' => ((int) $active ? 1 : 0)), array($this->getIdentifier() . ' = ?' => $entity[$this->getIdentifier()]));
+
+        return $affected;
+    }
+
     public function rowToObject($row )
     {
         if (!is_array($row) && !$row instanceof RowAbstract) {

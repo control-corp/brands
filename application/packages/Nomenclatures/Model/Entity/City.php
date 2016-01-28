@@ -10,4 +10,5 @@ class City extends EntityAbstract
     protected $country_id;
     protected $language_id;
     protected $name;
+    protected $active = 1;
 }

@@ -37,4 +37,6 @@ interface ModelInterface extends \Countable
     public function save(EntityInterface $entity);
 
     public function delete(EntityInterface $entity);
+
+    public function activate(EntityInterface $entity, $activate);
 }

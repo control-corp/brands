@@ -8,6 +8,24 @@ return array(
             'value' => 'Добавяне',
             'class' => 'btn btn-primary'
         ),
+        'btnActivate' => array(
+            'value' => 'Активиране',
+            'class' => 'btn btn-success',
+            'attributes' => array(
+                'data-rel' => 'ids[]',
+                'data-action' => app('router')->assemble(\null, ['action' => 'activate']),
+                'data-confirm' => 'Сигурни ли сте, че искате да активирате избраните записи?'
+            )
+        ),
+        'btnDeactivate' => array(
+            'value' => 'Деактивиране',
+            'class' => 'btn btn-warning',
+            'attributes' => array(
+                'data-rel' => 'ids[]',
+                'data-action' => app('router')->assemble(\null, ['action' => 'deactivate']),
+                'data-confirm' => 'Сигурни ли сте, че искате да деактивирате избраните записи?'
+            )
+        ),
         'btnDelete' => array(
             'value' => 'Изтриване',
             'class' => 'btn btn-danger',
@@ -46,6 +64,17 @@ return array(
                     'action' => 'edit',
                     'id' => ':id'
                 )
+            )
+        ),
+        'active' => array(
+            'type' => 'boolean',
+            'options' => array(
+                'sourceField' => 'active',
+                'headStyle' => 'width: 5%',
+                'title' => 'Активност',
+                'class' => 'text-center',
+                'true' => '<span class="fa fa-check"></span>',
+                'false' => '<span class="fa fa-ban"></span>',
             )
         ),
         'delete' => array(

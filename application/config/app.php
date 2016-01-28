@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'acl' => 1,
+    'acl' => 0,
     'debug' => [
         'handlers' => [
             'dev_tools' => 1,

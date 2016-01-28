@@ -41,6 +41,17 @@ $config['columns'] = array(
             'callable' => array(new \Nomenclatures\Model\Countries(), 'fetchPairs')
         ]
     ],
+    'active' => array(
+        'type' => 'boolean',
+        'options' => array(
+            'sourceField' => 'active',
+            'headStyle' => 'width: 5%',
+            'title' => 'Активност',
+            'class' => 'text-center',
+            'true' => '<span class="fa fa-check"></span>',
+            'false' => '<span class="fa fa-ban"></span>',
+        )
+    ),
     'delete' => array(
         'type' => 'href',
         'options' => array(

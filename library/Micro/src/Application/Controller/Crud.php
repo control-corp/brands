@@ -200,6 +200,44 @@ class Crud extends Controller
         return new View($controller . '/view', ['item' => $item]);
     }
 
+    /**
+     * Activate item Action
+     * @param number $active
+     */
+    public function activateAction($active = 1)
+    {
+        $id = (int) $this->request->getParam('id');
+        $ids = $this->request->getParam('ids', []);
+
+        if ($id) {
+            $ids = array($id);
+        }
+
+        $ids = array_filter($ids);
+
+        $affected = 0;
+
+        if (!empty($ids)) {
+            $this->getModel()->addWhere('id', $ids);
+            $items = $this->getModel()->getItems();
+            foreach ($items as $item) {
+                $affected += $this->getModel()->activate($item, $active);
+            }
+        }
+
+        $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index', 'id' => \null, 'ids' => \null]));
+
+        return $redirectResponse->withFlash('Информацията е записана');
+    }
+
+    /**
+     * Deactivate item Action
+     */
+    public function deactivateAction()
+    {
+        return $this->activateAction(0);
+    }
+
     protected function handleFilters($key = 'filters')
     {
         $filters = $this->request->getParam($key);
