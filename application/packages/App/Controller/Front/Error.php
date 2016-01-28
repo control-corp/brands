@@ -10,7 +10,7 @@ class Error extends Controller
 {
     const ERROR = 'Моля, опитайте по-късно!';
 
-    public function index()
+    public function indexAction()
     {
         $exception = $this->request->getParam('exception');
 

@@ -6,7 +6,7 @@ use Micro\Application\Controller;
 
 class Index extends Controller
 {
-    public function index()
+    public function indexAction()
     {
     }
 }

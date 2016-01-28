@@ -54,7 +54,7 @@ class Crud extends Controller
         return $this->model;
     }
 
-    public function index()
+    public function indexAction()
     {
         $package = $this->request->getParam('package');
         $controller = $this->request->getParam('controller');
@@ -107,7 +107,7 @@ class Crud extends Controller
         );
     }
 
-    public function add(EntityInterface $entity = \null)
+    public function addAction(EntityInterface $entity = \null)
     {
         $package = $this->request->getParam('package');
         $controller = $this->request->getParam('controller');
@@ -146,7 +146,7 @@ class Crud extends Controller
         );
     }
 
-    public function edit()
+    public function editAction()
     {
         $model = $this->getModel();
 
@@ -154,16 +154,16 @@ class Crud extends Controller
             $model->addJoinCondition('language_id', $language->getId());
         }
 
-        $item = $model->find((int) $this->request->getParam('id', 0));
+        $entity = $model->find((int) $this->request->getParam('id', 0));
 
-        if ($item === \null) {
+        if ($entity === \null) {
             throw new \Exception(sprintf('Записът не е намерен'), 404);
         }
 
-        return $this->add($item);
+        return $this->addAction($entity);
     }
 
-    public function delete()
+    public function deleteAction()
     {
         $id = (int) $this->request->getParam('id', 0);
         $ids = $this->request->getParam('ids', []);
@@ -187,7 +187,7 @@ class Crud extends Controller
         return $redirectResponse->withFlash('Информацията е записана');
     }
 
-    public function view()
+    public function viewAction()
     {
         $item = $this->getModel()->find((int) $this->request->getParam('id', 0));
 

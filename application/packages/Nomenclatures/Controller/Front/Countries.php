@@ -8,9 +8,9 @@ use Micro\Form\Form;
 
 class Countries extends Crud
 {
-    public function index()
+    public function indexAction()
     {
-        if (($view = parent::index()) instanceof RedirectResponse) {
+        if (($view = parent::indexAction()) instanceof RedirectResponse) {
             return $view;
         }
 

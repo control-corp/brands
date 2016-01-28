@@ -11,7 +11,7 @@ use UserManagement\Model\Users;
 
 class Index extends Controller
 {
-    public function profile()
+    public function profileAction()
     {
         if (!identity()) {
             return new RedirectResponse(route('login'));
@@ -36,7 +36,7 @@ class Index extends Controller
         }
     }
 
-    public function register()
+    public function registerAction()
     {
         $form = new Form(package_path('UserManagement', 'Resources/forms/register.php'));
 
@@ -57,7 +57,7 @@ class Index extends Controller
         return ['form' => $form];
     }
 
-    public function login()
+    public function loginAction()
     {
         $form = new Form(package_path('UserManagement', 'Resources/forms/login.php'));
 
@@ -76,7 +76,7 @@ class Index extends Controller
         return ['form' => $form];
     }
 
-    public function logout()
+    public function logoutAction()
     {
         Auth::getInstance()->clearIdentity();
 

@@ -312,8 +312,10 @@ class Application extends Container
 
         $packageInstance = new $package($request, $response);
 
-        if (!method_exists($packageInstance, $action)) {
-            throw new \Exception('[' . __METHOD__ . '] Method "' . $action . '" not found in "' . $package . '"', 404);
+        $actionMethod = lcfirst(Utils::camelize($action)) . 'Action';
+
+        if (!method_exists($packageInstance, $actionMethod)) {
+            throw new \Exception('[' . __METHOD__ . '] Method "' . $actionMethod . '" not found in "' . $package . '"', 404);
         }
 
         if ($packageInstance instanceof ContainerAwareInterface) {
@@ -324,7 +326,7 @@ class Application extends Container
             $packageInstance->init();
         }
 
-        if (($packageResponse = $packageInstance->$action()) instanceof Http\Response) {
+        if (($packageResponse = $packageInstance->$actionMethod()) instanceof Http\Response) {
             return $packageResponse;
         }
 

@@ -24,10 +24,13 @@ class Files
                                 $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
                                 foreach ($methods as $method) {
                                     $name = $method->name;
-                                    if (substr($name, 0, 3) === 'set' || substr($name, 0, 3) === 'get' || substr($name, 0, 1) === '_' || $name === 'init') {
+                                    if ('Action' !== substr($name, -6)) {
 										continue;
                                     }
-                                    $resources[$class . '@' . $method->name] = \true;
+                                    $resources[$class . '@' . substr($name, 0, -6)] = [
+                                        'doc' => static::parseDocBlock($method->getDocComment()),
+                                        'privilege' => ['GET', 'POST']
+                                    ];
                                 }
                             }
                         }
@@ -37,6 +40,38 @@ class Files
         }
 
         return $resources;
+    }
+
+    public static function parseDocBlock($docComment)
+    {
+        $lines = [];
+
+        // First remove doc block line starters
+        $docComment = preg_replace('#[ \t]*(?:\/\*\*|\*\/|\*)?[ ]{0,1}(.*)?#', '$1', $docComment);
+        $docComment = ltrim($docComment, "\r\n");
+
+        // Next parse out the tags and descriptions
+        $parsedDocComment = $docComment;
+        $lineNumber = $firstBlandLineEncountered = 0;
+
+        while (($newlinePos = strpos($parsedDocComment, "\n")) !== \false) {
+            $lineNumber++;
+            $line = substr($parsedDocComment, 0, $newlinePos);
+
+            if ((strpos($line, '@') === 0) && (preg_match('#^(@\w+.*?)(\n)(?:@|\r?\n|$)#s', $parsedDocComment, $matches))) {
+                if (preg_match('#^@(\w+)(?:\s+([^\s].*)|$)?#', $matches[1], $submatches)) {
+                    $lines[$submatches[1]] = $submatches[2];
+                }
+                $parsedDocComment = str_replace($matches[1] . $matches[2], '', $parsedDocComment);
+            } else {
+                if ($line == '') {
+                    $firstBlandLineEncountered = \true;
+                }
+                $parsedDocComment = substr($parsedDocComment, $newlinePos + 1);
+            }
+        }
+
+        return $lines;
     }
 
     public static function getClassFromFile($path_to_file)

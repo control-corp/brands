@@ -8,7 +8,7 @@ use Micro\Helper\Files;
 
 class Rights extends Controller
 {
-    public function index()
+    public function indexAction()
     {
         return new View(
             'rights/index',

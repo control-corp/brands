@@ -13,8 +13,9 @@ foreach ($this->resources as $resource => $privilege) :
         $currentPackage = $package;
         echo '<h2>' . $package . '</h2>';
     }
+    $translate = isset($privilege['doc']['translate']) ? $privilege['doc']['translate'] : $parts;
 ?>
 <div>
-    <input type="checkbox" name="resources[]" value="<?php echo $resource; ?>" /> <?php echo $parts; ?>
+    <input type="checkbox" name="resources[]" value="<?php echo $resource; ?>" /> <?php echo $translate; ?><?php echo $translate !== $parts ? ' (' . $parts . ')' : ''; ?>
 </div>
 <?php endforeach; ?>
