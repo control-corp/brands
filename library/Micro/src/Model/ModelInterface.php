@@ -10,7 +10,11 @@ interface ModelInterface extends \Countable
 
     public function find();
 
+    public function addWhere($field, $value = \null);
+
     public function addOrder($field, $direction = \null);
+
+    public function setOrder(array $order);
 
     public function addJoinCondition($field, $value);
 
@@ -19,6 +23,16 @@ interface ModelInterface extends \Countable
     public function getItems($offset = \null, $itemCountPerPage = \null);
 
     public function getItem();
+
+    public function fetchPairs(array $where = \null, array $fields = \null, array $order = \null);
+
+    public function beginTransaction();
+
+    public function commit();
+
+    public function rollback();
+
+    public function trigger($event, array $params = \null);
 
     public function save(EntityInterface $entity);
 
