@@ -9,7 +9,7 @@ use Micro\Paginator\Adapter\AdapterInterface;
 use Micro\Database\Table\Row\RowAbstract;
 use Micro\Database\Table\Rowset\RowsetAbstract;
 
-abstract class ModelAbstract implements AdapterInterface
+abstract class ModelAbstract implements AdapterInterface, ModelInterface
 {
     /**
      * @var TableAbstract
@@ -135,8 +135,12 @@ abstract class ModelAbstract implements AdapterInterface
         return $this;
     }
 
-    public function addOrder($field, $direction = 'ASC')
+    public function addOrder($field, $direction = \null)
     {
+        if ($direction === \null) {
+            $direction = 'ASC';
+        }
+
         $this->selectIsDirty = \true;
 
         if ($field instanceof Expr) {
@@ -517,6 +521,16 @@ abstract class ModelAbstract implements AdapterInterface
         $data = array_merge($data, $row->toArray());
 
         return $data;
+    }
+
+    public function getIdentifier()
+    {
+        return current($this->getTable()->info('primary'));
+    }
+
+    public function delete(EntityAbstract $entity)
+    {
+        return $this->getTable()->delete(['id = ?' => $entity[$this->getIdentifier()]]);
     }
 
     public function rowToObject($row )

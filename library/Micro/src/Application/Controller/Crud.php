@@ -8,20 +8,23 @@ use Micro\Http\Response\RedirectResponse;
 use Micro\Form\Form;
 use Micro\Grid;
 use Micro\Application\Utils;
-use Micro\Model\ModelAbstract;
 use Micro\Model\EntityAbstract;
 use Micro\Http\Response;
 use Micro\Translator\Language\LanguageInterface;
+use Micro\Model\ModelInterface;
 
 class Crud extends Controller
 {
     protected $ipp = 10;
 
+    /**
+     * @var \Micro\Model\ModelInterface
+     */
     protected $model;
 
     /**
      * @throws \Exception
-     * @return \Micro\Model\ModelAbstract
+     * @return \Micro\Model\ModelInterface
      */
     public function getModel()
     {
@@ -38,12 +41,12 @@ class Crud extends Controller
             $this->model = new $this->model;
         }
 
-        if (!is_object($this->model) || !$this->model instanceof ModelAbstract) {
+        if (!$this->model instanceof ModelInterface) {
             throw new \Exception(
                 sprintf(
                     'Model [%s] must be instanceof %s',
                     (is_object($this->model) ? get_class($this->model) : gettype($this->model)),
-                    ModelAbstract::class
+                    ModelInterface::class
                 )
             );
         }
@@ -77,7 +80,7 @@ class Crud extends Controller
 
         $ipp = max($this->ipp, $this->request->getParam('ipp', $this->ipp));
         $page = max(1, $this->request->getParam('page', 1));
-        $orderField = $this->request->getParam('orderField', current($model->getTable()->info('primary')));
+        $orderField = $this->request->getParam('orderField', $model->getIdentifier());
         $orderDir = strtoupper($this->request->getParam('orderDir', 'desc'));
 
         $model->addOrder($orderField, $orderDir);
@@ -125,10 +128,8 @@ class Crud extends Controller
 
             if ($form->isValid($post)) {
 
-                if (\null !== ($table = $model->getTableByColumn('language_id'))) {
-                    if (!isset($post['language_id']) && ($language = app('language')) instanceof LanguageInterface) {
-                        $post['language_id'] = $language->getId();
-                    }
+                if (!isset($post['language_id']) && ($language = app('language')) instanceof LanguageInterface) {
+                    $post['language_id'] = $language->getId();
                 }
 
                 $model->save($entity->setFromArray($post));
@@ -174,7 +175,11 @@ class Crud extends Controller
         $ids = array_filter($ids);
 
         if (!empty($ids)) {
-            $this->getModel()->getTable()->delete(['id IN (?)' => array_map('intval', $ids)]);
+            $this->getModel()->addFilters(['id' => $ids]);
+            $items = $this->getModel()->getItems();
+            foreach ($items as $item) {
+                $this->getModel()->delete($item);
+            }
         }
 
         $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index', 'id' => \null, 'ids' => \null]));
