@@ -33,18 +33,24 @@ class Href extends Column
 
     public function __toString()
     {
-        $params = $this->params;
-        $route  = isset($params['route']) ? $params['route'] : \null;
+        try {
 
-        unset($params['route']);
+            $params = $this->params;
+            $route  = isset($params['route']) ? $params['route'] : \null;
 
-        foreach ($params as $k => $v) {
-            if (substr($v, 0, 1) === ':') {
-                $field = substr($v, 1);
-                $params[$k] = $this->getCurrentValue($field);
+            unset($params['route']);
+
+            foreach ($params as $k => $v) {
+                if (substr($v, 0, 1) === ':') {
+                    $field = substr($v, 1);
+                    $params[$k] = $this->getCurrentValue($field);
+                }
             }
-        }
+            return '<a' . ($this->hrefClass ? ' class="' . $this->hrefClass . '"' : '') . ' href="' . app('router')->assemble($route, $params, $this->reset, $this->qsa) . '">' . parent::__toString() . '</a>';
 
-        return '<a' . ($this->hrefClass ? ' class="' . $this->hrefClass . '"' : '') . ' href="' . app('router')->assemble($route, $params, $this->reset, $this->qsa) . '">' . parent::__toString() . '</a>';
+        } catch (\Exception $e) {
+
+            return $e->getMessage();
+        }
     }
 }

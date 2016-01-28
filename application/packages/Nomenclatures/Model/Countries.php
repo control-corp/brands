@@ -2,9 +2,9 @@
 
 namespace Nomenclatures\Model;
 
-use Micro\Model\ModelAbstract;
+use Micro\Model\DatabaseAbstract;
 
-class Countries extends ModelAbstract
+class Countries extends DatabaseAbstract
 {
     protected $table = Table\Countries::class;
 

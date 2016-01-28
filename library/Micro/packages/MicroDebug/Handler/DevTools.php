@@ -4,6 +4,7 @@ namespace MicroDebug\Handler;
 
 use Micro\Event\Message;
 use Micro\Application\View;
+use Micro\Http\Response\HtmlResponse;
 
 class DevTools
 {
@@ -39,12 +40,11 @@ class DevTools
     {
         $response = $message->getParam('response');
 
-        $b = $response->getBody();
-
-        $b = explode('</body>', $b);
-
-        $b[0] .= $this->view->render() . '</body>';
-
-        $response->setBody(implode('', $b));
+        if ($response instanceof HtmlResponse) {
+            $b = $response->getBody();
+            $b = explode('</body>', $b);
+            $b[0] .= $this->view->render() . '</body>';
+            $response->setBody(implode('', $b));
+        }
     }
 }

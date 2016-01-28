@@ -9,7 +9,7 @@ use Micro\Paginator\Adapter\AdapterInterface;
 use Micro\Database\Table\Row\RowAbstract;
 use Micro\Database\Table\Rowset\RowsetAbstract;
 
-abstract class ModelAbstract implements AdapterInterface, ModelInterface
+abstract class DatabaseAbstract implements AdapterInterface, ModelInterface
 {
     /**
      * @var TableAbstract

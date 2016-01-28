@@ -47,7 +47,7 @@ class Index extends Controller
                 $user = $usersModel->createEntity()->setFromArray(array(
                     'username' => $data['username'],
                     'password' => Security::hash($data['password']),
-                    'group' => 2
+                    'group_id' => 2
                 ));
                 $usersModel->save($user);
                 return (new RedirectResponse(route('login')))->withFlash('Успешно се регистрирахте');

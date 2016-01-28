@@ -2,11 +2,11 @@
 
 namespace UserManagement\Model;
 
-use Micro\Model\ModelAbstract;
 use Micro\Application\Security;
 use Micro\Auth\Auth;
+use Micro\Model\DatabaseAbstract;
 
-class Users extends ModelAbstract
+class Users extends DatabaseAbstract
 {
     protected $table = Table\Users::class;
 
