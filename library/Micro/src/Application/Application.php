@@ -10,6 +10,7 @@ use Micro\Cache\Cache;
 use Micro\Session\Session;
 use Micro\Database\Database;
 use Micro\Acl\Acl;
+use Micro\Translator\Translator;
 
 class Application extends Container
 {
@@ -33,7 +34,7 @@ class Application extends Container
             throw new \InvalidArgumentException('[' . __METHOD__ . '] Config param must be valid file or array', 500);
         }
 
-        \MicroLoader::addPath($config->get('packages', []), \null, 'src');
+        \MicroLoader::addPath($config->get('packages', []), \null);
 
         $this['config'] = $config;
 
@@ -98,7 +99,7 @@ class Application extends Container
             };
         }
 
-        if (!isset($this['acl'])) {
+        if ($this['config']->get('acl', \true) && !isset($this['acl'])) {
             $this['acl'] = function () {
                 return new Acl();
             };
@@ -145,6 +146,15 @@ class Application extends Container
                 $default  = $app['config']->get('db.default');
                 $adapters = $app['config']->get('db.adapters', []);
                 return Database::factory($adapters[$default]['adapter'], $adapters[$default]);
+            };
+        }
+
+        /**
+         * Create default translator
+         */
+        if (!isset($this['translator'])) {
+            $this['translator'] = function ($app) {
+                return new Translator();
             };
         }
 
@@ -330,7 +340,7 @@ class Application extends Container
         $parts = explode('\\', $package);
 
         if ($packageResponse instanceof View) {
-            $packageResponse->injectPaths((array) package_path($parts[0], 'views'));
+            $packageResponse->injectPaths((array) package_path($parts[0], 'Resources/views'));
             if (($eventResponse = $this['event']->trigger('render.start', ['view' => $packageResponse])) instanceof Http\Response) {
                 return $eventResponse;
             }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Front;
 
 use Micro\Application\Controller;
 use Micro\Application\View;
@@ -27,6 +27,9 @@ class Error extends Controller
 
         $this->response->setCode($code);
 
-        return new View('error', ['exception' => $exception, 'message' => $message]);
+        return new View('error', [
+            'exception' => $exception,
+            'message' => $message
+        ]);
     }
 }

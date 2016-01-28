@@ -1,12 +1,12 @@
 <?php
 
-namespace Nomenclatures\Controller;
+namespace Nomenclatures\Controller\Front;
 
 use Micro\Application\Controller\Crud;
 use Micro\Http\Response;
 use Micro\Form\Form;
 
-class Countries extends Crud
+class Cities extends Crud
 {
     public function index()
     {
@@ -14,7 +14,7 @@ class Countries extends Crud
             return $response;
         }
 
-        $form = new Form(package_path(current_package(), 'forms/countries-filters.php'));
+        $form = new Form(package_path('Nomenclatures', 'Resources/forms/cities-filters.php'));
 
         $form->populate($response->filters);
 

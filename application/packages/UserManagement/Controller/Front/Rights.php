@@ -1,6 +1,6 @@
 <?php
 
-namespace UserManagement\Controller;
+namespace UserManagement\Controller\Front;
 
 use Micro\Application\Controller;
 use Micro\Application\View;

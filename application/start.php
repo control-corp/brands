@@ -13,6 +13,8 @@ if ((file_exists($classes = 'application/data/classes.php')) === \true) {
 
 $app = new Application(include 'application/config/app.php');
 
-$app['language'] = 2;
+$app['language'] = function ($c) {
+    return new \App\Model\Entity\Language(1, 'bg');
+};
 
 return $app;

@@ -19,7 +19,7 @@ class Package extends BasePackage
          * Acl
          */
         Acl::setResolver(function () {
-            return include __DIR__ . '/../rights.php';
+            return include __DIR__ . '/Resources/rights.php';
         });
 
         /**

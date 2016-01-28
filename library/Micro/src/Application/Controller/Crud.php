@@ -11,6 +11,7 @@ use Micro\Application\Utils;
 use Micro\Model\ModelAbstract;
 use Micro\Model\EntityAbstract;
 use Micro\Http\Response;
+use Micro\Translator\Language\LanguageInterface;
 
 class Crud extends Controller
 {
@@ -70,7 +71,9 @@ class Crud extends Controller
 
         $model = $this->getModel();
 
-        $model->addJoinCondition('language_id', app('language'));
+        if (($language = app('language')) instanceof LanguageInterface) {
+            $model->addJoinCondition('language_id', $language->getId());
+        }
 
         $ipp = max($this->ipp, $this->request->getParam('ipp', $this->ipp));
         $page = max(1, $this->request->getParam('page', 1));
@@ -83,7 +86,7 @@ class Crud extends Controller
 
         $grid = new Grid\Grid(
             $model,
-            package_path(ucfirst(Utils::camelize($package)), 'grids/' . $controller . '.php')
+            package_path(ucfirst(Utils::camelize($package)), '/Resources/grids/' . $controller . '.php')
         );
 
         $column = $grid->getColumn($orderField);
@@ -106,7 +109,7 @@ class Crud extends Controller
         $package = $this->request->getParam('package');
         $controller = $this->request->getParam('controller');
 
-        $form = new Form(package_path(ucfirst(Utils::camelize($package)), 'forms/' . $controller . '-add.php'));
+        $form = new Form(package_path(ucfirst(Utils::camelize($package)), '/Resources/forms/' . $controller . '-add.php'));
 
         $model = $this->getModel();
 
@@ -123,8 +126,8 @@ class Crud extends Controller
             if ($form->isValid($post)) {
 
                 if (\null !== ($table = $model->getTableByColumn('language_id'))) {
-                    if (!isset($post['language_id'])) {
-                        $post['language_id'] = app('language');
+                    if (!isset($post['language_id']) && ($language = app('language')) instanceof LanguageInterface) {
+                        $post['language_id'] = $language->getId();
                     }
                 }
 
@@ -146,7 +149,9 @@ class Crud extends Controller
     {
         $model = $this->getModel();
 
-        $model->addJoinCondition('language_id', app('language'));
+        if (($language = app('language')) instanceof LanguageInterface) {
+            $model->addJoinCondition('language_id', $language->getId());
+        }
 
         $item = $model->find((int) $this->request->getParam('id', 0));
 

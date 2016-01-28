@@ -1,6 +1,6 @@
 <?php
 
-namespace UserManagement\Controller;
+namespace UserManagement\Controller\Front;
 
 use Micro\Application\Controller;
 use Micro\Auth\Auth;
@@ -38,7 +38,7 @@ class Index extends Controller
 
     public function register()
     {
-        $form = new Form(package_path('UserManagement', 'forms/register.php'));
+        $form = new Form(package_path('UserManagement', 'Resources/forms/register.php'));
 
         if ($this->request->isPost()) {
             $data = $this->request->getPost();
@@ -47,7 +47,7 @@ class Index extends Controller
                 $user = $usersModel->createEntity()->setFromArray(array(
                     'username' => $data['username'],
                     'password' => Security::hash($data['password']),
-                    'group_id' => 2
+                    'group' => 2
                 ));
                 $usersModel->save($user);
                 return (new RedirectResponse(route('login')))->withFlash('Успешно се регистрирахте');
@@ -59,7 +59,7 @@ class Index extends Controller
 
     public function login()
     {
-        $form = new Form(package_path('UserManagement', 'forms/login.php'));
+        $form = new Form(package_path('UserManagement', 'Resources/forms/login.php'));
 
         if ($this->request->isPost()) {
             $data = $this->request->getPost();

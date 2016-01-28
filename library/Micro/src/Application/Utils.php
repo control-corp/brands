@@ -49,6 +49,19 @@ class Utils
         return base64_decode(strtr($data, '-_', '+/') . ($mod ? substr('====', $mod) : ''), $strict);
     }
 
+    public static function uniord($u)
+    {
+        $k = mb_convert_encoding($u, 'UCS-2LE', 'UTF-8');
+        $k1 = ord(substr($k, 0, 1));
+        $k2 = ord(substr($k, 1, 1));
+        return $k2 * 256 + $k1;
+    }
+
+    public static function unichr($intval)
+    {
+        return mb_convert_encoding(pack('n', $intval), 'UTF-8', 'UTF-16BE');
+    }
+
     public static function randomSentence($length, $alphabet = "abchefghjkmnpqrstuvwxyz0123456789")
     {
         $length = (int) $length;
@@ -67,6 +80,11 @@ class Utils
         }
 
         return $string;
+    }
+
+    public static function randomNumbers($length)
+    {
+        return static::randomSentence($length, '0123456789');
     }
 
     public static function buildOptions($optionsInput, $value = 0, $emptyOption = '', $emptyOptionValue = "")
@@ -93,6 +111,17 @@ class Utils
         }
 
         return $options;
+    }
+
+    public static function globRecursive($pattern, $flags = 0)
+    {
+        $files = glob($pattern, $flags);
+
+        foreach (glob(dirname($pattern) . '/*', GLOB_ONLYDIR | GLOB_NOSORT) as $dir) {
+            $files = array_merge($files, static::globRecursive($dir . '/' . basename($pattern), $flags));
+        }
+
+        return $files;
     }
 
     public static function iteratorToArray($iterator, $recursive = \true)

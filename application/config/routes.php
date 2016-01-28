@@ -3,30 +3,30 @@
 return [
     'home' => [
         'pattern' => '/',
-        'handler' => 'App\Controller\Index@index'
+        'handler' => 'App\Controller\Front\Index@index'
     ],
     'error' => [
         'pattern' => '/error',
-        'handler' => 'App\Controller\Error@index'
+        'handler' => 'App\Controller\Front\Error@index'
     ],
     'login' => [
         'pattern' => '/login',
-        'handler' => 'UserManagement\Controller\Index@login'
+        'handler' => 'UserManagement\Controller\Front\Index@login'
     ],
     'logout' => [
         'pattern' => '/logout',
-        'handler' => 'UserManagement\Controller\Index@logout'
+        'handler' => 'UserManagement\Controller\Front\Index@logout'
     ],
     'register' => [
         'pattern' => '/register',
-        'handler' => 'UserManagement\Controller\Index@register'
+        'handler' => 'UserManagement\Controller\Front\Index@register'
     ],
     'profile' => [
         'pattern' => '/profile',
-        'handler' => 'UserManagement\Controller\Index@profile'
+        'handler' => 'UserManagement\Controller\Front\Index@profile'
     ],
     'rights' => [
         'pattern' => '/rights',
-        'handler' => 'UserManagement\Controller\Rights@index'
+        'handler' => 'UserManagement\Controller\Front\Rights@index'
     ]
 ];

@@ -288,6 +288,14 @@ if (!function_exists('forward')) {
         return app()->resolve($package, $req, clone app('response'), $subRequest);
     }
 }
+
+if (!function_exists('widget')) {
+    function widget($package, array $params = [])
+    {
+		return forward($package, $params, \true)->getBody();
+    }
+}
+
 if (!function_exists('pagination')) {
     function pagination(Paginator $paginator, $partial = 'paginator', array $params = \null, View $view = \null)
     {
@@ -302,5 +310,18 @@ if (!function_exists('pagination')) {
         }
 
         return $view->partial($partial, $pages);
+    }
+}
+
+if (!function_exists('translate')) {
+    function translate($key, $code = \null)
+    {
+        static $cache;
+
+        if (isset($cache[$key . (string) $code])) {
+            return $cache[$key];
+        }
+
+        return $cache[$key . (string) $code] = app('translator')->translate($key, $code);
     }
 }

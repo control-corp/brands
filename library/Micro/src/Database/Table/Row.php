@@ -4,6 +4,7 @@ namespace Micro\Database\Table;
 
 use Micro\Database\Expr;
 use Micro\Auth\Auth;
+use Micro\Auth\Identity;
 
 class Row extends Row\RowAbstract
 {
@@ -45,7 +46,7 @@ class Row extends Row\RowAbstract
 
         $identity = Auth::identity();
 
-        if ($identity && method_exists($identity, 'getId')) {
+        if ($identity instanceof Identity) {
             if (in_array('owner', $cols) && (empty($this->_cleanData) || !$this->owner)) {
                 $this->owner = $identity->getId();
             }

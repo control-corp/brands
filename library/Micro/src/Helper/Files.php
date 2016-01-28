@@ -25,7 +25,7 @@ class Files
                                 foreach ($methods as $method) {
                                     $name = $method->name;
                                     if (substr($name, 0, 3) === 'set' || substr($name, 0, 3) === 'get' || substr($name, 0, 1) === '_' || $name === 'init') {
-                                        continue;
+										continue;
                                     }
                                     $resources[$class . '@' . $method->name] = \true;
                                 }

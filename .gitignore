@@ -2,3 +2,4 @@
 /.buildpath
 /.project
 /application/data/cache
+/application/data/session

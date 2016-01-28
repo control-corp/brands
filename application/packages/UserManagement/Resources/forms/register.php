@@ -20,17 +20,6 @@ return [
                 ]
             ]
         ],
-        'enum' => [
-            'type' => 'select',
-            'options' => [
-                'required' => 1,
-                'emptyOption' => '---',
-                'multiOptions' => [
-                    '1' => 'Da',
-                    '2' => 'Ne'
-                ]
-            ]
-        ],
         'protect' => 'csrf'
     ]
 ];

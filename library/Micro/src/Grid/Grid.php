@@ -74,12 +74,7 @@ class Grid
     {
         if (\null === $this->view) {
             $this->view = new View(\null);
-            try {
-                $paths = (array) package_path(current_package(), 'views');
-            } catch (\Exception $e) {
-                $paths = [];
-            }
-            $this->view->injectPaths($paths);
+            $this->view->injectPaths((array) package_path(current_package(), 'Resources/views'));
         }
 
         return $this->view;

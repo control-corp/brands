@@ -26,7 +26,7 @@ class DevTools
     public function onApplicationStart(Message $message)
     {
         $this->view = new View('debug');
-        $this->view->addPath(package_path('MicroDebug', 'views'));
+        $this->view->addPath(package_path('MicroDebug', 'Resources/views'));
     }
 
     public function onRenderStart(Message $message)

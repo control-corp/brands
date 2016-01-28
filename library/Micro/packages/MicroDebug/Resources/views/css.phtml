@@ -1,10 +1,10 @@
 <style>
 .debug-bar {
-	text-align: left;
+	text-align: right;
     margin: 0 auto;
     font-size: 14px;
     position: fixed;
-    left: 0;
+    right: 0;
     bottom: 0;
     background-color: #fff;
     width: 100%;
@@ -20,6 +20,7 @@
 }
 .debug-bar .debug-item {
     display: inline-block;
+	position: relative;
 	text-align: left;
     cursor: default;
     background-color: #ddd;
@@ -50,7 +51,8 @@
 .debug-bar .debug-item:not(.empty) pre {
     display: none;
     position: absolute;
-    bottom: 13px;
+    bottom: 6px;
+	right: 0;
     max-height: 300px;
     max-width: 1024px;
     overflow: scroll;

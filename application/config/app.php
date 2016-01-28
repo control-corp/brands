@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'acl' => 1,
     'debug' => [
         'handlers' => [
             'dev_tools' => 1,
@@ -12,7 +13,7 @@ return [
         'App' => 'application/packages/App',
         'Nomenclatures' => 'application/packages/Nomenclatures',
         'UserManagement' => 'application/packages/UserManagement',
-        //'MicroDebug' => 'library/Micro/packages/MicroDebug'
+        'MicroDebug' => 'library/Micro/packages/MicroDebug'
     ],
     'routes' => include 'application/config/routes.php',
     'error' => [
@@ -35,7 +36,7 @@ return [
                 'host'     => 'localhost',
                 'dbname'   => 'micro',
                 'username' => 'root',
-                'password' => '',
+                'password' => 'root',
                 'charset'  => 'utf8'
             ]
         ]
@@ -58,6 +59,12 @@ return [
                     ]
                 ]
             ]
+        ]
+    ],
+    'translator' => [
+        'adapter' => 'TranslatorArray',
+        'options' => [
+            'path' => 'application/data/languages'
         ]
     ]
 ];

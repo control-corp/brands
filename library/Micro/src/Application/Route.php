@@ -193,9 +193,9 @@ class Route
     /**
      * @return \Closure|string
      */
-    public function getHandler()
+    public function getHandler($invoke = \true)
     {
-        if ($this->handler instanceof \Closure) {
+        if ($invoke === \true && $this->handler instanceof \Closure) {
             return $this->handler->__invoke();
         }
 
