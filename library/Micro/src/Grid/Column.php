@@ -253,7 +253,7 @@ class Column
 
             if ($this->viewScript) {
 
-                $view = $this->getGrid()->getView();
+                $view = $this->getGrid()->getRenderer()->getView();
 
                 $data = [
                     'value' => $value,

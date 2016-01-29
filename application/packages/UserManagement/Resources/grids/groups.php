@@ -56,17 +56,12 @@ return array(
             )
         ),
         'delete' => array(
-            'type' => 'href',
             'options' => array(
-                'text' => ' ',
-                'class' => 'text-center',
-                'headStyle' => 'width: 5%',
-                'hrefClass' => 'remove glyphicon glyphicon-trash',
-                'params' => array(
-                    'action' => 'delete',
-                    'id' => ':id'
-                )
+                'text'   => ' ',
+                'headStyle'  => 'width: 5%',
+                'class'  => 'text-center',
+                'viewScript' => 'groups/grid-delete'
             )
-        )
+        ),
     )
 );
