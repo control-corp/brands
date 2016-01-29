@@ -19,7 +19,7 @@ return [
                 'isArray' => 1,
                 'class' => 'form-control selectpicker',
                 'belongsTo' => 'filters',
-                'multiOptions' => (new Countries())->fetchPairs()
+                'multiOptions' => (new Countries())->fetchCachedPairs(\null, \null, ['name' => 'ASC'])
             ]
         ],
     ]

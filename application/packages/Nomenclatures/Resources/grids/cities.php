@@ -38,7 +38,8 @@ $config['columns'] = array(
             'sourceField' => 'country_id',
             'title' => 'Държава',
             'headStyle' => 'width: 15%',
-            'callable' => array(new \Nomenclatures\Model\Countries(), 'fetchPairs')
+            'callable' => array(new \Nomenclatures\Model\Countries(), 'fetchCachedPairs'),
+            'params' => [\null, \null, ['name' => 'ASC']]
         ]
     ],
     'active' => array(

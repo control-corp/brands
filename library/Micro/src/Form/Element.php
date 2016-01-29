@@ -450,7 +450,7 @@ abstract class Element
     public function renderLabel()
     {
         if ($this->label) {
-            return '<label class="' . $this->name . '-element-label' . ($this->labelClass ? ' ' . $this->labelClass : 'element-label') . ($this->required ? ' required' : '') . '">' . $this->translateData($this->label) . ($this->required ? ' <span class="asterisk">*</span>' : '') . '</label>';
+            return '<label class="' . $this->name . '-element-label' . ($this->labelClass ? ' ' . $this->labelClass : ' element-label') . ($this->required ? ' required' : '') . '">' . $this->translateData($this->label) . ($this->required ? ' <span class="asterisk">*</span>' : '') . '</label>';
         }
 
         return '';

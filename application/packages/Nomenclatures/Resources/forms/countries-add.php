@@ -11,9 +11,9 @@ return [
                 ]
             ]
         ],
-        'btnSave' => [
-            'type' => 'submit', 'options' => ['value' => 'Запази']
-        ],
-        'protect' => 'csrf'
+        'btnSave'  => ['type' => 'submit', 'options' => ['value' => 'Запазване']],
+        'btnApply' => ['type' => 'submit', 'options' => ['value' => 'Прилагане']],
+        'btnBack'  => ['type' => 'submit', 'options' => ['value' => 'Назад']],
+        'protect'  => 'csrf'
     ]
 ];

@@ -5,6 +5,7 @@ namespace UserManagement;
 use Micro\Application\Package as BasePackage;
 use Micro\Acl\Acl;
 use Micro\Auth\Auth;
+use Micro\Cache;
 
 class Package extends BasePackage
 {
@@ -19,7 +20,36 @@ class Package extends BasePackage
          * Acl
          */
         Acl::setResolver(function () {
-            return include __DIR__ . '/Resources/rights.php';
+
+            try {
+                $cache = app('cache');
+            } catch (\Exception $e) {
+                $cache = \null;
+            }
+
+            if ($cache === \null || ($data = $cache->load('Acl')) === \false) {
+                $groups = app('db')->fetchAll('
+                    SELECT a.alias, b.alias as parentAlias, a.rights
+                    FROM Groups a
+                    LEFT JOIN Groups b ON b.id = a.parentId
+                ');
+                $data = [];
+                foreach ($groups as $group) {
+                    $data[$group['alias']] = [
+                        'group'     => $group['alias'],
+                        'parent'    => $group['parentAlias'],
+                        'resources' => []
+                    ];
+                    $rights = $group['rights'] ? json_decode($group['rights'], \true) : [];
+                    $rights = is_array($rights) ? $rights : [];
+                    $data[$group['alias']]['resources'] = $rights;
+                }
+                if ($cache instanceof Cache\Core) {
+                    $cache->save($data, 'Acl');
+                }
+            }
+
+            return $data;
         });
 
         /**

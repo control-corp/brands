@@ -2,10 +2,9 @@
 
 namespace Micro\Grid;
 
-use Exception as CoreException;
+use Micro\Application\Exception as CoreException;
 use Micro\Paginator\Paginator;
-use Micro\Form\Element;
-use Micro\Application\View;
+use Micro\Grid\Renderer\RendererInterface;
 
 class Grid
 {
@@ -15,16 +14,24 @@ class Grid
     const PLACEMENT_BOTH   = 0x3;
 
     protected $columns = [];
+
     protected $buttons = [];
 
     protected $paginator;
-    protected $view;
+
     protected $gridClass;
+
     protected $paginationViewScript = 'paginator';
+
     protected $paginatorAlways = \true;
+
     protected $paginatorPlacement = self::PLACEMENT_BOTTOM;
+
     protected $buttonsPlacement = self::PLACEMENT_TOP;
+
     protected $sortedColumn;
+
+    protected $renderer;
 
     public function __construct($paginator, $options)
     {
@@ -60,6 +67,28 @@ class Grid
         }
     }
 
+    public function getRenderer()
+    {
+        if ($this->renderer === \null) {
+            $this->renderer = new Renderer\Table($this);
+        }
+
+        return $this->renderer;
+    }
+
+    public function setRenderer($renderer)
+    {
+        if (is_string($renderer) && class_exists($renderer , \true)) {
+            $renderer = new $renderer($this);
+        }
+
+        if (!$renderer instanceof RendererInterface) {
+            throw new CoreException(__METHOD__);
+        }
+
+        $this->renderer = $renderer;
+    }
+
     public function getGridClass()
     {
         return $this->gridClass;
@@ -68,16 +97,6 @@ class Grid
     public function setGridClass($class)
     {
         $this->gridClass = $class;
-    }
-
-    public function getView()
-    {
-        if (\null === $this->view) {
-            $this->view = new View(\null);
-            $this->view->injectPaths((array) package_path(current_package(), 'Resources/views'));
-        }
-
-        return $this->view;
     }
 
     public function getPaginationViewScript()
@@ -406,122 +425,12 @@ class Grid
 
     public function render()
     {
-        $paginator = $this->getPaginator();
-
-        $output = '';
-        $buttonsCode = '';
-
-        $request = app('request');
-        $requestParams = $request->getParams();
-        $requestParams = array_diff_key($requestParams, $request->getPost());
-
-        foreach ($requestParams as $key => $requestParam) {
-            if (!is_array($requestParam)) {
-                continue;
-            }
-            unset($requestParams[$key]);
-        }
-
-        if (!empty($this->buttons)) {
-            $output .= '<form class="grid-form" method="post" action="' . route() . '">';
-            $buttonsCode = '<div class="grid-buttons">';
-            foreach ($this->buttons as $name => $button) {
-                try {
-                    $button = new Element\Submit($name, $button);
-                    $buttonsCode .= $button->render() . ' ';
-                } catch (\Exception $e) {
-                    $buttonsCode .= $e->getMessage();
-                }
-            }
-            $buttonsCode .= '</div>';
-            if ($this->getButtonsPlacement() & self::PLACEMENT_TOP) {
-                $output .= $buttonsCode;
-            }
-        }
-
-        if ($this->getPaginatorPlacement() & self::PLACEMENT_TOP) {
-            $output .= $this->renderPagination();
-        }
-
-        $output .= '<div class="table-responsive">';
-        $output .= '<table class="table table-bordered table-hover' . ($this->getGridClass() ? ' ' . $this->getGridClass() : '') . '">';
-        $output .= '<thead>';
-
-        $output .= '<tr class="table-row-head">';
-
-        foreach ($this->columns as $column) {
-
-            if (!$column instanceof Column) {
-                continue;
-            }
-
-            if ($column->isSortable()) {
-                $sortedClass = 'sorting';
-                if ($column->isSorted()) {
-                    $sortedClass = 'sorting_' . $column->getSorted();
-                }
-                $routeParams = array_merge($requestParams, ['orderField' => $column->getName(),
-                                                            'orderDir'   => ($column->getSorted() == 'asc') ? 'desc' : 'asc']);
-                $title = '<div class="' . $sortedClass . '" data-url="' . route(\null, $routeParams) . '">' . $column->getTitle() . '</div>';
-            } else {
-                $title = $column->getTitle();
-            }
-
-            $output .= '<th' . ($column->getHeadStyle() ? ' style="' . $column->getHeadStyle() . '"' : '') . ' class="table-cell-head' . ($column->getHeadClass() ? ' ' . $column->getHeadClass() : '') . '">';
-            $output .= $title;
-            $output .= '</th>';
-        }
-
-        $output .= '</tr>';
-        $output .= '</thead>';
-
-        $output .= '<tbody>';
-
-        foreach ($paginator as $key => $page) {
-
-            $output .= '<tr class="table-row">';
-
-            foreach ($this->columns as $column) {
-                if (!$column instanceof Column) {
-                    continue;
-                }
-                try {
-                    $output .= '<td' . ($column->getStyle() ? ' style="' . $column->getStyle() . '"' : '') . ' class="table-cell' . ($column->getClass() ? ' ' . $column->getClass() : '') . '">' . (string) $column . '</td>';
-                } catch (\Exception $e) {
-                    $output .= '<td' . ($column->getStyle() ? ' style="' . $column->getStyle() . '"' : '') . ' class="table-cell' . ($column->getClass() ? ' ' . $column->getClass() : '') . '">' . $e->getMessage() . '</td>';
-                }
-            }
-
-            $output .= '</tr>';
-        }
-
-        $output .= '</tbody>';
-
-        $output .= '</table>';
-        $output .= '</div>';
-
-
-        if ($this->getPaginatorPlacement() & self::PLACEMENT_BOTTOM) {
-            $output .= $this->renderPagination();
-        }
-
-        if (!empty($this->buttons)) {
-            if (($this->getButtonsPlacement() & self::PLACEMENT_BOTTOM)) {
-                $output .= $buttonsCode;
-            }
-            $output .= '</form>';
-        }
-
-        return $output;
+        return $this->getRenderer()->render();
     }
 
     public function renderPagination()
     {
-        if (($this->getPaginator()->count() <= 1) && !$this->getPaginatorAlways()) {
-            return "";
-        }
-
-        return pagination($this->getPaginator(), $this->getPaginationViewScript(), \null, $this->getView());
+        return $this->getRenderer()->renderPagination();
     }
 
     public function __toString()

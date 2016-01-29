@@ -5,6 +5,8 @@ namespace App\Controller\Front;
 use Micro\Application\Controller;
 use Micro\Application\View;
 use Micro\Http\Response\JsonResponse;
+use Micro\Http\Response\RedirectResponse;
+use Micro\Auth\Auth;
 
 class Error extends Controller
 {
@@ -25,11 +27,30 @@ class Error extends Controller
             return new JsonResponse(['error' => $message], $code);
         }
 
+        if ($exception->getCode() === 403) {
+            if (Auth::identity() === \null) {
+                if (is_allowed(app('router')->getRoute('login')->getHandler())) {
+                    return new RedirectResponse(
+                        route('login', ['backTo' => urlencode(route())])
+                    );
+                }
+            }
+        }
+
         $this->response->setCode($code);
 
         return new View('error', [
             'exception' => $exception,
             'message' => $message
         ]);
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Micro\Application\Controller::init()
+     */
+    public function init()
+    {
+
     }
 }

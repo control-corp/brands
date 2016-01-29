@@ -17,9 +17,10 @@ class Users extends DatabaseAbstract
         $this->addWhere('username', $username);
 
         $user = $this->getItem();
+        $user->loadRole();
 
         if ($user !== \null && Security::verity($password, $user['password'])) {
-            Auth::getInstance()->setIdentity($user['id']);
+            Auth::getInstance()->setIdentity($user);
             return \true;
         }
 

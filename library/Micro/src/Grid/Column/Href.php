@@ -46,11 +46,13 @@ class Href extends Column
                     $params[$k] = $this->getCurrentValue($field);
                 }
             }
+
             return '<a' . ($this->hrefClass ? ' class="' . $this->hrefClass . '"' : '') . ' href="' . app('router')->assemble($route, $params, $this->reset, $this->qsa) . '">' . parent::__toString() . '</a>';
 
         } catch (\Exception $e) {
-
-            return $e->getMessage();
+            if (env('development')) {
+                return $e->getMessage();
+            }
         }
     }
 }

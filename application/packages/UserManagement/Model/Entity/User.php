@@ -12,16 +12,20 @@ class User extends EntityAbstract implements RoleInterface, Identity
     protected $group_id;
     protected $username;
     protected $password;
+    protected $role;
 
     public function getRoleId()
     {
-        static $roleId;
+        return $this->loadRole();
+    }
 
-        if ($roleId === \null) {
-            $roleId = app('db')->fetchOne('SELECT alias FROM groups WHERE id = ?', array((int) $this->group_id));
+    public function loadRole()
+    {
+        if ($this->role === \null) {
+            $this->role = app('db')->fetchOne('SELECT alias FROM groups WHERE id = ?', array((int) $this->group_id));
         }
 
-        return $roleId;
+        return $this->role;
     }
 
     public function getId()

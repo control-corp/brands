@@ -13,24 +13,32 @@ class Files
         $resources = [];
 
         foreach ($dirs as $dir) {
+
             $it = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir));
+
             foreach ($it as $f) {
+
                 if ($f instanceof \SplFileInfo) {
+
                     if ($f->isFile() && $f->getExtension() === 'php') {
+
                         $class = static::getClassFromFile($f->getPathname());
+
                         if ($class) {
+
                             $reflection = new \ReflectionClass($class);
+
                             if ($reflection->isSubclassOf(\Micro\Application\Controller::class)) {
-                                $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
-                                foreach ($methods as $method) {
+
+                                foreach ($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+
                                     $name = $method->name;
+
                                     if ('Action' !== substr($name, -6)) {
 										continue;
                                     }
-                                    $resources[$class . '@' . substr($name, 0, -6)] = [
-                                        'doc' => static::parseDocBlock($method->getDocComment()),
-                                        'privilege' => ['GET', 'POST']
-                                    ];
+
+                                    $resources[$class . '@' . substr($name, 0, -6)] = static::parseDocBlock($method->getDocComment());
                                 }
                             }
                         }
@@ -39,7 +47,43 @@ class Files
             }
         }
 
-        return $resources;
+        $tree = [];
+
+        foreach ($resources as $resource => $doc) {
+            $resource = str_replace(array("\\", "@"), "_", $resource);
+            static::buildResourcesTree(explode('_', $resource), $tree, \null, $resource, $doc);
+        }
+
+        return $tree;
+    }
+
+    public static function buildResourcesTree(array $parts, &$tree, $parent = \null, $resource = \null, array $info = \null)
+    {
+        $part = array_shift($parts);
+
+        if ($part === \null) {
+            return;
+        }
+
+        if ($parent === \null) {
+            $parent = $part;
+        } else {
+            $parent = $parent . '_' . $part;
+        }
+
+        if (!isset($tree[$part])) {
+            $name = $part;
+            if ($info !== \null && $resource === $parent && isset($info['translate'])) {
+                $name = $info['translate'];
+            }
+            $tree[$part] = [
+                'id' => $parent,
+                'name' => $name,
+                'resources' => []
+            ];
+        }
+
+        static::buildResourcesTree($parts, $tree[$part]['resources'], $parent, $resource, $info);
     }
 
     public static function parseDocBlock($docComment)

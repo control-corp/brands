@@ -1,0 +1,27 @@
+<?php
+$found = $this->navigation()->findAllBy('active', 1);
+if (empty($found)) {
+    return;
+} else {
+    $found = end($found);
+    if ($found->getAlias() === 'home') {
+        return;
+    }
+}
+$pages = [];
+$cnt = 0;
+$buff = '';
+do {
+    $pages[] = $found;
+    $found = $found->getParent();
+    $cnt++;
+} while ($found instanceof Micro\Navigation\Page\AbstractPage);
+foreach (array_reverse($pages) as $k => $page) {
+    if ($cnt > $k + 1) {
+        $buff .= '<li><a href="' . $page->getHref() . '">' . $page->getLabel() . '</a></li>';
+    } else {
+        $buff .= '<li class="active">' . $page->getLabel() . '</li>';
+    }
+}
+?>
+<ol class="breadcrumb"><li><a href="<?php echo route('home', [], \true, \false); ?>">Начало</a></li><?php echo $buff; ?></ol>

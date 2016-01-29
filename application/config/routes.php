@@ -17,16 +17,8 @@ return [
         'pattern' => '/logout',
         'handler' => 'UserManagement\Controller\Front\Index@logout'
     ],
-    'register' => [
-        'pattern' => '/register',
-        'handler' => 'UserManagement\Controller\Front\Index@register'
-    ],
     'profile' => [
         'pattern' => '/profile',
         'handler' => 'UserManagement\Controller\Front\Index@profile'
-    ],
-    'rights' => [
-        'pattern' => '/rights',
-        'handler' => 'UserManagement\Controller\Front\Rights@index'
     ]
 ];

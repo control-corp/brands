@@ -18,4 +18,13 @@ class Submit extends Element
 
         return $tmp;
     }
+
+    public function setValue($value)
+    {
+        if ($value !== \null) {
+            $this->value = $value;
+        }
+
+        return $this;
+    }
 }

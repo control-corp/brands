@@ -3,6 +3,7 @@
 use Micro\Container\Container;
 use Micro\Application\Utils;
 use Micro\Application\View;
+use Micro\Application\Exception as CoreException;
 use Micro\Http\Response\JsonResponse;
 use Micro\Http\Response\RedirectResponse;
 use Micro\Paginator\Paginator;
@@ -55,7 +56,7 @@ if (!function_exists('package_path')) {
         $packages = config('packages', []);
 
         if (!isset($packages[$package])) {
-            throw new \Exception(sprintf('[' . __FUNCTION__ . '] Invalid package "%s"', $package));
+            throw new CoreException(sprintf('[' . __FUNCTION__ . '] Invalid package "%s"', $package));
         }
 
         $packagePath = rtrim($packages[$package], '/\\');
@@ -214,7 +215,7 @@ if (!function_exists('current_package')) {
         $route = app('router')->getCurrentRoute();
 
         if ($route === \null) {
-            throw new \Exception(sprintf('[' . __FUNCTION__ . '] There is no current route'));
+            throw new CoreException(sprintf('[' . __FUNCTION__ . '] There is no current route'));
         }
 
         $resource = $route->getHandler();
@@ -306,7 +307,7 @@ if (!function_exists('pagination')) {
         }
 
         if ($view === \null) {
-            $view = new View(\null);
+            $view = new View();
         }
 
         return $view->partial($partial, $pages);

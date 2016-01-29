@@ -13,44 +13,31 @@ class Index extends Controller
 {
     public function profileAction()
     {
-        if (!identity()) {
-            return new RedirectResponse(route('login'));
-        }
+        $form = new Form(package_path('UserManagement', 'Resources/forms/profile.php'));
+
+        $form->username->setValue(identity()->getUsername());
 
         if ($this->request->isPost()) {
 
-            $password = $this->request->getPost('password');
+            $data = $this->request->getPost();
 
-            if ($password) {
-                $usersModel = new Users();
-                $user = $usersModel->find(identity()->getId());
-                if ($user) {
-                    $user->password = Security::hash($password);
-                    $usersModel->save($user);
-                }
+            if (isset($data['btnBack'])) {
+                return new RedirectResponse(route());
             }
 
-            $redirect = new RedirectResponse(route());
-
-            return $redirect->withFlash();
-        }
-    }
-
-    public function registerAction()
-    {
-        $form = new Form(package_path('UserManagement', 'Resources/forms/register.php'));
-
-        if ($this->request->isPost()) {
-            $data = $this->request->getPost();
             if ($form->isValid($data)) {
+
                 $usersModel = new Users();
-                $user = $usersModel->createEntity()->setFromArray(array(
-                    'username' => $data['username'],
-                    'password' => Security::hash($data['password']),
-                    'group_id' => 2
-                ));
-                $usersModel->save($user);
-                return (new RedirectResponse(route('login')))->withFlash('Успешно се регистрирахте');
+                $user = $usersModel->find(identity()->getId());
+
+                if ($user && $data['password']) {
+                    $user->password = Security::hash($data['password']);
+                    $usersModel->save($user);
+                }
+
+                $redirect = new RedirectResponse(route());
+
+                return $redirect->withFlash();
             }
         }
 
@@ -66,7 +53,11 @@ class Index extends Controller
             if ($form->isValid($data)) {
                 $usersModel = new Users();
                 if ($usersModel->login($data['username'], $data['password'])) {
-                    return new RedirectResponse(route('home'));
+                    if (($backTo = $this->request->getParam('backTo')) !== \null) {
+                        return new RedirectResponse(urldecode($backTo));
+                    } else {
+                        return new RedirectResponse(route('home'));
+                    }
                 } else {
                     $form->password->addError('Невалидни данни');
                 }

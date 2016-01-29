@@ -2,6 +2,7 @@
 
 namespace Micro\Application;
 
+use Exception as CoreException;
 use Micro\Http;
 
 class Router
@@ -81,7 +82,7 @@ class Router
     public function map($name, $pattern, $handler)
     {
         if (isset($this->routes[$name])) {
-            throw new \Exception(sprintf('[' . __METHOD__ . '] Route "%s" already exists!', $name), 500);
+            throw new CoreException(sprintf('[' . __METHOD__ . '] Route "%s" already exists!', $name), 500);
         }
 
         $pattern = static::URL_DELIMITER . trim($pattern, static::URL_DELIMITER);
@@ -90,7 +91,7 @@ class Router
 
         if (Route::isStatic($pattern)) {
             if (isset($this->routesStatic[$pattern])) {
-                throw new \Exception(sprintf('[' . __METHOD__ . '] Route pattern "%s" already exists!', $pattern), 500);
+                throw new CoreException(sprintf('[' . __METHOD__ . '] Route pattern "%s" already exists!', $pattern), 500);
             }
             $this->routesStatic[$pattern] = $name;
         }
@@ -114,7 +115,7 @@ class Router
         }
 
         if (!isset($this->routes[$name])) {
-            throw new \Exception(sprintf('[' . __METHOD__ . '] Route "%s" not found!', $name), 500);
+            throw new CoreException(sprintf('[' . __METHOD__ . '] Route "%s" not found!', $name), 500);
         }
 
         $route = $this->routes[$name];
@@ -123,8 +124,17 @@ class Router
 
         $data += $this->globalParams;
 
-        if ($this->currentRoute instanceof Route && $reset === \false) {
+        if ($this->currentRoute instanceof Route
+            && $name === $this->currentRoute->getName()
+            && $reset === \false
+        ) {
             $data += $this->currentRoute->getParams();
+        }
+
+        foreach ($data as $k => $v) {
+            if (is_object($v) || is_array($v)) {
+                unset($data[$k]);
+            }
         }
 
         if (isset($this->routesStatic[$pattern])) {

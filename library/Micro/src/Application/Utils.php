@@ -4,6 +4,25 @@ namespace Micro\Application;
 
 class Utils
 {
+    public static function arrayMapRecursive($fn, $arr, $allowNull = false)
+    {
+        $rarr = array();
+
+        foreach ($arr as $k => $v) {
+            if (is_array($v)) {
+                $rarr[$k] = self::arrayMapRecursive($fn, $v, $allowNull);
+            } else {
+                if ($allowNull) {
+                    $rarr[$k] = $v == null ? null : $fn($v);
+                } else {
+                    $rarr[$k] = $fn($v);
+                }
+            }
+        }
+
+        return $rarr;
+    }
+
     public static function decamelize($value)
     {
         return strtolower(trim(preg_replace('/([A-Z])/', '-$1', $value), '-'));

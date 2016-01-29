@@ -1,18 +1,3 @@
-<?php
-
-$navigation = new Micro\Navigation\Navigation([
-    ['label' => 'Начало', 'route' => 'home'],
-    ['label' => 'Вход', 'route' => 'login'],
-    ['label' => 'Регистрация', 'route' => 'register'],
-    ['label' => 'Профил', 'route' => 'profile'],
-    ['label' => 'Права', 'route' => 'rights'],
-    ['label' => 'Градове', 'route' => 'default', 'routeParams' => ['package' => 'nomenclatures', 'controller' => 'cities']],
-    ['label' => 'Държави', 'route' => 'default', 'routeParams' => ['package' => 'nomenclatures', 'controller' => 'countries']],
-    ['label' => 'Изход', 'route' => 'logout'],
-]);
-
-?>
-
 <nav class="navbar navbar-inverse navbar-static-top">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -26,7 +11,7 @@ $navigation = new Micro\Navigation\Navigation([
         <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
                 <?php
-                foreach ($navigation as $page) {
+                foreach ($this->navigation() as $page) {
                     echo $this->partial('layouts/includes/_item', array('item' => $page, 'level' => 0));
                 }
                 ?>

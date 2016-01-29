@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'acl' => 0,
+    'acl' => 1,
     'debug' => [
         'handlers' => [
             'dev_tools' => 1,
@@ -13,6 +13,7 @@ return [
         'App' => 'application/packages/App',
         'Nomenclatures' => 'application/packages/Nomenclatures',
         'UserManagement' => 'application/packages/UserManagement',
+        'Navigation' => 'application/packages/Navigation',
         'MicroDebug' => 'library/Micro/packages/MicroDebug'
     ],
     'routes' => include 'application/config/routes.php',
@@ -36,7 +37,7 @@ return [
                 'host'     => 'localhost',
                 'dbname'   => 'micro',
                 'username' => 'root',
-                'password' => 'root',
+                'password' => '',
                 'charset'  => 'utf8'
             ]
         ]

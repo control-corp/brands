@@ -8,6 +8,7 @@ use Micro\Database\Select;
 use Micro\Paginator\Adapter\AdapterInterface;
 use Micro\Database\Table\Row\RowAbstract;
 use Micro\Database\Table\Rowset\RowsetAbstract;
+use Micro\Cache;
 
 abstract class DatabaseAbstract implements AdapterInterface, ModelInterface
 {
@@ -412,7 +413,7 @@ abstract class DatabaseAbstract implements AdapterInterface, ModelInterface
     {
         $this->trigger('beforesave', compact('entity'));
 
-        $data = $entity->toArray();
+        $data = $originalData = $entity->toArray();
 
         try {
 
@@ -445,8 +446,11 @@ abstract class DatabaseAbstract implements AdapterInterface, ModelInterface
 
         } catch (\Exception $e) {
             $this->rollBack();
+            $entity->setFromArray($originalData);
             throw $e;
         }
+
+        $this->removeCache();
 
         return $entity;
     }
@@ -530,7 +534,11 @@ abstract class DatabaseAbstract implements AdapterInterface, ModelInterface
 
     public function delete(EntityInterface $entity)
     {
-        return $this->getTable()->delete(['id = ?' => $entity[$this->getIdentifier()]]);
+        $affected = $this->getTable()->delete(['id = ?' => $entity[$this->getIdentifier()]]);
+
+        $this->removeCache();
+
+        return $affected;
     }
 
     /**
@@ -548,6 +556,8 @@ abstract class DatabaseAbstract implements AdapterInterface, ModelInterface
         }
 
         $affected = $this->getTable()->update(array('active' => ((int) $active ? 1 : 0)), array($this->getIdentifier() . ' = ?' => $entity[$this->getIdentifier()]));
+
+        $this->removeCache();
 
         return $affected;
     }
@@ -593,8 +603,15 @@ abstract class DatabaseAbstract implements AdapterInterface, ModelInterface
         return $results;
     }
 
-    public function fetchPairs(array $where = \null, array $fields = \null, array $order = \null)
+    public function fetchPairs(array $where = \null, array $fields = \null, array $order = \null, $cacheIt = \false)
     {
+        $adapter = $this->getTable()->getAdapter();
+        $cache = \null;
+
+        if ($cacheIt !== \false) {
+            $cache = app('cache');
+        }
+
         if ($where !== \null) {
             foreach ($where as $k => $v) {
                 if ($v instanceof Expr) {
@@ -617,8 +634,8 @@ abstract class DatabaseAbstract implements AdapterInterface, ModelInterface
             $key = $fields[0];
             $value = $fields[1];
         } else {
-            $key = 'id';
-            $value = 'id';
+            $key   = $this->getIdentifier();
+            $value = $this->getIdentifier();
             $table = $this->getTableByColumn('name');
             if ($table) {
                 $value = $table->info('name') . '.name';
@@ -629,7 +646,23 @@ abstract class DatabaseAbstract implements AdapterInterface, ModelInterface
 
         $select->reset('columns')->columns([$key, $value]);
 
-        return $this->table->getAdapter()->fetchPairs($select);
+        $cacheId = $this->getCacheId() . '_' . md5($select->__toString());
+
+        if ($cache === \null || ($pairs = $cache->load($cacheId)) === \false) {
+
+            $pairs = $adapter->fetchPairs($select);
+
+            if ($cache instanceof Cache\Core) {
+                $cache->save($pairs, $cacheId, array($this->getCacheId()));
+            }
+        }
+
+        return $pairs;
+    }
+
+    public function fetchCachedPairs(array $where = \null, array $fields = \null, array $order = \null)
+    {
+        return $this->fetchPairs($where, $fields, $order, \true);
     }
 
     public function beginTransaction()
@@ -666,6 +699,23 @@ abstract class DatabaseAbstract implements AdapterInterface, ModelInterface
         }
 
         self::$transactionLevel--;
+    }
+
+    public function removeCache()
+    {
+        try {
+            $cache = app('cache');
+            if ($cache instanceof Cache\Core) {
+                $cache->clean(Cache\Cache::CLEANING_MODE_MATCHING_TAG, array($this->getCacheId()));
+            }
+        } catch (\Exception $e) {
+
+        }
+    }
+
+    public function getCacheId()
+    {
+        return preg_replace('~[^a-zA-Z0-9_]~', '_', get_class($this));
     }
 
     public function trigger($event, array $params = \null)

@@ -2,6 +2,8 @@
 
 namespace Micro\Application;
 
+use Exception as CoreException;
+
 class View
 {
     protected $template;
@@ -22,7 +24,7 @@ class View
 
     protected static $helpers = [];
 
-    public function __construct($template, array $data = \null, $injectPaths = \false)
+    public function __construct($template = \null, array $data = \null, $injectPaths = \false)
     {
         $this->template = $template;
         $this->data = $data ?: [];
@@ -57,7 +59,7 @@ class View
             $renderParent = \false;
         } else {
             if (empty($this->template)) {
-                throw new \Exception('Template is empty', 500);
+                throw new CoreException('Template is empty', 500);
             }
             $file = $this->template;
         }
@@ -108,6 +110,9 @@ class View
         try {
             return (string) $this->render();
         } catch (\Exception $e) {
+            if (env('development')) {
+                return $e->getMessage();
+            }
             return '';
         }
     }
@@ -119,7 +124,7 @@ class View
         return $this;
     }
 
-    public function addData($data)
+    public function addData(array $data)
     {
         $this->data = array_merge($this->data, $data);
 
@@ -148,12 +153,24 @@ class View
         $this->data[$key] = $value;
     }
 
+    public function __isset($key)
+    {
+        return $this->data[$key];
+    }
+
+    public function __unset($key)
+    {
+        if (isset($this->data[$key])) {
+            unset($this->data[$key]);
+        }
+    }
+
     public function partial($template, array $data = [])
     {
         $view = clone $this;
 
         if ($template === $view->getTemplate()) {
-            throw new \Exception('Recursion detected', 500);
+            throw new CoreException('Recursion detected', 500);
         }
 
         $view->setSections([]);
@@ -174,8 +191,6 @@ class View
         $view->setTemplate($template);
 
         $this->setParent($view);
-
-        return $this;
     }
 
     public function setParent(View $parent = \null)
@@ -188,7 +203,7 @@ class View
     public function start($section)
     {
         if ($this->__currentSection !== \null) {
-            throw new \Exception('There is current started section', 500);
+            throw new CoreException('There is current started section', 500);
         }
 
         $this->__currentSection = $section;
@@ -199,7 +214,7 @@ class View
     public function stop()
     {
         if ($this->__currentSection === \null) {
-            throw new \Exception('There is not current started section', 500);
+            throw new CoreException('There is not current started section', 500);
         }
 
         $section = $this->__currentSection;
@@ -263,7 +278,7 @@ class View
             }
 
             if (!isset(static::$helpers[$method])) {
-                throw new \Exception('Invalid view helper: [' . implode('], [', $search) . ']', 500);
+                throw new CoreException('Invalid view helper: [' . implode('], [', $search) . ']', 500);
             }
         }
 

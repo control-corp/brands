@@ -2,6 +2,7 @@
 
 namespace Micro\Application;
 
+use Exception as CoreException;
 use Micro\Http;
 use Micro\Container\ContainerAwareInterface;
 use Micro\Container\ContainerAwareTrait;
@@ -37,7 +38,7 @@ class Controller implements ContainerAwareInterface
     public function init()
     {
         if (!is_allowed()) {
-            throw new \Exception('Access denied', 403);
+            throw new CoreException('Access denied', 403);
         }
     }
 }

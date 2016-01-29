@@ -8,6 +8,10 @@ use Micro\Form\Form;
 
 class Cities extends Crud
 {
+    /**
+     * (non-PHPdoc)
+     * @see \Micro\Application\Controller\Crud::indexAction()
+     */
     public function indexAction()
     {
         if (($response = parent::indexAction()) instanceof Response) {

@@ -4,6 +4,7 @@ namespace Micro\Navigation\Page;
 
 class Page extends AbstractPage
 {
+    protected $alias;
     protected $href;
     protected $uri;
     protected $routeParams = [];
@@ -72,6 +73,17 @@ class Page extends AbstractPage
         }
     }
 
+    public function setAlias($alias)
+    {
+        $this->alias = $alias;
+
+        return $this;
+    }
+
+    public function getAlias()
+    {
+        return $this->alias;
+    }
 
     public function getHref()
     {
@@ -105,6 +117,11 @@ class Page extends AbstractPage
         $this->route = $route;
 
         return $this;
+    }
+
+    public function getRoute()
+    {
+        return $this->route;
     }
 
     public function setReset($reset)

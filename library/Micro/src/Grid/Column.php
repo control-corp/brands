@@ -269,7 +269,11 @@ class Column
             }
 
         } catch (\Exception $e) {
-            $value = $e->getMessage();
+            if (env('development')) {
+                $value = $e->getMessage();
+            } else {
+                $value = '';
+            }
         }
 
         return (string) $value;

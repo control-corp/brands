@@ -2,6 +2,7 @@
 
 namespace Micro\Application;
 
+use Exception as CoreException;
 use Micro\Http;
 use Micro\Event;
 use Micro\Container\Container;
@@ -20,9 +21,14 @@ class Application extends Container
     private $packages = [];
 
     /**
+     * @var array of collected Exceptions
+     */
+    private $exceptions = [];
+
+    /**
      * Constructor
      * @param array | string $config
-     * @throws \InvalidArgumentException
+     * @throws CoreException
      */
     public function __construct($config)
     {
@@ -31,7 +37,7 @@ class Application extends Container
         } elseif (is_string($config) && file_exists($config)) {
             $config = new Config(include $config);
         } else if (!$config instanceof Config) {
-            throw new \InvalidArgumentException('[' . __METHOD__ . '] Config param must be valid file or array', 500);
+            throw new CoreException('[' . __METHOD__ . '] Config param must be valid file or array', 500);
         }
 
         \MicroLoader::addPath($config->get('packages', []), \null);
@@ -177,7 +183,7 @@ class Application extends Container
         try {
 
             if (($route = $this['router']->match()) === \null) {
-                throw new \Exception('[' . __METHOD__ . '] Route not found', 404);
+                throw new CoreException('[' . __METHOD__ . '] Route not found', 404);
             }
 
             if (($packageResponse = $this->unpackage($route)) instanceof Http\Response) {
@@ -209,7 +215,7 @@ class Application extends Container
 
     /**
      * @param \Exception $e
-     * @throws \Exception
+     * @throws CoreException
      * @return \Micro\Http\Response
      */
     public function handleException(\Exception $e)
@@ -223,19 +229,17 @@ class Application extends Container
         $route = $this['router']->getRoute($errorHandler['route']);
 
         if ($route === \null) {
-            throw new \Exception('[' . __METHOD__ . '] Error route not found', 404);
+            throw new CoreException('[' . __METHOD__ . '] Error route not found', 404);
         }
 
         $route->setParams($this['config']->get('error.params', []) + ['exception' => $e]);
-
-        $this['router']->setCurrentRoute($route);
 
         return $this->unpackage($route);
     }
 
     /**
      * Boot the application
-     * @throws \Exception
+     * @throws CoreException
      */
     public function boot()
     {
@@ -248,7 +252,7 @@ class Application extends Container
             if (class_exists($packageInstance, \true)) {
                 $instance = new $packageInstance($this);
                 if (!$instance instanceof Package) {
-                    throw new \RuntimeException(sprintf('[' . __METHOD__ . '] %s must be instance of Micro\Application\Package', $packageInstance), 500);
+                    throw new CoreException(sprintf('[' . __METHOD__ . '] %s must be instance of Micro\Application\Package', $packageInstance), 500);
                 }
                 $instance->setContainer($this);
                 $instance->boot();
@@ -260,7 +264,7 @@ class Application extends Container
     /**
      * Unpackage the application request
      * @param \Micro\Application\Route $route
-     * @throws \Exception
+     * @throws CoreException
      * @return \Micro\Http\Response
      */
     public function unpackage(Route $route)
@@ -295,19 +299,19 @@ class Application extends Container
      * @param Http\Request $request
      * @param Http\Response $response
      * @param bool $subRequest
-     * @throws \Exception
+     * @throws CoreException
      * @return \Micro\Http\Response
      */
     public function resolve($package, Http\Request $request, Http\Response $response, $subRequest = \false)
     {
         if (!is_string($package) || strpos($package, '@') === \false) {
-            throw new \Exception('[' . __METHOD__ . '] Package must be Package\Handler@action format', 500);
+            throw new CoreException('[' . __METHOD__ . '] Package must be Package\Handler@action format', 500);
         }
 
         list($package, $action) = explode('@', $package);
 
         if (!class_exists($package, \true)) {
-            throw new \Exception('[' . __METHOD__ . '] Package class "' . $package . '" not found', 404);
+            throw new CoreException('[' . __METHOD__ . '] Package class "' . $package . '" not found', 404);
         }
 
         $packageInstance = new $package($request, $response);
@@ -315,7 +319,7 @@ class Application extends Container
         $actionMethod = lcfirst(Utils::camelize($action)) . 'Action';
 
         if (!method_exists($packageInstance, $actionMethod)) {
-            throw new \Exception('[' . __METHOD__ . '] Method "' . $actionMethod . '" not found in "' . $package . '"', 404);
+            throw new CoreException('[' . __METHOD__ . '] Method "' . $actionMethod . '" not found in "' . $package . '"', 404);
         }
 
         if ($packageInstance instanceof ContainerAwareInterface) {
@@ -331,7 +335,7 @@ class Application extends Container
         }
 
         if (is_object($packageResponse) && !$packageResponse instanceof View) {
-            throw new \Exception('[' . __METHOD__ . '] Package response is object and must be instance of View', 500);
+            throw new CoreException('[' . __METHOD__ . '] Package response is object and must be instance of View', 500);
         }
 
         if (is_array($packageResponse) || $packageResponse === \null) {
@@ -339,9 +343,8 @@ class Application extends Container
             $packageResponse->setTemplate(Utils::decamelize($action));
         }
 
-        $parts = explode('\\', $package);
-
         if ($packageResponse instanceof View) {
+            $parts = explode('\\', $package);
             $packageResponse->injectPaths((array) package_path($parts[0], 'Resources/views'));
             if (($eventResponse = $this['event']->trigger('render.start', ['view' => $packageResponse])) instanceof Http\Response) {
                 return $eventResponse;
@@ -367,15 +370,23 @@ class Application extends Container
 
     /**
      * @param string $package
-     * @throws \Exception
+     * @throws CoreException
      * @return \Micro\Application\Package
      */
     public function getPackage($package)
     {
         if (!isset($this->packages[$package])) {
-            throw new \Exception('[' . __METHOD__ . '] Package "' . $package . '" not found');
+            throw new CoreException('[' . __METHOD__ . '] Package "' . $package . '" not found');
         }
 
         return $this->packages[$package];
+    }
+
+    /**
+     * @param \Exception $e
+     */
+    public function collectException(\Exception $e)
+    {
+        $this->exceptions[] = $e;
     }
 }

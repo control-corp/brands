@@ -2,6 +2,7 @@
 
 namespace Micro\Application;
 
+use Exception as CoreException;
 use Micro\Application\Utils;
 
 class Route
@@ -184,7 +185,7 @@ class Route
         $url = preg_replace('~(\[([^\]]+)\])~ius', '', $url); // clear rest optionals
 
         if (!static::isStatic($url)) { // check something wrong
-            throw new \Exception(sprintf('Too few arguments? "%s"!', $url), 500);
+            throw new CoreException(sprintf('Too few arguments? "%s"!', $url), 500);
         }
 
         return $url;

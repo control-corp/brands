@@ -1,21 +1,27 @@
 <?php $this->extend('layouts/default'); ?>
 
-<div class="update">
-    <form method="post">
-        <input type="text" name="username" placeholder="username" value="<?php echo identity()->getUsername(); ?>" readonly />
-        <input type="password" name="password" placeholder="password" />
-        <input type="submit" name="update" value="update" />
-    </form>
-</div>
+<h1>Профил</h1>
 
-<?php $this->start('styles'); ?>
-<style>
-    .update {
-    	margin-top: 10px;
-    }
-    .update input {
-	   display: block;
-       margin-top: 5px;
-    }
-</style>
-<?php $this->stop(); ?>
+<form class="form-horizontal" action="<?php echo route(); ?>" method="post" enctype="multipart/form-data">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="form-group" style="margin-bottom: 0">
+                        <div class="col-md-6">
+                            <?php echo $this->form->username->renderLabel(); ?>
+                            <?php echo $this->form->username; ?>
+                        </div>
+                        <div class="col-md-6">
+                            <?php echo $this->form->password->renderLabel(); ?>
+                            <?php echo $this->form->password; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <input type="submit" class="btn btn-primary" name="btnSave" value="Запазване" />
+    </div>
+</form>

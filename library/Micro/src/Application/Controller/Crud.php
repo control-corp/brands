@@ -2,6 +2,7 @@
 
 namespace Micro\Application\Controller;
 
+use Micro\Http;
 use Micro\Application\Controller;
 use Micro\Application\View;
 use Micro\Http\Response\RedirectResponse;
@@ -21,6 +22,22 @@ class Crud extends Controller
      * @var \Micro\Model\ModelInterface
      */
     protected $model;
+
+    /**
+     * @var View
+     */
+    protected $view;
+
+    /**
+     * @param Http\Request $request
+     * @param Http\Response $response
+     */
+    public function __construct(Http\Request $request, Http\Response $response)
+    {
+        parent::__construct($request, $response);
+
+        $this->view = new View();
+    }
 
     /**
      * @throws \Exception
@@ -54,6 +71,9 @@ class Crud extends Controller
         return $this->model;
     }
 
+    /**
+     * @return \Micro\Http\Response\RedirectResponse|\Micro\Application\View
+     */
     public function indexAction()
     {
         $package = $this->request->getParam('package');
@@ -101,51 +121,152 @@ class Crud extends Controller
         $grid->setIpp($ipp);
         $grid->setPageNumber($page);
 
-        return new View(
-            $controller . '/index',
-            ['grid' => $grid, 'filters' => $filters]
-        );
+        $this->view->setTemplate($controller . '/index');
+
+        $this->view->addData(['grid' => $grid, 'filters' => $filters]);
+
+        return $this->view;
     }
 
+    /**
+     * @param EntityInterface $entity
+     * @return \Micro\Http\Response\RedirectResponse|\Micro\Application\View
+     */
     public function addAction(EntityInterface $entity = \null)
     {
         $package = $this->request->getParam('package');
         $controller = $this->request->getParam('controller');
 
-        $form = new Form(package_path(ucfirst(Utils::camelize($package)), '/Resources/forms/' . $controller . '-add.php'));
-
         $model = $this->getModel();
 
-        if ($entity !== \null) {
-            $form->populate($entity->toArray());
-        } else {
+        if ($entity === \null) {
             $entity = $model->createEntity();
         }
+
+        $form = new Form(package_path(ucfirst(Utils::camelize($package)), '/Resources/forms/' . $controller . '-add.php'));
+
+        $form->populate($entity->toArray());
+
+        $this->prepareForm($form, $entity);
 
         if ($this->request->isPost()) {
 
             $post = $this->request->getPost();
 
-            if ($form->isValid($post)) {
+            if (isset($post['btnBack'])) {
+                return new RedirectResponse(route(\null, ['action' => 'index', 'id' => \null]));
+            }
+
+            $post = Utils::arrayMapRecursive('trim', $post);
+
+            $this->modifyPost($form, $entity, $post);
+
+            $this->preValidate($form, $entity, $post);
+
+            $form->isValid($post);
+
+            $this->postValidate($form, $entity, $post);
+
+            if (!$form->hasErrors()) {
 
                 if (!isset($post['language_id']) && ($language = app('language')) instanceof LanguageInterface) {
                     $post['language_id'] = $language->getId();
                 }
 
-                $model->save($entity->setFromArray($post));
+                try {
 
-                $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index', 'id' => \null]));
+                    $post = Utils::arrayMapRecursive('trim', $post, true);
 
-                return $redirectResponse->withFlash(sprintf('Информацията е записана'));
+                    $this->modifyData($post);
+
+                    $entity->setFromArray($post);
+
+                    $this->modifyEntity($entity);
+
+                    $model->save($entity);
+
+                    if (isset($post['btnApply'])) {
+                        $redirectResponse = new RedirectResponse(route(\null, ['action' => 'edit', 'id' => $entity[$model->getIdentifier()]]));
+                    } else {
+                        $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index', 'id' => \null]));
+                    }
+
+                    return $redirectResponse->withFlash('Информацията е записана');
+
+                } catch (\Exception $e) {
+
+                    if ($entity[$model->getIdentifier()]) {
+                        $redirectResponse = new RedirectResponse(route(\null, ['action' => 'edit', 'id' => $entity[$model->getIdentifier()]]));
+                    } else {
+                        $redirectResponse = new RedirectResponse(route(\null, ['action' => 'add', 'id' => \null]));
+                    }
+
+                    return $redirectResponse->withFlash($e->getMessage(), 'danger');
+                }
             }
         }
 
-        return new View(
-            $controller . '/add',
-            ['form' => $form, 'item' => $entity]
-        );
+        $this->view->addData(['form' => $form, 'item' => $entity]);
+
+        $this->view->setTemplate($controller . '/add');
+
+        return $this->view;
     }
 
+    /**
+     * @param Form $form
+     * @param EntityInterface $entity
+     */
+    protected function prepareForm(Form $form, EntityInterface $entity)
+    {
+    }
+
+    /**
+     * @param Form $form
+     * @param EntityInterface $entity
+     * @param array $data
+     */
+    protected function modifyPost(Form $form, EntityInterface $item, array &$data)
+    {
+    }
+
+    /**
+     * @param Form $form
+     * @param EntityInterface $entity
+     * @param array $data
+     */
+    protected function preValidate(Form $form, EntityInterface $item, array $data)
+    {
+
+    }
+
+    /**
+     * @param Form $form
+     * @param EntityInterface $entity
+     * @param array $data
+     */
+    protected function postValidate(Form $form, EntityInterface $item, array $data)
+    {
+    }
+
+    /**
+     * @param array $data
+     */
+    protected function modifyData(array &$data)
+    {
+    }
+
+    /**
+     * @param EntityInterface $entity
+     */
+    protected function modifyEntity(EntityInterface $entity)
+    {
+    }
+
+    /**
+     * @throws \Exception
+     * @return \Micro\Http\Response\RedirectResponse|\Micro\Application\View
+     */
     public function editAction()
     {
         $model = $this->getModel();
@@ -163,6 +284,9 @@ class Crud extends Controller
         return $this->addAction($entity);
     }
 
+    /**
+     * @return \Micro\Http\Response\RedirectResponse
+     */
     public function deleteAction()
     {
         $id = (int) $this->request->getParam('id', 0);
@@ -174,30 +298,23 @@ class Crud extends Controller
 
         $ids = array_filter($ids);
 
+        $affected = 0;
+
         if (!empty($ids)) {
             $this->getModel()->addFilters(['id' => $ids]);
             $items = $this->getModel()->getItems();
             foreach ($items as $item) {
-                $this->getModel()->delete($item);
+                try {
+                    $affected += $this->getModel()->delete($item);
+                } catch (\Exception $e) {
+
+                }
             }
         }
 
         $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index', 'id' => \null, 'ids' => \null]));
 
-        return $redirectResponse->withFlash('Информацията е записана');
-    }
-
-    public function viewAction()
-    {
-        $item = $this->getModel()->find((int) $this->request->getParam('id', 0));
-
-        if ($item === \null) {
-            throw new \Exception(sprintf('Записът не е намерен'), 404);
-        }
-
-        $controller = $this->request->getParam('controller');
-
-        return new View($controller . '/view', ['item' => $item]);
+        return $redirectResponse->withFlash(sprintf('Информацията е записана. Бяха изтрити %d запис(а)', $affected));
     }
 
     /**
@@ -221,13 +338,17 @@ class Crud extends Controller
             $this->getModel()->addWhere('id', $ids);
             $items = $this->getModel()->getItems();
             foreach ($items as $item) {
-                $affected += $this->getModel()->activate($item, $active);
+                try {
+                    $affected += $this->getModel()->activate($item, $active);
+                } catch (\Exception $e) {
+
+                }
             }
         }
 
         $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index', 'id' => \null, 'ids' => \null]));
 
-        return $redirectResponse->withFlash('Информацията е записана');
+        return $redirectResponse->withFlash(sprintf('Информацията е записана. Бяха %s %d запис(а)', ($active ? 'активирани' : 'деактивирани'), $affected));
     }
 
     /**
@@ -238,6 +359,11 @@ class Crud extends Controller
         return $this->activateAction(0);
     }
 
+    /**
+     * Handle filters
+     * @param string $key
+     * @return \Micro\Http\Response\RedirectResponse|array
+     */
     protected function handleFilters($key = 'filters')
     {
         $filters = $this->request->getParam($key);

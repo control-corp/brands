@@ -15,9 +15,10 @@
     <?php echo $this->renderSection('styles'); ?>
 </head>
 <body role="document">
-    <?php echo $this->partial('layouts/includes/_menu'); ?>
+    <?php echo $this->render('layouts/includes/_menu'); ?>
     <div class="container-fluid">
-        <?php echo $this->partial('layouts/includes/_flash'); ?>
+        <?php echo $this->render('layouts/includes/_breadcrumb'); ?>
+        <?php echo $this->render('layouts/includes/_flash'); ?>
         <?php echo $this->renderSection('content'); ?>
     </div>
     <footer class="footer">

@@ -7,15 +7,15 @@ return [
             'options' => [
                 'required' => 1,
                 'class' => 'form-control',
-                'attributes' => ['placeholder' => 'username']
+                'attributes' => ['placeholder' => 'username', 'readonly' => 'readonly']
             ]
         ],
         'password' => [
             'type'    => 'password',
             'options' => [
-                'required' => 1,
+                'required' => 0,
                 'class' => 'form-control',
-                'attributes' => ['placeholder' => 'password']
+                'attributes' => ['placeholder' => 'password', 'autocomplete' => 'off']
             ]
         ]
     ]
