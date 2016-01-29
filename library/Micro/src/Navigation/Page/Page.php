@@ -2,6 +2,7 @@
 
 namespace Micro\Navigation\Page;
 
+use Micro\Application\Route;
 class Page extends AbstractPage
 {
     protected $alias;
@@ -138,7 +139,7 @@ class Page extends AbstractPage
         return $this;
     }
 
-    public function hasAccess()
+    public function isAllowed($role = \null)
     {
         if ($this->uri !== \null) {
             return \true;
@@ -146,7 +147,7 @@ class Page extends AbstractPage
 
         $route = app('router')->getRoute($this->route);
 
-        if ($route === \null) {
+        if (!$route instanceof Route) {
             return \false;
         }
 
@@ -154,7 +155,7 @@ class Page extends AbstractPage
 
         $resource = $route->getHandler();
 
-        if (!is_string($resource) || is_allowed($resource)) {
+        if (!is_string($resource) || is_allowed($resource, $role)) {
             return \true;
         }
 

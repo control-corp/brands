@@ -67,6 +67,14 @@ class Application extends Container
                 $response = $eventResponse;
             }
 
+            if (env('development')) {
+                foreach ($this->exceptions as $exception) {
+                    if ($exception instanceof \Exception) {
+                        $response->write('<pre>' . $exception->getMessage() . '</pre>');
+                    }
+                }
+            }
+
             $response->send();
 
         } catch (\Exception $e) {

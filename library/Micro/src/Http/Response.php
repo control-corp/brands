@@ -120,6 +120,13 @@ class Response
         return $this;
     }
 
+    public function write($value)
+    {
+        $this->body .= $value;
+
+        return $this;
+    }
+
     public function setBody($value)
     {
         $this->body = $value;
