@@ -82,7 +82,7 @@ class View
             }
         }
 
-        return 'Template "' . $file . '" not found in ' . implode(', ', $this->paths);
+        throw new CoreException('Template "' . $file . '" not found in ' . implode(', ', $this->paths), 500);
     }
 
     public function evalFile($__path)

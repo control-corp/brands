@@ -245,47 +245,21 @@ class Router
             }
         }
 
-		if (!isset($this->routes['admin-ajax'])) {
-            $route = $this->map('admin-ajax', '/admin/ajax/{package}[/{controller}][/{action}][/{id}]', function () {
-                $params = $this->getParams() + $this->getDefaults();
-                return ucfirst(Utils::camelize($params['package']))
-                        . '\\Controller\\Admin\\' . ucfirst(Utils::camelize($params['controller'])) . '\\Ajax'
-                        . '@' . lcfirst(Utils::camelize($params['action']));
-            });
-            $route->setDefaults(['package' => 'App', 'controller' => 'Index', 'action' => 'index', 'id' => null]);
-            $route->setConditions(['package' => '[\w._-]+', 'controller' => '[\w._-]+', 'action' => '[\w._-]+']);
-        }
-
         if (!isset($this->routes['admin'])) {
             $route = $this->map('admin', '/admin[/{package}][/{controller}][/{action}][/{id}]', function () {
-                $params = $this->getParams() + $this->getDefaults();
-                return ucfirst(Utils::camelize($params['package']))
-                        . '\\Controller\\Admin\\' . ucfirst(Utils::camelize($params['controller']))
-                        . '@' . lcfirst(Utils::camelize($params['action']));
+                $params = \array_map('Micro\Application\Utils::camelize', $this->getParams());
+                return \ucfirst($params['package']) . '\\Controller\Admin\\' . \ucfirst($params['controller']) . '@' . \lcfirst($params['action']);
             });
-            $route->setDefaults(['package' => 'App', 'controller' => 'Index', 'action' => 'index', 'id' => null]);
-            $route->setConditions(['package' => '[\w._-]+', 'controller' => '[\w._-]+', 'action' => '[\w._-]+']);
-        }
-
-		if (!isset($this->routes['default-ajax'])) {
-            $route = $this->map('default-ajax', '/ajax/{package}[/{controller}][/{action}][/{id}]', function () {
-                $params = $this->getParams() + $this->getDefaults();
-                return ucfirst(Utils::camelize($params['package']))
-                        . '\\Controller\\Front\\' . ucfirst(Utils::camelize($params['controller'])) . '\\Ajax'
-                        . '@' . lcfirst(Utils::camelize($params['action']));
-            });
-            $route->setDefaults(['package' => 'App', 'controller' => 'Index', 'action' => 'index', 'id' => null]);
+            $route->setDefaults(['package' => 'app', 'controller' => 'index', 'action' => 'index', 'id' => \null]);
             $route->setConditions(['package' => '[\w._-]+', 'controller' => '[\w._-]+', 'action' => '[\w._-]+']);
         }
 
         if (!isset($this->routes['default'])) {
             $route = $this->map('default', '/{package}[/{controller}][/{action}][/{id}]', function () {
-                $params = $this->getParams() + $this->getDefaults();
-                return ucfirst(Utils::camelize($params['package']))
-                        . '\\Controller\Front\\' . ucfirst(Utils::camelize($params['controller']))
-                        . '@' . lcfirst(Utils::camelize($params['action']));
+                $params = \array_map('Micro\Application\Utils::camelize', $this->getParams());
+                return \ucfirst($params['package']) . '\\Controller\Front\\' . \ucfirst($params['controller']) . '@' . \lcfirst($params['action']);
             });
-            $route->setDefaults(['package' => 'App', 'controller' => 'Index', 'action' => 'index', 'id' => null]);
+            $route->setDefaults(['package' => 'app', 'controller' => 'index', 'action' => 'index', 'id' => \null]);
             $route->setConditions(['package' => '[\w._-]+', 'controller' => '[\w._-]+', 'action' => '[\w._-]+']);
         }
     }

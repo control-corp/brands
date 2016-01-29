@@ -269,7 +269,7 @@ class Application extends Container
      */
     public function unpackage(Route $route)
     {
-        $this['request']->setParams($route->getParams() + $route->getDefaults());
+        $this['request']->setParams($route->getParams());
 
         if (($eventResponse = $this['event']->trigger('unpackage.start', compact('route'))) instanceof Http\Response) {
             return $eventResponse;

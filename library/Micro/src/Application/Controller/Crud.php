@@ -2,9 +2,7 @@
 
 namespace Micro\Application\Controller;
 
-use Micro\Http;
 use Micro\Application\Controller;
-use Micro\Application\View;
 use Micro\Http\Response\RedirectResponse;
 use Micro\Form\Form;
 use Micro\Grid;
@@ -22,22 +20,6 @@ class Crud extends Controller
      * @var \Micro\Model\ModelInterface
      */
     protected $model;
-
-    /**
-     * @var View
-     */
-    protected $view;
-
-    /**
-     * @param Http\Request $request
-     * @param Http\Response $response
-     */
-    public function __construct(Http\Request $request, Http\Response $response)
-    {
-        parent::__construct($request, $response);
-
-        $this->view = new View();
-    }
 
     /**
      * @throws \Exception

@@ -3,7 +3,6 @@
 namespace App\Controller\Front;
 
 use Micro\Application\Controller;
-use Micro\Application\View;
 use Micro\Http\Response\JsonResponse;
 use Micro\Http\Response\RedirectResponse;
 use Micro\Auth\Auth;
@@ -39,10 +38,12 @@ class Error extends Controller
 
         $this->response->setCode($code);
 
-        return new View('error', [
-            'exception' => $exception,
-            'message' => $message
-        ]);
+        return $this->view
+                    ->setTemplate('error')
+                    ->addData([
+                        'exception' => $exception,
+                        'message'   => $message
+                    ]);
     }
 
     /**

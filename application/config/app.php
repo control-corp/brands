@@ -14,7 +14,7 @@ return [
         'Nomenclatures' => 'application/packages/Nomenclatures',
         'UserManagement' => 'application/packages/UserManagement',
         'Navigation' => 'application/packages/Navigation',
-        'MicroDebug' => 'library/Micro/packages/MicroDebug'
+        //'MicroDebug' => 'library/Micro/packages/MicroDebug'
     ],
     'routes' => include 'application/config/routes.php',
     'error' => [

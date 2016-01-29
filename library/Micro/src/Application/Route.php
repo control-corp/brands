@@ -263,8 +263,12 @@ class Route
     /**
      * @return array
      */
-    public function getParams()
+    public function getParams($withDefaults = \true)
     {
+        if ($withDefaults === \true) {
+            return $this->params + $this->defaults;
+        }
+
         return $this->params;
     }
 

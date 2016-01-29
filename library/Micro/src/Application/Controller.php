@@ -22,6 +22,11 @@ class Controller implements ContainerAwareInterface
     protected $response;
 
     /**
+     * @var View
+     */
+    protected $view;
+
+    /**
      * @param \Micro\Http\Request $request
      * @param \Micro\Http\Response $response
      */
@@ -30,6 +35,8 @@ class Controller implements ContainerAwareInterface
         $this->request = $request;
 
         $this->response = $response;
+
+        $this->view = new View();
     }
 
     /**
