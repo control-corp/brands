@@ -6,6 +6,7 @@ return [
     ['label' => 'Управление', 'alias' => 'control', 'uri' => '#', 'pages' => [
         ['label' => 'Настройки', 'alias' => 'control.settings', 'route' => 'default', 'routeParams' => ['package' => 'app', 'controller' => 'settings']],
         ['label' => 'Групи', 'alias' => 'control.groups', 'route' => 'default', 'routeParams' => ['package' => 'user-management', 'controller' => 'groups']],
+        ['label' => 'Email шаблони', 'alias' => 'control.mail.templates', 'route' => 'default', 'routeParams' => ['package' => 'mail', 'controller' => 'index']],
     ]],
     ['label' => 'Номенклатури', 'alias' => 'nomenclatures', 'route' => 'default', 'routeParams' => ['package' => 'nomenclatures', 'controller' => 'brand-classes'], 'pages' => [
         ['label' => 'Класове марки', 'alias' => 'nomenclatures.brand.classes', 'route' => 'default', 'routeParams' => ['package' => 'nomenclatures', 'controller' => 'brand-classes']],

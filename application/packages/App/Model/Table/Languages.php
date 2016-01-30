@@ -6,5 +6,5 @@ use Micro\Database\Table\TableAbstract;
 
 class Languages extends TableAbstract
 {
-    protected $_name = 'languages';
+    protected $_name = 'Languages';
 }
