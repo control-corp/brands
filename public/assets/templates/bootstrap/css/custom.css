@@ -42,7 +42,7 @@ body > .container-fluid {
 	content: "»";
 }
     
-.errors {
+.element-error {
    	color: #a94442;
    	margin-top: 2px;
    	width: 100%;

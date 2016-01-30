@@ -13,9 +13,9 @@ $(document).ajaxStop(function () {
 
 function moveToErrors()
 {
-	if ($('span.errors').length) {
+	if ($('span.element-error').length) {
 	    $('html, body').animate({
-	        scrollTop: $('span.errors').first().prev().offset().top - 30
+	        scrollTop: $('span.element-error').first().prev().offset().top - 30
 	    },500);
 	}
 }
