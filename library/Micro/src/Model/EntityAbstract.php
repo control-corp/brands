@@ -26,15 +26,8 @@ abstract class EntityAbstract implements EntityInterface
     {
         $data = [];
 
-        $reflection = new \ReflectionClass($this);
-
         foreach ($this as $k => $v) {
-            $method = 'get' . ucfirst(Utils::camelize($k));
-            if ($reflection->hasMethod($method)) {
-                $data[$k] = $this->$method();
-            } else {
-                $data[$k] = $v;
-            }
+            $data[$k] = $v;
         }
 
         return $data;

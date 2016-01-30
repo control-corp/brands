@@ -48,4 +48,9 @@ class Controller implements ContainerAwareInterface
             throw new CoreException('Access denied', 403);
         }
     }
+
+    public function getView()
+    {
+        return $this->view;
+    }
 }

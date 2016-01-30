@@ -49,8 +49,6 @@ class Page extends AbstractPage
     {
         if (\null === $this->active) {
 
-            $reqParams = app('request')->getParams();
-
             $route = app('router')->getCurrentRoute();
 
             if ($route === \null || $route->getName() !== $this->route) {
@@ -58,7 +56,11 @@ class Page extends AbstractPage
                 return;
             }
 
-            $myParams = $this->routeParams;
+            $reqParams = app('request')->getParams();
+
+            $pageRoute = app('router')->getRoute($this->route);
+
+            $myParams = $this->routeParams + ($pageRoute ? $pageRoute->getParams() : []);
 
             foreach ($myParams as $key => $value) {
                 if (\null === $value) {

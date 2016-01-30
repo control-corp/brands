@@ -346,13 +346,17 @@ class Application extends Container
             throw new CoreException('[' . __METHOD__ . '] Package response is object and must be instance of View', 500);
         }
 
-        if (is_array($packageResponse) || $packageResponse === \null) {
+        if ($packageResponse === \null) {
+            $packageResponse = $packageInstance->getView();
+        } else if (is_array($packageResponse)) {
             $packageResponse = new View(\null, $packageResponse);
-            $packageResponse->setTemplate(Utils::decamelize($action));
         }
 
         if ($packageResponse instanceof View) {
             $parts = explode('\\', $package);
+            if ($packageResponse->getTemplate() === \null) {
+                $packageResponse->setTemplate(Utils::decamelize($parts[count($parts) - 1]) . '/' . Utils::decamelize($action));
+            }
             $packageResponse->injectPaths((array) package_path($parts[0], 'Resources/views'));
             if (($eventResponse = $this['event']->trigger('render.start', ['view' => $packageResponse])) instanceof Http\Response) {
                 return $eventResponse;

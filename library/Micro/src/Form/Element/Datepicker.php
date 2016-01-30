@@ -14,12 +14,14 @@ class Datepicker extends Element
 
         $name = $this->getFullyName();
 
+        $value = '';
+
         try {
-            $date  = new \DateTime($this->value);
-            $value = $date->format($this->format);
-        } catch (\Exception $e) {
-            $value = '';
-        }
+            if ($this->value) {
+                $date  = new \DateTime($this->value);
+                $value = $date->format($this->format);
+            }
+        } catch (\Exception $e) {}
 
         $tmp .= '<input type="text" name="' . $name . '" value="' . escape($value) . '"' . $this->htmlAttributes() . ' />';
 

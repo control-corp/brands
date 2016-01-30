@@ -107,14 +107,7 @@ class View
 
     public function __toString()
     {
-        try {
-            return (string) $this->render();
-        } catch (\Exception $e) {
-            if (env('development')) {
-                return $e->getMessage();
-            }
-            return '';
-        }
+        return get_class($this);
     }
 
     public function setData($data)
@@ -127,6 +120,20 @@ class View
     public function addData(array $data)
     {
         $this->data = array_merge($this->data, $data);
+
+        return $this;
+    }
+
+    public function assign($key, $value)
+    {
+        if (is_array($key)) {
+            foreach ($key as $k => $v) {
+                $this->assign($k, $v);
+            }
+            return $this;
+        }
+
+        $this->data[$key] = $value;
 
         return $this;
     }

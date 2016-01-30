@@ -89,10 +89,14 @@ class Crud extends Controller
 
         $model->addFilters($filters);
 
+        $this->modifyModel($filters);
+
         $grid = new Grid\Grid(
             $model,
             package_path(ucfirst(Utils::camelize($package)), '/Resources/grids/' . $controller . '.php')
         );
+
+        $grid->getRenderer()->setView($this->view);
 
         $column = $grid->getColumn($orderField);
 
@@ -108,6 +112,13 @@ class Crud extends Controller
         $this->view->addData(['grid' => $grid, 'filters' => $filters]);
 
         return $this->view;
+    }
+
+    /**
+     * @param array $filters
+     */
+    protected function modifyModel(array $filters)
+    {
     }
 
     /**

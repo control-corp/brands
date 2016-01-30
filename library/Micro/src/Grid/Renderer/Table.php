@@ -31,6 +31,13 @@ class Table implements RendererInterface
         return $this->view;
     }
 
+    public function setView(View $view)
+    {
+        $this->view = $view;
+
+        return $this;
+    }
+
     public function render()
     {
         $paginator = $this->grid->getPaginator();
