@@ -251,7 +251,7 @@ class Router
                 return \ucfirst($params['package']) . '\\Controller\Admin\\' . \ucfirst($params['controller']) . '@' . \lcfirst($params['action']);
             });
             $route->setDefaults(['package' => 'app', 'controller' => 'index', 'action' => 'index', 'id' => \null]);
-            $route->setConditions(['package' => '[\w._-]+', 'controller' => '[\w._-]+', 'action' => '[\w._-]+']);
+            $route->setConditions(['package' => '[^\/]+', 'controller' => '[^\/]+', 'action' => '[^\/]+']);
         }
 
         if (!isset($this->routes['default'])) {
@@ -260,7 +260,7 @@ class Router
                 return \ucfirst($params['package']) . '\\Controller\Front\\' . \ucfirst($params['controller']) . '@' . \lcfirst($params['action']);
             });
             $route->setDefaults(['package' => 'app', 'controller' => 'index', 'action' => 'index', 'id' => \null]);
-            $route->setConditions(['package' => '[\w._-]+', 'controller' => '[\w._-]+', 'action' => '[\w._-]+']);
+            $route->setConditions(['package' => '[^\/]+', 'controller' => '[^\/]+', 'action' => '[^\/]+']);
         }
     }
 }

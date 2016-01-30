@@ -3,6 +3,7 @@
 namespace Navigation\Model\Table;
 
 use Micro\Database\Table\TableAbstract;
+use Navigation\Model;
 
 class Items extends TableAbstract
 {
@@ -11,6 +12,9 @@ class Items extends TableAbstract
     public function updateTree(array $tree)
     {
         $this->_updateTree($tree);
+
+        $itemsModel = new Model\Items();
+        $itemsModel->removeCache();
     }
 
     protected function _updateTree(array $tree, $parent = null)

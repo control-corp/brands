@@ -160,6 +160,12 @@ class Route
 
         $url = $this->pattern;
 
+        $a = 0;
+
+        if ($data['controller'] === 'brand-classes') {
+            $a = 1;
+        }
+
         foreach ($data as $k => $v) {
 
             $v = Utils::decamelize($v);

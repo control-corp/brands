@@ -7,7 +7,7 @@ return [
             'options' => [
                 'required' => 1,
                 'class' => 'form-control',
-                'attributes' => ['placeholder' => 'username']
+                'attributes' => ['placeholder' => 'потребителско име']
             ]
         ],
         'password' => [
@@ -15,7 +15,7 @@ return [
             'options' => [
                 'required' => 1,
                 'class' => 'form-control',
-                'attributes' => ['placeholder' => 'password']
+                'attributes' => ['placeholder' => 'парола']
             ]
         ]
     ]
