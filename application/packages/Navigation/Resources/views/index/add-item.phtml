@@ -89,20 +89,23 @@ $this->hookToMenu('main', 'control.navigation', $label);
 </form>
 <?php $this->start('scripts'); ?>
 <script>
-$('#route').on('change', function (e, routeData) {
+$('#route').on('change', function (e, routeData, qsaData) {
 	if ($.trim($(this).val()) === '') {
 	    $('#routeData').html('');
 	    return true;
 	}
 	if (typeof routeData === 'undefined') {
-		routeData = [];
+		routeData = '[]';
 	}
-    $.post('<?php echo route(\null, array('action' => 'ajax-get-route-data')); ?>', {route: $(this).val(), routeData: JSON.stringify(routeData) }, function (res) {
+	if (typeof qsaData === 'undefined') {
+		qsaData = '';
+	}
+    $.post('<?php echo route(\null, array('action' => 'ajax-get-route-data')); ?>', {route: $(this).val(), routeData: routeData, qsaData: qsaData}, function (res) {
         $('#routeData').html(res);
     });
 });
 if ($('#route').val()) {
-	$('#route').trigger('change', <?php echo json_encode($this->routeData); ?>);
+	$('#route').trigger('change', ['<?php echo ($this->item->getRouteData() ? $this->item->getRouteData() : '[]'); ?>', '<?php echo $this->item->getQsaData(); ?>']);
 }
 </script>
 <?php $this->stop(); ?>

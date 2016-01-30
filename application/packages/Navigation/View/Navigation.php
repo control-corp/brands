@@ -10,21 +10,34 @@ class Navigation
 {
     protected static $menus = [];
 
-    public function __construct()
-    {
-        //static::$menus['main'] = new NavigationContainer(include package_path('Navigation', 'Resources/menu-main.php'));
-        //static::$menus['left'] = new NavigationContainer(include package_path('Navigation', 'Resources/menu-left.php'));
-    }
-
     public function __invoke($menuId)
     {
         if (!isset(static::$menus[$menuId])) {
 
-            $container = new NavigationContainer();
+            $cache = \null;
 
-            $tree = new Helper\Tree($menuId);
+            try {
+                $cache = app('cache');
+            } catch (\Exception $e) {}
 
-            $container->setPages($this->buildPages($tree->getTree()));
+            $languageCode = 'no';
+
+            try {
+                $language = app('language');
+                $languageCode = $language ? $language->getCode() : 'no';
+            } catch (\Exception $e) {}
+
+            $cacheId = 'Menu_' . $menuId . '_' . $languageCode;
+            $cacheId = preg_replace('~[^a-zA-Z0-9_]~', '_', $cacheId);
+
+            if ($cache === \null || ($container = $cache->load($cacheId)) === \false) {
+                $tree = new Helper\Tree($menuId);
+                $container = new NavigationContainer();
+                $container->setPages($this->buildPages($tree->getTree()));
+                if ($cache !== \null) {
+                    $cache->save($container, $cacheId, ['Navigation_Model_Items']);
+                }
+            }
 
             static::$menus[$menuId] = $container;
         }
@@ -59,6 +72,12 @@ class Navigation
                 $routeData = $item['routeData']
                              ? json_decode($item['routeData'], \true)
                              : [];
+
+                if ($item['qsaData']) {
+                    $qsaData = [];
+                    parse_str($item['qsaData'], $qsaData);
+                    $routeData = array_merge($routeData, $qsaData);
+                }
 
                 $page->setRouteParams($routeData);
             }

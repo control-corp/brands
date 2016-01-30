@@ -22,9 +22,10 @@ return [
             'pattern' => '/profile',
             'handler' => 'UserManagement\Controller\Front\Index@profile'
         ],
-        'article.id' => [
-            'pattern' => '/article/{alias}/{id}',
-            'handler' => 'App\Controller\Front\Index@article',
+        'pages.detail' => [
+            'pattern' => '/page/{alias}-{id}.html',
+            'handler' => 'Pages\Controller\Front\Index@detail',
+            'conditions' => ['alias' => '[\w-]+', 'id' => '\d+'],
         ],
     ]
 ];

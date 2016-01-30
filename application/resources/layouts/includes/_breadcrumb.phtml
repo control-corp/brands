@@ -1,7 +1,7 @@
 <?php
 $found = [];
-foreach (array('main', 'left') as $menu) {
-    $found = $this->navigation($menu)->findAllBy('active', 1);
+foreach (Navigation\View\Navigation::getMenus() as $menu) {
+    $found = $menu->findAllBy('active', 1);
     if (!empty($found)) {
         break;
     }

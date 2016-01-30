@@ -15,6 +15,7 @@ class Item extends EntityAbstract
     protected $route;
     protected $reset = 1;
     protected $qsa = 0;
+    protected $qsaData;
     protected $routeData;
     protected $active = 1;
     protected $order;
@@ -113,6 +114,17 @@ class Item extends EntityAbstract
     {
         return $this->qsa;
     }
+
+    public function getQsaData()
+    {
+        return $this->qsaData;
+    }
+
+    public function setQsaData($qsaData)
+    {
+        $this->qsaData = $qsaData;
+    }
+
 
     public function setReset($reset)
     {

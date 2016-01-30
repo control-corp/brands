@@ -16,7 +16,7 @@ class Error extends Controller
         $exception = $this->request->getParam('exception');
 
         if (!$exception instanceof \Exception) {
-            return '';
+            return;
         }
 
         $code = $exception->getCode() ?: 404;

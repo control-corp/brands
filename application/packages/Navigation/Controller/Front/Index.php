@@ -92,11 +92,10 @@ class Index extends Crud
         $form = new Form(package_path('Navigation', 'Resources/forms/index-add-item.php'));
 
         $tree = new Helper\Tree($menu->getAlias());
+
         $form->parentId->setMultiOptions($tree->flat($tree->getTree(null), '---', array((int) $id)));
 
         $form->populate($item->toArray());
-
-        $routeData = $item->getRouteData() ? json_decode($item->getRouteData(), \true) : [];
 
         if ($this->request->isPost()) {
 
@@ -152,6 +151,14 @@ class Index extends Crud
                     $item->setUrl(\null);
                 }
 
+                if ($item->getRoute()) {
+                    if (($navigationHelper = $this->getNavigationHelper($item->getRoute())) !== \null) {
+                        if (method_exists($navigationHelper, 'decode')) {
+                            $navigationHelper->decode($routeData, $item);
+                        }
+                    }
+                }
+
                 $item->setRouteData(empty($routeData) ? \null : json_encode($routeData));
 
                 if ($item->getOrder() === \null) {
@@ -191,13 +198,14 @@ class Index extends Crud
         $this->view->assign('menu', $menu);
         $this->view->assign('item', $item);
         $this->view->assign('form', $form);
-        $this->view->assign('routeData', $routeData);
     }
 
     public function ajaxGetRouteDataAction()
     {
         $routeName = $this->request->getPost('route');
         $routeData = $this->request->getPost('routeData');
+        $qsaData   = $this->request->getPost('qsaData');
+
         $routeData = $routeData ? json_decode($routeData, \true) : [];
         $routeData = is_array($routeData) ? $routeData : [];
 
@@ -205,8 +213,37 @@ class Index extends Crud
 
         $route->compile();
 
+        $navigationData = [];
+
+        if (($navigationHelper = $this->getNavigationHelper($routeName)) !== \null) {
+            if (method_exists($navigationHelper, 'resolve')) {
+                $navigationData = $navigationHelper->resolve($routeData);
+            }
+        }
+
         $this->view->assign('route', $route);
         $this->view->assign('routeData', $routeData);
+        $this->view->assign('qsaData', $qsaData);
+        $this->view->assign('navigationData', $navigationData);
+    }
+
+    protected function getNavigationHelper($routeName)
+    {
+        $route = app('router')->getRoute($routeName);
+
+        $handler = $route->getHandler(\false);
+
+        if (is_string($handler) && strpos($handler, '@') !== \false) {
+            list($package, $action) = explode('@', $handler);
+            $parts = explode('\\', $package);
+            $navigationHelper = \ucfirst(Utils::camelize($parts[0])) . '\\Navigation\\' . \ucfirst(Utils::camelize($routeName));
+            if (class_exists($navigationHelper, \true)) {
+                $navigationHelper = new $navigationHelper($route);
+                return $navigationHelper;
+            }
+        }
+
+        return null;
     }
 
     public function deleteItemAction()
