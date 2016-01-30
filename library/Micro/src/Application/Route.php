@@ -41,6 +41,8 @@ class Route
      * @var array
      */
     protected $params = [];
+    protected $paramsOptional = [];
+    protected $paramsRequired = [];
 
     /**
      * @param string $name
@@ -102,7 +104,7 @@ class Route
 
                 $regex = '\w+';
 
-                $this->params[$match[2]] = isset($this->defaults[$match[2]]) ? $this->defaults[$match[2]] : \null;
+                $this->paramsOptional[$match[2]] = isset($this->defaults[$match[2]]) ? $this->defaults[$match[2]] : \null;
 
                 if (isset($this->conditions[$match[2]])) {
                     $regex = $this->conditions[$match[2]];
@@ -118,7 +120,7 @@ class Route
 
                 $regex = '\w+';
 
-                $this->params[$match[1]] = isset($this->defaults[$match[1]]) ? $this->defaults[$match[1]] : \null;
+                $this->paramsRequired[$match[1]] = isset($this->defaults[$match[1]]) ? $this->defaults[$match[1]] : \null;
 
                 if (isset($this->conditions[$match[1]])) {
                     $regex = $this->conditions[$match[1]];
@@ -129,6 +131,8 @@ class Route
             };
 
             $this->compiled = preg_replace_callback('~{([^}]+)}~ius', $lambdaRequired->bindTo($this), $this->compiled);
+
+            $this->params = $this->paramsRequired + $this->paramsOptional;
         }
 
         return $this->compiled;

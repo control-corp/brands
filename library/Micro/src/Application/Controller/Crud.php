@@ -194,7 +194,7 @@ class Crud extends Controller
                         $redirectResponse = new RedirectResponse(route(\null, ['action' => 'add', 'id' => \null]));
                     }
 
-                    return $redirectResponse->withFlash($e->getMessage(), 'danger');
+                    return $redirectResponse->withFlash((env('development') ? $e->getMessage() : 'Възникна грешка. Опитайте по-късно'), 'danger');
                 }
             }
         }

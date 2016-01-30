@@ -3,6 +3,7 @@
 namespace Micro\Navigation\Page;
 
 use Micro\Application\Route;
+
 class Page extends AbstractPage
 {
     protected $alias;
