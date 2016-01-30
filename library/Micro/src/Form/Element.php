@@ -473,9 +473,14 @@ abstract class Element
             return $data;
         }
 
-        /**
-         * @todo Translate
-         */
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                $data[$key] = $this->translateData($value);
+            }
+        } else {
+            $data = translate($data);
+        }
+
         return $data;
     }
 }

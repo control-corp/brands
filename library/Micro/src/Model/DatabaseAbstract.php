@@ -91,6 +91,8 @@ abstract class DatabaseAbstract implements AdapterInterface, ModelInterface
 
     public function find()
     {
+        $this->resetSelect(\true);
+
         $pkInfo = $this->table->info(TableAbstract::PRIMARY);
 
         $ids = func_get_args();

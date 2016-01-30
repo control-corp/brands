@@ -95,7 +95,12 @@ class Page extends AbstractPage
             if ($this->uri !== \null) {
                 $this->href = (string) $this->uri;
             } else {
-                $this->href = (string) route($this->route, $this->routeParams, $this->reset, $this->qsa);
+                try {
+                    $this->href = (string) route($this->route, $this->routeParams, $this->reset, $this->qsa);
+                } catch (\Exception $e) {
+                    $this->label = $e->getMessage();
+                    $this->href = '#';
+                }
             }
         }
 

@@ -358,26 +358,43 @@ class Application extends Container
             throw new CoreException('[' . __METHOD__ . '] Package response is object and must be instance of View', 500);
         }
 
-        if ($packageResponse === \null) {
-            $packageResponse = $packageInstance->getView();
-        } else if (is_array($packageResponse)) {
-            $packageResponse = new View(\null, $packageResponse);
+        if ($packageResponse === \null || is_array($packageResponse)) {
+
+            if ($packageInstance instanceof Controller) {
+                $view = $packageInstance->getView();
+            } else {
+                $view = new View();
+            }
+
+            if (is_array($packageResponse)) {
+                $view->addData($packageResponse);
+            }
+
+            $packageResponse = $view;
         }
 
         if ($packageResponse instanceof View) {
+
             $parts = explode('\\', $package);
+
             if ($packageResponse->getTemplate() === \null) {
                 $packageResponse->setTemplate(Utils::decamelize($parts[count($parts) - 1]) . '/' . Utils::decamelize($action));
             }
+
             $packageResponse->injectPaths((array) package_path($parts[0], 'Resources/views'));
+
             if (($eventResponse = $this['event']->trigger('render.start', ['view' => $packageResponse])) instanceof Http\Response) {
                 return $eventResponse;
             }
+
             if ($subRequest) {
                 $packageResponse->setRenderParent(\false);
             }
+
             $response->setBody((string) $packageResponse->render());
+
         } else {
+
             $response->setBody((string) $packageResponse);
         }
 

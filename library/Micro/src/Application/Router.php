@@ -132,7 +132,7 @@ class Router
         }
 
         foreach ($data as $k => $v) {
-            if (is_object($v) || is_array($v)) {
+            if (is_object($v) || is_array($v) || is_numeric($k)) {
                 unset($data[$k]);
             }
         }

@@ -162,11 +162,6 @@ class Route
 
         foreach ($data as $k => $v) {
 
-            if (is_array($v) || is_object($v)) {
-                unset($data[$k]);
-                continue;
-            }
-
             $v = Utils::decamelize($v);
 
             $lambda = function ($match) use ($v) {
