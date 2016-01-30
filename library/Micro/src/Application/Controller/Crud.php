@@ -80,16 +80,16 @@ class Crud extends Controller
             $model->addJoinCondition('language_id', $language->getId());
         }
 
+        $model->addFilters($filters);
+
+        $this->modifyModel($filters);
+
         $ipp = max($this->ipp, $this->request->getParam('ipp', $this->ipp));
         $page = max(1, $this->request->getParam('page', 1));
         $orderField = $this->request->getParam('orderField', $model->getIdentifier());
         $orderDir = strtoupper($this->request->getParam('orderDir', 'desc'));
 
         $model->addOrder($orderField, $orderDir);
-
-        $model->addFilters($filters);
-
-        $this->modifyModel($filters);
 
         $grid = new Grid\Grid(
             $model,
