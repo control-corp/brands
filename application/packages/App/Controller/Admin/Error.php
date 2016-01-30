@@ -1,13 +1,17 @@
 <?php
 
-namespace App\Controller\Front;
+namespace App\Controller\Admin;
 
 use Micro\Application\Controller;
 use Micro\Http\Response\JsonResponse;
+use Micro\Http\Response\RedirectResponse;
+use Micro\Auth\Auth;
 
 class Error extends Controller
 {
     const ERROR = 'Моля, опитайте по-късно!';
+
+    protected $scope = 'admin';
 
     public function indexAction()
     {
@@ -22,6 +26,16 @@ class Error extends Controller
 
         if ($this->request->isAjax()) {
             return new JsonResponse(['error' => $message], $code);
+        }
+
+        if ($exception->getCode() === 403) {
+            if (Auth::identity() === \null) {
+                if (is_allowed(app('router')->getRoute('admin-login')->getHandler())) {
+                    return new RedirectResponse(
+                        route('admin-login', ['backTo' => urlencode(route())])
+                    );
+                }
+            }
         }
 
         $this->response->setCode($code);
