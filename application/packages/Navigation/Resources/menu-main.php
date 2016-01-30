@@ -3,9 +3,10 @@
 return [
     ['label' => 'Начало', 'alias' => 'home', 'route' => 'home'],
     ['label' => 'Вход', 'alias' => 'login', 'route' => 'login'],
-    /* ['label' => 'Управление', 'alias' => 'control', 'route' => 'default', 'routeParams' => ['package' => 'user-management', 'controller' => 'groups'], 'pages' => [
-        ['label' => 'Групи', 'alias' => 'groups', 'route' => 'default', 'routeParams' => ['package' => 'user-management', 'controller' => 'groups']],
-    ]], */
+    ['label' => 'Управление', 'alias' => 'control', 'uri' => '#', 'pages' => [
+        ['label' => 'Настройки', 'alias' => 'control.settings', 'route' => 'default', 'routeParams' => ['package' => 'app', 'controller' => 'settings']],
+        ['label' => 'Групи', 'alias' => 'control.groups', 'route' => 'default', 'routeParams' => ['package' => 'user-management', 'controller' => 'groups']],
+    ]],
     ['label' => 'Номенклатури', 'alias' => 'nomenclatures', 'route' => 'default', 'routeParams' => ['package' => 'nomenclatures', 'controller' => 'brand-classes'], 'pages' => [
         ['label' => 'Класове марки', 'alias' => 'nomenclatures.brand.classes', 'route' => 'default', 'routeParams' => ['package' => 'nomenclatures', 'controller' => 'brand-classes']],
         ['label' => 'Заявители', 'alias' => 'nomenclatures.notifiers', 'route' => 'default', 'routeParams' => ['package' => 'nomenclatures', 'controller' => 'notifiers']],

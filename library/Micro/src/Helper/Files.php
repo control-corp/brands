@@ -26,9 +26,15 @@ class Files
 
                         if ($class) {
 
-                            $reflection = new \ReflectionClass($class);
+                            $reflection = \null;
 
-                            if ($reflection->isSubclassOf(\Micro\Application\Controller::class)) {
+                            try {
+                                $reflection = new \ReflectionClass($class);
+                            } catch (\Exception $e) {
+
+                            }
+
+                            if ($reflection && $reflection->isSubclassOf(\Micro\Application\Controller::class)) {
 
                                 foreach ($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
 
