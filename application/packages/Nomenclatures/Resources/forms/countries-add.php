@@ -5,15 +5,50 @@ return [
         'name' => [
             'type' => 'text',
             'options' => [
+                'label' => 'Име',
                 'required' => 1,
-                'attributes' => [
-                    'placeholder' => 'name'
-                ]
+                'labelClass' => 'control-label',
+                'class' => 'form-control',
             ]
         ],
-        'btnSave'  => ['type' => 'submit', 'options' => ['value' => 'Запазване']],
-        'btnApply' => ['type' => 'submit', 'options' => ['value' => 'Прилагане']],
-        'btnBack'  => ['type' => 'submit', 'options' => ['value' => 'Назад']],
-        'protect'  => 'csrf'
+        'continentId' => [
+            'type' => 'select',
+            'options' => [
+                'label' => 'Континент',
+                'required' => 1,
+                'labelClass' => 'control-label',
+                'class' => 'form-control',
+                'emptyOption' => 'Избери',
+                'multiOptions' => (new Nomenclatures\Model\Continents)->fetchCachedPairs(\null, \null, ['name' => 'asc']),
+            ],
+        ],
+        'ISO3166Code' => [
+            'type' => 'text',
+            'options' => [
+                'required' => 1,
+                'label' => 'Код',
+                'labelClass' => 'control-label',
+                'class' => 'form-control',
+                'attributes' => ['maxlength' => 2],
+            ],
+        ],
+        'population' => [
+            'type' => 'text',
+            'options' => [
+                'label' => 'Население на държавата',
+                'labelClass' => 'control-label',
+                'class' => 'form-control',
+                'attributes' => ['maxlength' => 20],
+            ],
+        ],
+        'active' => [
+            'type' => 'checkbox',
+            'options' => [
+                'label' => 'Активност',
+            ],
+        ],
+        'btnSave'  => ['type' => 'submit', 'options' => ['value' => 'Запазване', 'class' => 'btn btn-primary']],
+        'btnApply' => ['type' => 'submit', 'options' => ['value' => 'Прилагане', 'class' => 'btn btn-success']],
+        'btnBack'  => ['type' => 'submit', 'options' => ['value' => 'Назад', 'class' => 'btn btn-default']],
     ]
 ];

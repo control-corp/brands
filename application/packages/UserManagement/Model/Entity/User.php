@@ -9,7 +9,7 @@ use Micro\Auth\Identity;
 class User extends EntityAbstract implements RoleInterface, Identity
 {
     protected $id;
-    protected $group_id;
+    protected $groupId;
     protected $username;
     protected $password;
     protected $role;
@@ -22,7 +22,7 @@ class User extends EntityAbstract implements RoleInterface, Identity
     public function loadRole()
     {
         if ($this->role === \null) {
-            $this->role = app('db')->fetchOne('SELECT alias FROM groups WHERE id = ?', array((int) $this->group_id));
+            $this->role = app('db')->fetchOne('SELECT alias FROM Groups WHERE id = ?', array((int) $this->groupId));
         }
 
         return $this->role;
@@ -50,7 +50,7 @@ class User extends EntityAbstract implements RoleInterface, Identity
 
     public function getGroups()
     {
-        return [$this->group_id];
+        return [$this->groupId];
     }
 
     public function isActive()

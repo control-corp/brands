@@ -39,7 +39,6 @@ class Error extends Controller
         $this->response->setCode($code);
 
         return $this->view
-                    ->setTemplate('error')
                     ->addData([
                         'exception' => $exception,
                         'message'   => $message

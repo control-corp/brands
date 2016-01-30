@@ -11,10 +11,11 @@ return [
     ],
     'packages' => [
         'App' => 'application/packages/App',
+        'Brands' => 'application/packages/Brands',
         'Nomenclatures' => 'application/packages/Nomenclatures',
         'UserManagement' => 'application/packages/UserManagement',
         'Navigation' => 'application/packages/Navigation',
-        //'MicroDebug' => 'library/Micro/packages/MicroDebug'
+        'MicroDebug' => 'library/Micro/packages/MicroDebug'
     ],
     'routes' => include 'application/config/routes.php',
     'error' => [
@@ -27,7 +28,7 @@ return [
     ],
     'session' => [
         'name' => 'TEST',
-        'save_path' => 'application/data/session'
+        'save_path' => 'data/session'
     ],
     'db' => [
         'default' => 'localhost',
@@ -35,7 +36,7 @@ return [
             'localhost' => [
                 'adapter'  => 'mysqli',
                 'host'     => 'localhost',
-                'dbname'   => 'micro',
+                'dbname'   => 'brands_micro',
                 'username' => 'root',
                 'password' => '',
                 'charset'  => 'utf8'
@@ -56,7 +57,7 @@ return [
                 'backend' => [
                     'adapter' => 'File',
                     'options' => [
-                        'cache_dir' => 'application/data/cache'
+                        'cache_dir' => 'data/cache'
                     ]
                 ]
             ]
@@ -65,7 +66,14 @@ return [
     'translator' => [
         'adapter' => 'TranslatorArray',
         'options' => [
-            'path' => 'application/data/languages'
+            'path' => 'data/languages'
         ]
+    ],
+    'config' => [
+        'js' => [
+            'datepicker' => [
+                'format' => 'dd.mm.yyyy',
+            ],
+        ],
     ]
 ];

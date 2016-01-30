@@ -1,41 +1,8 @@
 <?php
 
 return array(
-    'paginatorPlacement' => 'both',
-    'paginatorAlways' => 0,
-    'buttons' => array(
-        'btnAdd' => array(
-            'value' => 'Добавяне',
-            'class' => 'btn btn-primary'
-        ),
-        'btnActivate' => array(
-            'value' => 'Активиране',
-            'class' => 'btn btn-success',
-            'attributes' => array(
-                'data-rel' => 'ids[]',
-                'data-action' => app('router')->assemble(\null, ['action' => 'activate']),
-                'data-confirm' => 'Сигурни ли сте, че искате да активирате избраните записи?'
-            )
-        ),
-        'btnDeactivate' => array(
-            'value' => 'Деактивиране',
-            'class' => 'btn btn-warning',
-            'attributes' => array(
-                'data-rel' => 'ids[]',
-                'data-action' => app('router')->assemble(\null, ['action' => 'deactivate']),
-                'data-confirm' => 'Сигурни ли сте, че искате да деактивирате избраните записи?'
-            )
-        ),
-        'btnDelete' => array(
-            'value' => 'Изтриване',
-            'class' => 'btn btn-danger',
-            'attributes' => array(
-                'data-rel' => 'ids[]',
-                'data-action' => app('router')->assemble(\null, ['action' => 'delete']),
-                'data-confirm' => 'Сигурни ли сте, че искате да изтриете избраните записи?'
-            )
-        )
-    ),
+    'paginatorPlacement' => 'top',
+    'buttons' => include __DIR__ . '/_buttons.php',
     'columns' => array(
         'ids' => array(
             'type' => 'checkbox',
@@ -66,6 +33,38 @@ return array(
                 )
             )
         ),
+        'continentId' => array(
+            'type' => 'pairs',
+            'options' => array(
+                'sourceField' => 'continentId',
+                'title' => 'Континент',
+                'callable' => array(new Nomenclatures\Model\Continents(), 'fetchCachedPairs'),
+                'params' => [null, null, ['name' => 'asc']]
+            )
+        ),
+        'ISO3166Code' => array(
+            'options' => array(
+                'sourceField' => 'ISO3166Code',
+                'title' => 'Код',
+                'headStyle' => 'width: 15%'
+            )
+        ),
+        'population' => array(
+            'options' => array(
+                'sourceField' => 'population',
+                'title' => 'Население на държавата',
+                'sortable' => 1,
+                'headStyle' => 'width: 15%'
+            )
+        ),
+        'countBrands' => array(
+            'options' => array(
+                'sourceField' => 'countBrands',
+                'title' => 'Брой марки в държавата',
+                'sortable' => 1,
+                'headStyle' => 'width: 15%'
+            )
+        ),
         'active' => array(
             'type' => 'boolean',
             'options' => array(
@@ -84,7 +83,6 @@ return array(
                 'class' => 'text-center',
                 'headStyle' => 'width: 5%',
                 'hrefClass' => 'remove glyphicon glyphicon-trash',
-                'reset' => 0,
                 'params' => array(
                     'action' => 'delete',
                     'id' => ':id'

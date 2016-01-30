@@ -17,7 +17,7 @@ $active = $this->item->isActive(true);
     <ul class="dropdown-menu">
         <?php
         foreach ($this->item->getPages() as $child) :
-            echo $this->partial('layouts/includes/_item.phtml', array('item' => $child, 'level' => ($this->level + 1)));
+            echo $this->partial('layouts/includes/_item', array('item' => $child, 'level' => ($this->level + 1)));
         endforeach;
         ?>
     </ul>
@@ -31,7 +31,7 @@ $active = $this->item->isActive(true);
         <ul class="dropdown-menu">
         <?php
         foreach ($this->item->getPages() as $child) :
-            echo $this->partial('layouts/includes/_item.phtml', array('item' => $child, 'level' => ($this->level + 1)));
+            echo $this->partial('layouts/includes/_item', array('item' => $child, 'level' => ($this->level + 1)));
         endforeach;
         ?>
         </ul>

@@ -10,6 +10,7 @@ class Group extends EntityAbstract
     protected $parentId;
     protected $name;
     protected $alias;
-    protected $rights = [];
+    protected $rights;
+    protected $active = 1;
     protected $disabled = 0;
 }

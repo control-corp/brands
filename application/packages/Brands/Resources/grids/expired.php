@@ -1,0 +1,1 @@
+<?php$grid = include __DIR__ . '/index.php';$grid['columns']['reNewDate'] = array(    'options' => array(        'sourceField' => 'reNewDate',        'title' => 'Дата на подновяване',        'sortable' => 1,        'viewScript' => 'expired/grid-renew'    ));return $grid;

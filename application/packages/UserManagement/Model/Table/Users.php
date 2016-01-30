@@ -6,5 +6,5 @@ use Micro\Database\Table\TableAbstract;
 
 class Users extends TableAbstract
 {
-    protected $_name = 'users';
+    protected $_name = 'Users';
 }

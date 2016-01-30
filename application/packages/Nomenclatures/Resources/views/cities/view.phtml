@@ -1,9 +1,0 @@
-<?php $this->extend('layouts/default'); ?>
-
-<?php $this->section('title', $this->item['name']); ?>
-
-<div style="margin-bottom: 10px">
-    <a href="<?php echo route(\null, ['action' => 'index']); ?>">назад към списъка</a>
-</div>
-
-<h1><?php echo $this->item['name']; ?></h1>

@@ -6,5 +6,5 @@ use Micro\Database\Table\TableAbstract;
 
 class Groups extends TableAbstract
 {
-    protected $_name = 'groups';
+    protected $_name = 'Groups';
 }
