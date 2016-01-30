@@ -261,14 +261,21 @@ class Application extends Container
         $packages = $this['config']->get('packages', []);
 
         foreach ($packages as $package => $path) {
+
+            if ($path instanceof Package) {
+                $path->setContainer($this)->boot();
+                $this->packages[$package] = $path;
+                continue;
+            }
+
             $packageInstance = $package . '\\Package';
-            if (class_exists($packageInstance, \true)) {
+
+            if (\class_exists($packageInstance, \true)) {
                 $instance = new $packageInstance($this);
                 if (!$instance instanceof Package) {
-                    throw new CoreException(sprintf('[' . __METHOD__ . '] %s must be instance of Micro\Application\Package', $packageInstance), 500);
+                    throw new CoreException(\sprintf('[' . __METHOD__ . '] %s must be instance of Micro\Application\Package', $packageInstance), 500);
                 }
-                $instance->setContainer($this);
-                $instance->boot();
+                $instance->setContainer($this)->boot();
                 $this->packages[$package] = $instance;
             }
         }

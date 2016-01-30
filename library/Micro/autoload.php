@@ -53,7 +53,7 @@ class MicroLoader
             return;
         }
 
-        if ($path === \null) {
+        if ($path === \null || !is_string($path)) {
             return;
         }
 

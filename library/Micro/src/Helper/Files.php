@@ -2,6 +2,8 @@
 
 namespace Micro\Helper;
 
+use Micro\Application\Package;
+
 class Files
 {
     public static function fetchControllers($dirs = \null)
@@ -13,6 +15,10 @@ class Files
         $resources = [];
 
         foreach ($dirs as $dir) {
+
+            if ($dir instanceof Package) {
+                $dir = $dir->getDir();
+            }
 
             $it = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir));
 

@@ -59,7 +59,11 @@ if (!function_exists('package_path')) {
             throw new CoreException(sprintf('[' . __FUNCTION__ . '] Invalid package "%s"', $package));
         }
 
-        $packagePath = rtrim($packages[$package], '/\\');
+        if ($packages[$package] instanceof Micro\Application\Package) {
+            $packagePath = $packages[$package]->getDir();
+        } else {
+            $packagePath = rtrim($packages[$package], '/\\');
+        }
 
         if ($path !== \null) {
             $packagePath .= DIRECTORY_SEPARATOR . trim($path, '/\\');
