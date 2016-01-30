@@ -2,11 +2,15 @@
 
 return [
     'acl' => 1,
+    'log' => [
+        'enabled' => 1,
+        'path' => 'data/log',
+    ],
     'debug' => [
         'handlers' => [
             'dev_tools' => 1,
             'fire_php' => 1,
-            'performance' => 0
+            //'performance' => 'data/classes.php'
         ],
     ],
     'packages' => [
@@ -30,19 +34,7 @@ return [
         'name' => 'TEST',
         'save_path' => 'data/session'
     ],
-    'db' => [
-        'default' => 'localhost',
-        'adapters' => [
-            'localhost' => [
-                'adapter'  => 'mysqli',
-                'host'     => 'localhost',
-                'dbname'   => 'brands_micro',
-                'username' => 'root',
-                'password' => '',
-                'charset'  => 'utf8'
-            ]
-        ]
-    ],
+    'db' => include __DIR__ . '/db.php',
     'cache' => [
         'default'  => 'file',
         'adapters' => [

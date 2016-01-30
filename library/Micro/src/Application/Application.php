@@ -2,7 +2,7 @@
 
 namespace Micro\Application;
 
-use Exception as CoreException;
+use Micro\Application\Exception as CoreException;
 use Micro\Http;
 use Micro\Event;
 use Micro\Container\Container;
@@ -12,6 +12,7 @@ use Micro\Session\Session;
 use Micro\Database\Database;
 use Micro\Acl\Acl;
 use Micro\Translator\Translator;
+use Micro\Log\Log as CoreLog;
 
 class Application extends Container
 {
@@ -176,6 +177,10 @@ class Application extends Container
          * Register session config
          */
         Session::register($this['config']->get('session', []));
+
+        CoreLog::register();
+
+        CoreException::register();
 
         return $this;
     }

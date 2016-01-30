@@ -8,7 +8,7 @@ class Performance
 {
     public function boot()
     {
-        if (!\config('debug.handlers.performance', 0)) {
+        if (!\config('debug.handlers.performance')) {
             return;
         }
 
@@ -26,6 +26,6 @@ class Performance
             }
         }
 
-        \file_put_contents('application/data/classes.php', "<?php\nreturn " . \var_export($forStore, \true) . ";", \LOCK_EX);
+        \file_put_contents(config('debug.handlers.performance'), "<?php\nreturn " . \var_export($forStore, \true) . ";", \LOCK_EX);
     }
 }
