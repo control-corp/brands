@@ -1,5 +1,11 @@
 <?php
-$found = $this->navigation()->findAllBy('active', 1);
+$found = [];
+foreach (array('main', 'left') as $menu) {
+    $found = $this->navigation($menu)->findAllBy('active', 1);
+    if (!empty($found)) {
+        break;
+    }
+}
 if (empty($found)) {
     return;
 } else {

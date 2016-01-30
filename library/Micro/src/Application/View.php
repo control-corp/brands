@@ -24,6 +24,8 @@ class View
 
     protected static $helpers = [];
 
+    protected $package;
+
     public function __construct($template = \null, array $data = \null, $injectPaths = \false)
     {
         $this->template = $template;
@@ -263,33 +265,49 @@ class View
         return $this->sections;
     }
 
+    /**
+     *
+     * @param string $package
+     * @return \Micro\Application\View
+     */
+    public function widget($package)
+    {
+        $this->package = $package;
+
+        return $this;
+    }
+
     public function __call($method, $params)
     {
-        $method = ucfirst($method);
+        $method = \ucfirst($method);
 
         if (!isset(static::$helpers[$method])) {
 
-            $search   = [];
-            $search[] = $helper = 'Micro\\View\\' . $method;
+            $search = [];
+            $packages = [];
 
-            if (class_exists($helper)) {
-                static::$helpers[$method] = $helper = new $helper();
+            if (\null !== $this->package) {
+                $packages = [$this->package];
             } else {
-                foreach (config('packages', []) as $package => $path) {
-                    $search[] = $helper = $package . '\\View\\' . ucfirst($method);
-                    if (class_exists($helper)) {
-                        static::$helpers[$method] = $helper = new $helper($this);
-                        break;
-                    }
+                $packages = array_keys(\config('packages', []));
+            }
+
+            foreach ($packages as $package) {
+                $search[] = $helper = $package . '\\View\\' . \ucfirst($method);
+                if (\class_exists($helper, \true)) {
+                    static::$helpers[$method] = new $helper($this);
+                    break;
                 }
             }
 
             if (!isset(static::$helpers[$method])) {
-                throw new CoreException('Invalid view helper: [' . implode('], [', $search) . ']', 500);
+                throw new CoreException('Invalid view helper: [' . \implode('], [', $search) . ']', 500);
             }
         }
 
-        return call_user_func_array(static::$helpers[$method], $params);
+        $this->package = \null;
+
+        return \call_user_func_array(static::$helpers[$method], $params);
     }
 
     public function __clone()
