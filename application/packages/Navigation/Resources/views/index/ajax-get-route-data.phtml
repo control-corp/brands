@@ -1,0 +1,11 @@
+<?php
+$params = $this->route->getParams();
+foreach ($params as $key => $junk) :
+?>
+<div class="form-group">
+    <div class="col-md-12">
+        <label style="padding: 5px 0"><?php echo ucfirst($key); ?></label>
+        <input type="text" class="form-control" name="routeData[<?php echo $key; ?>]" value="<?php echo (isset($this->routeData[$key]) ? $this->routeData[$key] : ''); ?>" />
+    </div>
+</div>
+<?php endforeach; ?>
