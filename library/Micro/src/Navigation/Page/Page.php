@@ -57,11 +57,9 @@ class Page extends AbstractPage
                 return;
             }
 
-            $reqParams = app('request')->getParams();
-
             $pageRoute = app('router')->getRoute($this->route);
 
-            $myParams = $this->routeParams + ($pageRoute ? $pageRoute->getParams() : []);
+            $myParams = $this->routeParams + ($pageRoute ? $pageRoute->getDefaults() : []);
 
             foreach ($myParams as $key => $value) {
                 if (\null === $value) {
@@ -69,7 +67,7 @@ class Page extends AbstractPage
                 }
             }
 
-            if (count(array_intersect_assoc($reqParams, $myParams)) == count($myParams)) {
+            if (count(array_intersect_assoc(app('request')->getParams(), $myParams)) == count($myParams)) {
                 $this->active = \true;
             } else {
                 $this->active = \false;

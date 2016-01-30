@@ -209,8 +209,18 @@ class Application extends Container
                 throw new CoreException('[' . __METHOD__ . '] Route not found', 404);
             }
 
-            if (($packageResponse = $this->unpackage($route)) instanceof Http\Response) {
-                $response = $packageResponse;
+            $this['request']->setParams($route->getParams());
+
+            $routeHandler = $route->getHandler();
+
+            if (is_string($routeHandler) && strpos($routeHandler, '@') !== \false) { // package format
+                $routeHandler = $this->resolve($routeHandler, $this['request'], $this['response']);
+            }
+
+            if ($routeHandler instanceof Http\Response) {
+                $response = $routeHandler;
+            } else {
+                $response = $this['response']->setBody((string) $routeHandler);
             }
 
         } catch (\Exception $e) {
@@ -245,19 +255,23 @@ class Application extends Container
     {
         $errorHandler = $this['config']->get('error');
 
-        if ($errorHandler === \null || !isset($errorHandler['route'])) {
+        if ($errorHandler === \null || empty($errorHandler)) {
             throw $e;
         }
 
-        $route = $this['router']->getRoute($errorHandler['route']);
+        $currentRoute = $this['router']->getCurrentRoute();
 
-        if ($route === \null) {
-            throw new CoreException('[' . __METHOD__ . '] Error route not found', 404);
+        $package = current($errorHandler);
+
+        if ($currentRoute) {
+            if (isset($errorHandler[$currentRoute->getName()])) {
+                $package = $errorHandler[$currentRoute->getName()];
+            }
         }
 
-        $route->setParams($this['config']->get('error.params', []) + ['exception' => $e]);
+        $this['request']->setParam('exception', $e);
 
-        return $this->unpackage($route);
+        return $this->resolve($package, $this['request'], $this['response']);
     }
 
     /**
@@ -292,39 +306,6 @@ class Application extends Container
     }
 
     /**
-     * Unpackage the application request
-     * @param \Micro\Application\Route $route
-     * @throws CoreException
-     * @return \Micro\Http\Response
-     */
-    public function unpackage(Route $route)
-    {
-        $this['request']->setParams($route->getParams());
-
-        if (($eventResponse = $this['event']->trigger('unpackage.start', compact('route'))) instanceof Http\Response) {
-            return $eventResponse;
-        }
-
-        $routeHandler = $route->getHandler();
-
-        if (is_string($routeHandler) && strpos($routeHandler, '@') !== \false) { // package format
-            $routeHandler = $this->resolve($routeHandler, $this['request'], $this['response']);
-        }
-
-        if ($routeHandler instanceof Http\Response) {
-            $response = $routeHandler;
-        } else {
-            $response = $this['response']->setBody((string) $routeHandler);
-        }
-
-        if (($eventResponse = $this['event']->trigger('unpackage.end', compact('response'))) instanceof Http\Response) {
-            return $eventResponse;
-        }
-
-        return $response;
-    }
-
-    /**
      * @param string $package
      * @param Http\Request $request
      * @param Http\Response $response
@@ -356,8 +337,11 @@ class Application extends Container
             $packageInstance->setContainer($this);
         }
 
+        $scope = '';
+
         if ($packageInstance instanceof Controller) {
             $packageInstance->init();
+            $scope = $packageInstance->getScope();
         }
 
         if (($packageResponse = $packageInstance->$actionMethod()) instanceof Http\Response) {
@@ -388,7 +372,7 @@ class Application extends Container
             $parts = explode('\\', $package);
 
             if ($packageResponse->getTemplate() === \null) {
-                $packageResponse->setTemplate(Utils::decamelize($parts[count($parts) - 1]) . '/' . Utils::decamelize($action));
+                $packageResponse->setTemplate(($scope ? $scope . '/' : '') . Utils::decamelize($parts[count($parts) - 1]) . '/' . Utils::decamelize($action));
             }
 
             $packageResponse->injectPaths((array) package_path($parts[0], 'Resources/views'));

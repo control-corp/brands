@@ -26,6 +26,8 @@ class Controller implements ContainerAwareInterface
      */
     protected $view;
 
+    protected $scope;
+
     /**
      * @param \Micro\Http\Request $request
      * @param \Micro\Http\Response $response
@@ -52,5 +54,10 @@ class Controller implements ContainerAwareInterface
     public function getView()
     {
         return $this->view;
+    }
+
+    public function getScope()
+    {
+        return $this->scope;
     }
 }

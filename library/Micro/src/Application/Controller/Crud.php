@@ -93,7 +93,7 @@ class Crud extends Controller
 
         $grid = new Grid\Grid(
             $model,
-            package_path(ucfirst(Utils::camelize($package)), '/Resources/grids/' . $controller . '.php')
+            package_path(ucfirst(Utils::camelize($package)), '/Resources/grids/' . ($this->scope ? $this->scope . '/' : '') . $controller . '.php')
         );
 
         $grid->getRenderer()->setView($this->view);
@@ -107,7 +107,7 @@ class Crud extends Controller
         $grid->setIpp($ipp);
         $grid->setPageNumber($page);
 
-        $this->view->setTemplate($controller . '/index');
+        $this->view->setTemplate(($this->scope ? $this->scope . '/' : '') . $controller . '/index');
 
         $this->view->addData(['grid' => $grid, 'filters' => $filters]);
 
@@ -136,7 +136,7 @@ class Crud extends Controller
             $entity = $model->createEntity();
         }
 
-        $form = new Form(package_path(ucfirst(Utils::camelize($package)), '/Resources/forms/' . $controller . '-add.php'));
+        $form = new Form(package_path(ucfirst(Utils::camelize($package)), '/Resources/forms/' . ($this->scope ? $this->scope . '/' : '') . $controller . '-add.php'));
 
         $form->populate($entity->toArray());
 
@@ -201,7 +201,7 @@ class Crud extends Controller
 
         $this->view->addData(['form' => $form, 'item' => $entity]);
 
-        $this->view->setTemplate($controller . '/add');
+        $this->view->setTemplate(($this->scope ? $this->scope . '/' : '') . $controller . '/add');
 
         return $this->view;
     }
