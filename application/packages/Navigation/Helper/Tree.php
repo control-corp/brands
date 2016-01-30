@@ -17,6 +17,10 @@ class Tree
     {
         $db = app('db');
 
+        if (!$db) {
+            return [];
+        }
+
         $select = $db->select()
                      ->from('MenuItems')
                      ->joinInner('Menu', 'Menu.id = MenuItems.menuId', array())

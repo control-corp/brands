@@ -237,7 +237,9 @@ if (!function_exists('current_package')) {
 if (!function_exists('is_allowed')) {
     function is_allowed($resource = \null, $role = \null, $privilege = \true)
     {
-        if (!app()->has('acl')) {
+        $acl = app('acl');
+
+        if ($acl === \null) {
             return \true;
         }
 
@@ -271,7 +273,7 @@ if (!function_exists('is_allowed')) {
             }
         }
 
-        return app('acl')->isAllowed($role, $resource, $privilege);
+        return $acl->isAllowed($role, $resource, $privilege);
     }
 }
 

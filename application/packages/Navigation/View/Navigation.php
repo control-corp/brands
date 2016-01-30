@@ -14,11 +14,13 @@ class Navigation
     {
         if (!isset(static::$menus[$menuId])) {
 
-            $cache = \null;
+            $db = app('db');
 
-            try {
-                $cache = app('cache');
-            } catch (\Exception $e) {}
+            if (!$db) {
+                return new NavigationContainer();
+            }
+
+            $cache = app('cache');
 
             $languageCode = 'no';
 

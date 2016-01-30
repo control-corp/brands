@@ -12,18 +12,30 @@ class FirePHP
             return;
         }
 
-        app('event')->attach('application.start', [$this, 'onApplicationStart']);
-        app('event')->attach('application.end', [$this, 'onApplicationEnd']);
+        $eventManager = app('event');
+
+        $eventManager->attach('application.start', [$this, 'onApplicationStart']);
+        $eventManager->attach('application.end', [$this, 'onApplicationEnd']);
     }
 
     public function onApplicationStart()
     {
-        app('db')->setProfiler(\true);
+        $db = app('db');
+
+        if ($db) {
+            $db->setProfiler(\true);
+        }
     }
 
     public function onApplicationEnd(Message $message)
     {
-        $profiler = app('db')->getProfiler();
+        $db = app('db');
+
+        if (!$db) {
+            return;
+        }
+
+        $profiler = $db->getProfiler();
 
         if ($profiler->getEnabled()) {
 

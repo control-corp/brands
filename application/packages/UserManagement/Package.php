@@ -21,19 +21,23 @@ class Package extends BasePackage
          */
         Acl::setResolver(function () {
 
-            try {
-                $cache = app('cache');
-            } catch (\Exception $e) {
-                $cache = \null;
+            $cache = app('cache');
+            $db = app('db');
+
+            if (!$db) {
+                return [];
             }
 
             if ($cache === \null || ($data = $cache->load('Acl')) === \false) {
+
                 $groups = app('db')->fetchAll('
                     SELECT a.alias, b.alias as parentAlias, a.rights
                     FROM Groups a
                     LEFT JOIN Groups b ON b.id = a.parentId
                 ');
+
                 $data = [];
+
                 foreach ($groups as $group) {
                     $data[$group['alias']] = [
                         'group'     => $group['alias'],
@@ -44,6 +48,7 @@ class Package extends BasePackage
                     $rights = is_array($rights) ? $rights : [];
                     $data[$group['alias']]['resources'] = $rights;
                 }
+
                 if ($cache instanceof Cache\Core) {
                     $cache->save($data, 'Acl');
                 }

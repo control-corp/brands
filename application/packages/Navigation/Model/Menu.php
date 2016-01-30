@@ -12,11 +12,7 @@ class Menu extends DatabaseAbstract
 
     public function removeCache()
     {
-        $cache = \null;
-
-        try {
-            $cache = app('cache');
-        } catch (\Exception $e) {}
+        $cache = app('cache');
 
         if ($cache instanceof Cache\Core) {
             $cache->clean(Cache\Cache::CLEANING_MODE_MATCHING_TAG, array($this->getCacheId()));

@@ -58,7 +58,7 @@ class Container implements ContainerInterface
         }
 
         // call resolved
-        if (isset($this->resolved[$offset])) {
+        if (array_key_exists($offset, $this->resolved)) {
             return $this->call($this->resolved[$offset]);
         }
 

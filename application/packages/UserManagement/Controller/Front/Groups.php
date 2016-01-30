@@ -64,13 +64,8 @@ class Groups extends Crud
 
         $entity['rights'] = json_encode($rights);
 
-        try {
-            $cache = app('cache');
-            if ($cache instanceof Cache\Core) {
-                $cache->remove('Acl');
-            }
-        } catch (\Exception $e) {
-
+        if (($cache = app('cache')) instanceof Cache\Core) {
+            $cache->remove('Acl');
         }
     }
 

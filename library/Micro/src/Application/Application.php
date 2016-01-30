@@ -114,9 +114,12 @@ class Application extends Container
             };
         }
 
-        if ($this['config']->get('acl', \true) && !isset($this['acl'])) {
-            $this['acl'] = function () {
-                return new Acl();
+        if (!isset($this['acl'])) {
+            $this['acl'] = function ($c) {
+                if ($c['config']->get('acl', \true)) {
+                    return new Acl();
+                }
+                return \null;
             };
         }
 
@@ -160,6 +163,9 @@ class Application extends Container
             $this['db'] = function ($app) {
                 $default  = $app['config']->get('db.default');
                 $adapters = $app['config']->get('db.adapters', []);
+                if (!isset($adapters[$default])) {
+                    return \null;
+                }
                 return Database::factory($adapters[$default]['adapter'], $adapters[$default]);
             };
         }
@@ -176,7 +182,11 @@ class Application extends Container
         /**
          * Register session config
          */
-        Session::register($this['config']->get('session', []));
+        $sessionConfig = $this['config']->get('session', []);
+
+        if (!empty($sessionConfig)) {
+            Session::register($sessionConfig);
+        }
 
         CoreLog::register();
 

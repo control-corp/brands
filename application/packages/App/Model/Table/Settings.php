@@ -11,13 +11,7 @@ class Settings extends TableAbstract
 
     public static function removeCache()
     {
-        $cache = \null;
-
-        try {
-            $cache = app('cache');
-        } catch (\Exception $e) {
-
-        }
+        $cache = app('cache');
 
         if ($cache instanceof Cache\Core) {
             $cache->remove('Settings');
@@ -34,13 +28,7 @@ class Settings extends TableAbstract
 
     public static function getSettings()
     {
-        $cache = \null;
-
-        try {
-            $cache = app('cache');
-        }catch (\Exception $e) {
-
-        }
+        $cache = app('cache');
 
         if ($cache === \null || ($settings = $cache->load('Settings')) === \false) {
             $settings = static::getDefaultAdapter()->fetchPairs('SELECT `key`, `value` FROM Settings');
