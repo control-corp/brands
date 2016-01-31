@@ -12,12 +12,12 @@ use Micro\Auth\Auth;
 use Micro\Helper\Flash;
 
 if (!function_exists('app')) {
-    function app($service = \null)
+    function app($service = \null, $app = 'app')
     {
-        $container = Container::getInstance();
+        $container = Container::getInstance('app');
 
         if ($service !== \null) {
-            return $container[$service];
+            return $container->get($service);
         }
 
         return $container;
@@ -203,13 +203,9 @@ if (!function_exists('flash')) {
 }
 
 if (!function_exists('escape')) {
-    function escape($var, $encoding = 'UTF-8', $escape = 'htmlspecialchars')
+    function escape($var, $encoding = 'UTF-8')
     {
-        if (in_array($escape, ['htmlspecialchars', 'htmlentities'])) {
-            return call_user_func($escape, $var, ENT_COMPAT, $encoding);
-        }
-
-        return call_user_func($escape, $var);
+        return htmlspecialchars($var, ENT_COMPAT, $encoding);
     }
 }
 

@@ -17,6 +17,11 @@ class Container implements ContainerInterface
     /**
      * @var array
      */
+    protected $factory = [];
+
+    /**
+     * @var array
+     */
     protected $aliases = [];
 
     /**
@@ -27,42 +32,48 @@ class Container implements ContainerInterface
     /**
      * @param \Micro\Container $instance
      */
-    public static function setInstance(Container $instance)
+    public static function setInstance($name, Container $instance)
     {
-        static::$instance = $instance;
+        static::$instance[$name] = $instance;
     }
 
     /**
      * @return \Micro\Container
      */
-    public static function getInstance()
+    public static function getInstance($name)
     {
-        return static::$instance;
+        if (!isset(static::$instance[$name])) {
+            throw new \InvalidArgumentException(sprintf('[%s] Container instance [%s] not exists', __METHOD__, $name), 500);
+        }
+
+        return static::$instance[$name];
     }
 
     /**
      * (non-PHPdoc)
-     * @see ArrayAccess::offsetGet()
+     * @see \Micro\Container\ContainerInterface::get()
      */
-    public function offsetGet($offset)
+    public function get($service)
     {
         /**
          * Check if it has an alias
          */
-        if (isset($this->aliases[$offset])) {
-            $offset = $this->resolveAlias($offset);
+        if (isset($this->aliases[$service])) {
+            $service = $this->resolveAlias($service);
         }
 
-        if (!isset($this->services[$offset])) {
-            throw new \InvalidArgumentException(sprintf('[' . __METHOD__ . '] Service "%s" not found!', $offset), 500);
+        if (!isset($this->services[$service])) {
+            throw new \InvalidArgumentException(sprintf('[' . __METHOD__ . '] Service "%s" not found!', $service), 500);
         }
 
         // call resolved
-        if (array_key_exists($offset, $this->resolved)) {
-            return $this->call($this->resolved[$offset]);
+        if (array_key_exists($service, $this->resolved)) {
+            return $this->factory[$service] === \true
+                   ? $this->resolved[$service]->__invoke($this)
+                   : $this->resolved[$service];
         }
 
-        $result = $this->services[$offset];
+        $result = $this->services[$service];
 
         if ($result instanceof \Closure) {
             $result = $result->__invoke($this);
@@ -72,71 +83,17 @@ class Container implements ContainerInterface
             $result->setContainer($this);
         }
 
-        $this->resolved[$offset] = $result;
-
-        return $this->call($result);
-    }
-
-    /**
-     * @param mixed $service
-     * @throws \InvalidArgumentException
-     * @return mixed
-     */
-    protected function call($service)
-    {
-        if (is_object($service) && method_exists($service, '__invoke')) {
-            return $service->__invoke($this);
+        if (is_object($result) && method_exists($result, '__invoke')) {
+            $this->factory[$service] = \true;
+        } else {
+            $this->factory[$service] = \false;
         }
 
-        return $service;
-    }
+        $this->resolved[$service] = $result;
 
-    /**
-     * (non-PHPdoc)
-     * @see ArrayAccess::offsetSet()
-     */
-    public function offsetSet($offset, $value)
-    {
-        if (isset($this->resolved[$offset])) {
-            throw new \InvalidArgumentException(sprintf('[' . __METHOD__ . '] Service "%s" is resolved!', $offset), 500);
-        }
-
-        $this->services[$offset] = $value;
-
-        return $this;
-    }
-
-    /**
-     * (non-PHPdoc)
-     * @see ArrayAccess::offsetExists()
-     */
-    public function offsetExists($offset)
-    {
-        return isset($this->services[$offset]);
-    }
-
-    /**
-     * (non-PHPdoc)
-     * @see ArrayAccess::offsetUnset()
-     */
-    public function offsetUnset($offset)
-    {
-        if (isset($this->services[$offset])) {
-            unset($this->services[$offset]);
-        }
-
-        if (isset($this->resolved[$offset])) {
-            unset($this->resolved[$offset]);
-        }
-    }
-
-    /**
-     * (non-PHPdoc)
-     * @see \Micro\Container\ContainerInterface::get()
-     */
-    public function get($service)
-    {
-        return $this->offsetGet($service);
+        return $this->factory[$service] === \true
+               ? $this->resolved[$service]->__invoke($this)
+               : $this->resolved[$service];
     }
 
     /**
@@ -145,7 +102,11 @@ class Container implements ContainerInterface
      */
     public function set($service, $callback)
     {
-        return $this->offsetSet($service, $callback);
+        if (isset($this->resolved[$service])) {
+            throw new \InvalidArgumentException(sprintf('[' . __METHOD__ . '] Service "%s" is resolved!', $service), 500);
+        }
+
+        $this->services[$service] = $callback;
     }
 
     /**
@@ -154,7 +115,7 @@ class Container implements ContainerInterface
      */
     public function has($service)
     {
-        return $this->offsetExists($service);
+        return isset($this->services[$service]);
     }
 
     /**
@@ -179,7 +140,7 @@ class Container implements ContainerInterface
             return $callback($service($c), $c);
         };
 
-        return $this[$offset] = $extended;
+        return $this->set($offset, $extended);
     }
 
     /**
@@ -219,5 +180,51 @@ class Container implements ContainerInterface
         }
 
         return $alias;
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see ArrayAccess::offsetGet()
+     */
+    public function offsetGet($offset)
+    {
+        return $this->get($offset);
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see ArrayAccess::offsetSet()
+     */
+    public function offsetSet($offset, $value)
+    {
+        return $this->set($offset, $value);
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see ArrayAccess::offsetExists()
+     */
+    public function offsetExists($offset)
+    {
+        return $this->has($offset);
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see ArrayAccess::offsetUnset()
+     */
+    public function offsetUnset($offset)
+    {
+        if (isset($this->services[$offset])) {
+            unset($this->services[$offset]);
+        }
+
+        if (isset($this->resolved[$offset])) {
+            unset($this->resolved[$offset]);
+        }
+
+        if (isset($this->factory[$offset])) {
+            unset($this->factory[$offset]);
+        }
     }
 }

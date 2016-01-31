@@ -4,7 +4,6 @@ namespace UserManagement;
 
 use Micro\Application\Package as BasePackage;
 use Micro\Acl\Acl;
-use Micro\Auth\Auth;
 use Micro\Cache;
 
 class Package extends BasePackage
@@ -60,8 +59,8 @@ class Package extends BasePackage
         /**
          * Auth
          */
-        Auth::setResolver(function ($identity) {
+        /* \Micro\Auth\Auth::setResolver(function ($identity) {
             return \UserManagement\Model\Users::callFind((int) $identity);
-        });
+        }); */
     }
 }

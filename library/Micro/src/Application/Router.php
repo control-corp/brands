@@ -73,14 +73,20 @@ class Router
     }
 
     /**
-     * @param string $name
      * @param string $pattern
      * @param \Closure|string $handler
+     * @param string $name
      * @throws \Exception
      * @return \Micro\Application\Route
      */
-    public function map($name, $pattern, $handler)
+    public function map($pattern, $handler, $name = \null)
     {
+        if (\null === $name) {
+            $name = preg_replace('~[^\w]~', '-', $pattern);
+            $name = preg_replace('~[\-]+~', '-', $name);
+            $name = 'route-' . trim($name, '-');
+        }
+
         if (isset($this->routes[$name])) {
             throw new CoreException(sprintf('[' . __METHOD__ . '] Route "%s" already exists!', $name), 500);
         }
@@ -129,12 +135,6 @@ class Router
             && $reset === \false
         ) {
             $data += $this->currentRoute->getParams();
-        }
-
-        foreach ($data as $k => $v) {
-            if (is_object($v) || is_array($v) || is_numeric($k)) {
-                unset($data[$k]);
-            }
         }
 
         if (isset($this->routesStatic[$pattern])) {
@@ -234,7 +234,11 @@ class Router
     {
         foreach ($routes as $name => $config) {
 
-            $route = $this->map($name, $config['pattern'], $config['handler']);
+            if (!isset($config['pattern']) || !isset($config['handler'])) {
+                continue;
+            }
+
+            $route = $this->map($config['pattern'], $config['handler'], $name);
 
             if (isset($config['conditions'])) {
                 $route->setConditions($config['conditions']);
@@ -246,19 +250,19 @@ class Router
         }
 
         if (!isset($this->routes['admin'])) {
-            $route = $this->map('admin', '/admin[/{package}][/{controller}][/{action}][/{id}]', function () {
+            $route = $this->map('/admin[/{package}][/{controller}][/{action}][/{id}]', function () {
                 $params = \array_map('Micro\Application\Utils::camelize', $this->getParams());
                 return \ucfirst($params['package']) . '\\Controller\Admin\\' . \ucfirst($params['controller']) . '@' . \lcfirst($params['action']);
-            });
+            }, 'admin');
             $route->setDefaults(['package' => 'app', 'controller' => 'index', 'action' => 'index', 'id' => \null]);
             $route->setConditions(['package' => '[^\/]+', 'controller' => '[^\/]+', 'action' => '[^\/]+']);
         }
 
         if (!isset($this->routes['default'])) {
-            $route = $this->map('default', '/{package}[/{controller}][/{action}][/{id}]', function () {
+            $route = $this->map('/{package}[/{controller}][/{action}][/{id}]', function () {
                 $params = \array_map('Micro\Application\Utils::camelize', $this->getParams());
                 return \ucfirst($params['package']) . '\\Controller\Front\\' . \ucfirst($params['controller']) . '@' . \lcfirst($params['action']);
-            });
+            }, 'default');
             $route->setDefaults(['package' => 'app', 'controller' => 'index', 'action' => 'index', 'id' => \null]);
             $route->setConditions(['package' => '[^\/]+', 'controller' => '[^\/]+', 'action' => '[^\/]+']);
         }

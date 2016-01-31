@@ -3,8 +3,8 @@
 $reNewDate = '';
 $alert = 'brand-default';
 $txt = '';
-if ($this->item['reNewDate']) {
-    $date = new \DateTime($this->item['reNewDate']);
+if ($this->item->getReNewDate()) {
+    $date = new \DateTime($this->item->getReNewDate());
     $reNewDate = $date->format('d.m.Y');
     $now = new \DateTime();
     $diff = $date->diff($now);    $months = $diff->days / 30;    $months = (int) round($months);

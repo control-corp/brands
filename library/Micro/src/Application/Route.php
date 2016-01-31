@@ -3,7 +3,6 @@
 namespace Micro\Application;
 
 use Exception as CoreException;
-use Micro\Application\Utils;
 
 class Route
 {
@@ -160,37 +159,31 @@ class Route
 
         $url = $this->pattern;
 
-        $a = 0;
-
-        if ($data['controller'] === 'brand-classes') {
-            $a = 1;
+        foreach ($data as $key => $value) {
+            $pattern = sprintf('#\{%s(:[^}]+)?\}#', preg_quote($key));
+            $url = preg_replace($pattern, $value, $url);
+            unset($data[$key]);
         }
 
-        foreach ($data as $k => $v) {
+        $url = str_replace(']', '', $url);
+        $segs = array_reverse(explode('[', $url));
 
-            $v = Utils::decamelize($v);
-
-            $lambda = function ($match) use ($v) {
-                array_shift($match);
-                array_shift($match);
-                return $match[0] . $v . $match[1];
-            };
-
-            $ocount = 0;
-            $url = preg_replace_callback('~(\[([^\]]*){' . $k . '}([^\]]*)\])~ius', $lambda, $url, -1, $ocount); // replace optionals
-
-            $count = 0;
-            $url = preg_replace('~{' . $k . '}~ius', $v, $url, -1, $count); // replace required
-
-            if ($ocount + $count !== 0) {
-                unset($data[$k]);
+        foreach ($segs as $n => $seg) {
+            if (strpos($seg, '{') !== false) {
+                if (isset($segs[$n - 1])) {
+                    throw new \InvalidArgumentException(
+                        'Optional segments with unsubstituted parameters cannot '
+                        . 'contain segments with substituted parameters'
+                    );
+                }
+                unset($segs[$n]);
             }
         }
 
-        $url = preg_replace('~(\[([^\]]+)\])~ius', '', $url); // clear rest optionals
+        $url = implode('', array_reverse($segs));
 
-        if (!static::isStatic($url)) { // check something wrong
-            throw new CoreException(sprintf('Too few arguments? "%s"!', $url), 500);
+        if (empty($url)) { // check something wrong
+            throw new CoreException(sprintf('Too few arguments? "%s"!', $this->pattern), 500);
         }
 
         return $url;

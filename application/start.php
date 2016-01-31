@@ -4,9 +4,9 @@ use Micro\Application\Application;
 
 include 'library/Micro/autoload.php';
 
-if (file_exists('vendor/autoload.php')) {
+/* if (file_exists('vendor/autoload.php')) {
     include 'vendor/autoload.php';
-}
+} */
 
 /**
  * Cached mapped classes / dirs
@@ -22,6 +22,8 @@ foreach (glob('application/config/*.php') as $file) {
 }
 
 $app = new Application($config);
+
+$app->registerDefaultServices();
 
 $app['language'] = function ($c) {
     return new \App\Model\Entity\Language(1, 'bg');

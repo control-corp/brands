@@ -14,6 +14,16 @@ class Page extends AbstractPage
     protected $reset = \true;
     protected $qsa = \false;
     protected $active = \null;
+    protected $router;
+
+    public function getRouter()
+    {
+        if ($this->router === \null) {
+            $this->router = app('router');
+        }
+
+        return $this->router;
+    }
 
     public function isActive($recursive = \false)
     {
@@ -50,14 +60,16 @@ class Page extends AbstractPage
     {
         if (\null === $this->active) {
 
-            $route = app('router')->getCurrentRoute();
+            $router = $this->getRouter();
+
+            $route = $router->getCurrentRoute();
 
             if ($route === \null || $route->getName() !== $this->route) {
                 $this->active = \false;
                 return;
             }
 
-            $pageRoute = app('router')->getRoute($this->route);
+            $pageRoute = $router->getRoute($this->route);
 
             $myParams = $this->routeParams + ($pageRoute ? $pageRoute->getDefaults() : []);
 
@@ -94,7 +106,7 @@ class Page extends AbstractPage
                 $this->href = (string) $this->uri;
             } else {
                 try {
-                    $this->href = (string) route($this->route, $this->routeParams, $this->reset, $this->qsa);
+                    $this->href = (string) $this->getRouter()->assemble($this->route, $this->routeParams, $this->reset, $this->qsa);
                 } catch (\Exception $e) {
                     $this->label = $e->getMessage();
                     $this->href = '#';
@@ -151,7 +163,7 @@ class Page extends AbstractPage
             return \true;
         }
 
-        $route = app('router')->getRoute($this->route);
+        $route = $this->getRouter()->getRoute($this->route);
 
         if (!$route instanceof Route) {
             return \false;

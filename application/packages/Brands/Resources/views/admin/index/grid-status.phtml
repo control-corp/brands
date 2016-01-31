@@ -1,9 +1,9 @@
 <?php
-if ($this->item['statusId']) :
+if ($this->item->getStatusId()) :
     $date = '';
-    if ($this->item['statusDate']) {
-        $date = new \DateTime($this->item['statusDate']);
+    if ($this->item->getStatusDate()) {
+        $date = new \DateTime($this->item->getStatusDate());
         $date = '&nbsp;/<br />' . $date->format('d.m.Y');
     }
-    echo $this->nomStatuses[$this->item['statusId']] . $date;
+    echo $this->nomStatuses[$this->item->getStatusId()] . $date;
 endif;

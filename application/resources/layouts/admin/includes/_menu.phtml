@@ -18,9 +18,9 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <?php
-                foreach ($this->widget('Navigation')->navigation('right') as $page) :
+                foreach ($this->widget('Navigation')->navigation('right') as $page) {
                     echo $this->partial('layouts/admin/includes/_item', array('item' => $page, 'level' => 0));
-                endforeach;
+                }
                 ?>
             </ul>
         </div><!--/.nav-collapse -->

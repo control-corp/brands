@@ -2,8 +2,6 @@
 
 namespace Micro\Model;
 
-use Micro\Application\Utils;
-
 abstract class EntityAbstract implements EntityInterface
 {
     public function setFromArray(array $data)
@@ -11,10 +9,10 @@ abstract class EntityAbstract implements EntityInterface
         $reflection = new \ReflectionClass($this);
 
         foreach ($data as $k => $v) {
-            $method = 'set' . ucfirst(Utils::camelize($k));
+            $method = 'set' . ucfirst($k);
             if ($reflection->hasMethod($method)) {
                 $this->$method($v);
-            } else if (property_exists($this, $k)) {
+            } else {
                 $this->$k = $v;
             }
         }
@@ -54,9 +52,7 @@ abstract class EntityAbstract implements EntityInterface
      */
     public function offsetGet ($offset)
     {
-        return $this->offsetExists($offset)
-               ? $this->$offset
-               : \null;
+        return $this->$offset;
     }
 
     /**
@@ -65,9 +61,7 @@ abstract class EntityAbstract implements EntityInterface
      */
     public function offsetSet ($offset, $value)
     {
-        if ($this->offsetExists($offset)) {
-            $this->$offset = $value;
-        }
+        $this->$offset = $value;
     }
 
     /**
@@ -75,9 +69,7 @@ abstract class EntityAbstract implements EntityInterface
      */
     public function offsetUnset ($offset)
     {
-        if ($this->offsetExists($offset)) {
-            $this->$offset = \null;
-        }
+        $this->$offset = \null;
     }
 
     /**
@@ -86,7 +78,7 @@ abstract class EntityAbstract implements EntityInterface
      */
     public function __get($offset)
     {
-        return $this->offsetGet($offset);
+        return $this->$offset;
     }
 
     /**
@@ -95,8 +87,23 @@ abstract class EntityAbstract implements EntityInterface
      */
     public function __set($offset, $value)
     {
-        if ($this->offsetExists($offset)) {
-            $this->offsetSet($offset, $value);
-        }
+        $this->$offset = $value;
+    }
+
+    /**
+     * @param string $offset
+     * @return bool
+     */
+    public function __isset($offset)
+    {
+        return property_exists($this, $offset);
+    }
+
+    /**
+     * @param string $offset
+     */
+    public function __unset($offset)
+    {
+        $this->$offset = \null;
     }
 }

@@ -27,11 +27,16 @@ class Application extends Container
     private $exceptions = [];
 
     /**
+     * @var Application is booted
+     */
+    private $booted = \false;
+
+    /**
      * Constructor
      * @param array | string $config
      * @throws CoreException
      */
-    public function __construct($config)
+    public function __construct($config, $name = 'app')
     {
         if (is_array($config)) {
             $config = new Config($config);
@@ -45,7 +50,7 @@ class Application extends Container
 
         $this['config'] = $config;
 
-        static::setInstance($this);
+        static::setInstance($name, $this);
     }
 
     /**
@@ -56,17 +61,7 @@ class Application extends Container
     {
         try {
 
-            $this->boot();
-
-            if (($eventResponse = $this['event']->trigger('application.start', ['request' => $this['request']])) instanceof Http\Response) {
-                $response = $eventResponse;
-            } else {
-                $response = $this->start();
-            }
-
-            if (($eventResponse = $this['event']->trigger('application.end', ['response' => $response])) instanceof Http\Response) {
-                $response = $eventResponse;
-            }
+            $response = $this->start();
 
             if (env('development')) {
                 foreach ($this->exceptions as $exception) {
@@ -195,6 +190,11 @@ class Application extends Container
         return $this;
     }
 
+    public function map($pattern, $handler, $name = \null)
+    {
+        return $this->get('router')->map($pattern, $handler, $name);
+    }
+
     /**
      * Unpackage the application request
      * @return \Micro\Http\Response
@@ -214,7 +214,18 @@ class Application extends Container
             $routeHandler = $route->getHandler();
 
             if (is_string($routeHandler) && strpos($routeHandler, '@') !== \false) { // package format
+
+                $this->boot();
+
+                if (($eventResponse = $this['event']->trigger('application.start', ['request' => $this['request']])) instanceof Http\Response) {
+                    return $eventResponse;
+                }
+
                 $routeHandler = $this->resolve($routeHandler, $this['request'], $this['response']);
+
+                if (($eventResponse = $this['event']->trigger('application.end', ['response' => $routeHandler])) instanceof Http\Response) {
+                    return $eventResponse;
+                }
             }
 
             if ($routeHandler instanceof Http\Response) {
@@ -280,7 +291,9 @@ class Application extends Container
      */
     public function boot()
     {
-        $this->registerDefaultServices();
+        if (\true === $this->booted) {
+            return;
+        }
 
         $packages = $this['config']->get('packages', []);
 
@@ -303,6 +316,8 @@ class Application extends Container
                 $this->packages[$package] = $instance;
             }
         }
+
+        $this->booted = \true;
     }
 
     /**
@@ -316,7 +331,7 @@ class Application extends Container
     public function resolve($package, Http\Request $request, Http\Response $response, $subRequest = \false)
     {
         if (!is_string($package) || strpos($package, '@') === \false) {
-            throw new CoreException('[' . __METHOD__ . '] Package must be Package\Handler@action format', 500);
+            throw new CoreException('[' . __METHOD__ . '] Package must be in [Package\Handler@action] format', 500);
         }
 
         list($package, $action) = explode('@', $package);

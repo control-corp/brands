@@ -10,10 +10,5 @@ return [
             'pattern' => '/admin/login',
             'handler' => 'UserManagement\Controller\Admin\Index@login'
         ],
-        'pages.detail' => [
-            'pattern' => '/page/{alias}-{id}.html',
-            'handler' => 'Pages\Controller\Front\Index@detail',
-            'conditions' => ['alias' => '[\w-]+', 'id' => '\d+'],
-        ],
     ]
 ];
