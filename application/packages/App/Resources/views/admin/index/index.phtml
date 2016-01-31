@@ -2,4 +2,21 @@
 
 $this->extend('layouts/admin/default');
 
-echo '<h1>Добре дошъл</h1>';
+?>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="row">
+            <div class="col-md-12">
+                <?php echo $this->partial('admin/index/_menu', array('container' => $this->widget('Navigation')->navigation('main'), 'level' => 0)); ?>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="row">
+            <div class="col-md-12">
+                <?php echo $this->partial('admin/index/_menu', array('container' => $this->widget('Navigation')->navigation('right'), 'level' => 0)); ?>
+            </div>
+        </div>
+    </div>
+</div>
