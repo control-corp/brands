@@ -160,9 +160,11 @@ class Route
         $url = $this->pattern;
 
         foreach ($data as $key => $value) {
-            $pattern = sprintf('#\{%s(:[^}]+)?\}#', preg_quote($key));
-            $url = preg_replace($pattern, $value, $url);
-            unset($data[$key]);
+            $count = 0;
+            $url = preg_replace(sprintf('#\{%s(:[^}]+)?\}#', preg_quote($key)), $value, $url, -1, $count);
+            if ($count) {
+                unset($data[$key]);
+            }
         }
 
         $url = str_replace(']', '', $url);
