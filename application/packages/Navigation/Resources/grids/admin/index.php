@@ -63,7 +63,6 @@ return array(
                 'text' => ' ',
                 'sourceField' => 'id',
                 'headStyle' => 'width: 5%',
-                'sortable' => 1,
                 'class' => 'text-center',
                 'headClass' => 'text-center',
                 'hrefClass' => 'glyphicon glyphicon-list',
