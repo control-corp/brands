@@ -3,13 +3,9 @@
 namespace Micro\Application;
 
 use Exception as CoreException;
-use Micro\Container\ContainerAwareInterface;
-use Micro\Container\ContainerAwareTrait;
 
-class Route implements ContainerAwareInterface
+class Route
 {
-    use ContainerAwareTrait;
-
     /**
      * @var string
      */
@@ -177,10 +173,10 @@ class Route implements ContainerAwareInterface
         foreach ($segs as $n => $seg) {
             if (strpos($seg, '{') !== false) {
                 if (isset($segs[$n - 1])) {
-                    throw new \InvalidArgumentException(
+                    throw new \InvalidArgumentException(sprintf(
                         'Optional segments with unsubstituted parameters cannot '
-                        . 'contain segments with substituted parameters'
-                    );
+                        . 'contain segments with substituted parameters "%s"'
+                    ), $this->pattern);
                 }
                 unset($segs[$n]);
             }
@@ -189,7 +185,7 @@ class Route implements ContainerAwareInterface
         $url = implode('', array_reverse($segs));
 
         if (empty($url)) { // check something wrong
-            throw new CoreException(sprintf('Too few arguments? "%s"!', $this->pattern), 500);
+            throw new \InvalidArgumentException(sprintf('Too few arguments? "%s"!', $this->pattern));
         }
 
         return $url;
@@ -201,7 +197,7 @@ class Route implements ContainerAwareInterface
     public function getHandler($invoke = \true)
     {
         if ($invoke === \true && $this->handler instanceof \Closure) {
-            return $this->handler->__invoke($this->container);
+            return $this->handler->__invoke();
         }
 
         return $this->handler;

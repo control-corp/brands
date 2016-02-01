@@ -98,7 +98,6 @@ class Router implements ContainerAwareInterface
         $pattern = static::URL_DELIMITER . trim($pattern, static::URL_DELIMITER);
 
         $route = new Route($name, $pattern, $handler);
-        $route->setContainer($this->container);
 
         if (Route::isStatic($pattern)) {
             if (isset($this->routesStatic[$pattern])) {
