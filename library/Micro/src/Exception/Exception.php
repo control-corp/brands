@@ -1,6 +1,6 @@
 <?php
 
-namespace Micro\Application;
+namespace Micro\Exception;
 
 use Micro\Log\Log;
 
@@ -15,7 +15,7 @@ class Exception extends \Exception
 
 	public static function register()
 	{
-	    set_exception_handler(array('Micro\Application\Exception', 'exceptionHandler'));
+	    set_exception_handler('Micro\Exception\Exception::exceptionHandler');
 	}
 
 	public static function exceptionHandler(\Exception $e)

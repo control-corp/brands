@@ -6,7 +6,11 @@ $(document).ajaxStop(function () {
     if (match) {
         eval('var err = ' + error +';');
         if (typeof err == 'object' && err.error) {
-            alert(err.error);
+        	if ($.isPlainObject(err.error) && err.error.message) {
+        		alert(err.error.message);
+        	} else {
+        		alert(err.error);
+        	}
         }
     }
 });

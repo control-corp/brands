@@ -2,7 +2,7 @@
 
 namespace Micro\Grid;
 
-use Micro\Application\Exception as CoreException;
+use Micro\Exception\Exception as CoreException;
 use Micro\Paginator\Paginator;
 use Micro\Grid\Renderer\RendererInterface;
 

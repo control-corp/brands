@@ -2,7 +2,7 @@
 
 namespace Micro\Application;
 
-use Micro\Application\Exception as CoreException;
+use Micro\Exception\Exception as CoreException;
 use Micro\Http;
 use Micro\Event;
 use Micro\Container\Container;
@@ -14,8 +14,9 @@ use Micro\Acl\Acl;
 use Micro\Translator\Translator;
 use Micro\Log\Log as CoreLog;
 use Micro\Database\Table\TableAbstract;
+use Micro\Exception\ExceptionHandlerInterface;
 
-class Application extends Container
+class Application extends Container implements ExceptionHandlerInterface
 {
     /**
      * @var array
@@ -255,7 +256,13 @@ class Application extends Container
 
             try {
 
-                if (($exceptionResponse = $this->get('exception.handler')->handleException($e)) instanceof Http\Response) {
+                $exceptionHandler = $this->get('exception.handler');
+
+                if (!$exceptionHandler instanceof ExceptionHandlerInterface) {
+                    throw $e;
+                }
+
+                if (($exceptionResponse = $exceptionHandler->handleException($e)) instanceof Http\Response) {
                     return $exceptionResponse;
                 }
 

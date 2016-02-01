@@ -1,7 +1,17 @@
 <?php
 
 return [
-    'acl' => 1,
+    /* 'acl' => [
+        'enabled' => 1
+    ], */
+    /* 'auth' => [
+        'namespace' => [
+            'admin' => [
+                'admin',
+                'admin-login'
+            ]
+        ]
+    ], */
     'log' => [
         'enabled' => 1,
         'path' => 'data/log',

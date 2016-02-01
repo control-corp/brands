@@ -21,7 +21,15 @@ class Error extends Controller
         $message = (env('development') || $code === 403 ? $exception->getMessage() : static::ERROR);
 
         if ($this->request->isAjax()) {
-            return new JsonResponse(['error' => $message], $code);
+            return new JsonResponse([
+                'error' => [
+                    'message' => $exception->getMessage(),
+                    'code'    => $exception->getCode(),
+                    'file'    => $exception->getFile(),
+                    'line'    => $exception->getLine(),
+                    'trace'   => $exception->getTrace()
+                ]
+            ], $code);
         }
 
         $this->response->setCode($code);

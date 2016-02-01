@@ -2,7 +2,7 @@
 
 namespace Mail\Model;
 
-use Micro\Application\Exception as CoreException;
+use Micro\Exception\Exception as CoreException;
 use Micro\Model\DatabaseAbstract;
 use Zend\Mime;
 use Zend\Mail\Message;

@@ -3,7 +3,7 @@
 use Micro\Container\Container;
 use Micro\Application\Utils;
 use Micro\Application\View;
-use Micro\Application\Exception as CoreException;
+use Micro\Exception\Exception as CoreException;
 use Micro\Http\Response\JsonResponse;
 use Micro\Http\Response\RedirectResponse;
 use Micro\Paginator\Paginator;

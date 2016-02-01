@@ -212,7 +212,7 @@ class Index extends Crud
         $routeData = $routeData ? json_decode($routeData, \true) : [];
         $routeData = is_array($routeData) ? $routeData : [];
 
-        $route = app('router')->getRoute($routeName);
+        $route = $this->container->get('router')->getRoute($routeName);
 
         $route->compile();
 
@@ -232,7 +232,7 @@ class Index extends Crud
 
     protected function getNavigationHelper($routeName)
     {
-        $route = app('router')->getRoute($routeName);
+        $route = $this->container->get('router')->getRoute($routeName);
 
         $handler = $route->getHandler(\false);
 
