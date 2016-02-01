@@ -88,12 +88,12 @@ class Index extends Crud
     {
         if (isset($data['name']) && $data['name'] && isset($data['countryId']) && $data['countryId']) {
             $m = new \Brands\Model\Table\Brands();
-            $where = array('name = ?' => $data['name'], 'countryId = ?' => $data['countryId']);
+            $where = array('name = ?' => $data['name'], 'countryId = ?' => $data['countryId'], 'typeId = ?' => $data['typeId']);
             if ($item->getId()) {
                 $where['id <> ?'] = $item->getId();
             }
             if ($m->fetchRow($where)) {
-                $form->countryId->addError('Марката съществува за тази държава');
+                $form->countryId->addError('Тази марка и тип съществува за тази държава');
                 $form->markAsError();
             }
         }

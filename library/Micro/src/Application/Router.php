@@ -235,7 +235,7 @@ class Router implements ContainerAwareInterface
     {
         if (!isset($this->routes['admin'])) {
 
-            $route = $this->map('/admin[/{package}][/{controller}][/{action}][/{id}][/{wildcard}]', function () {
+            $route = $this->map('/admin[/{package}][/{controller}][/{action}][/{id}][{wildcard}]', function () {
 
                 static $cache = [];
 
@@ -262,7 +262,7 @@ class Router implements ContainerAwareInterface
 
         if (!isset($this->routes['default'])) {
 
-            $route = $this->map('/{package}[/{controller}][/{action}][/{id}][/{wildcard}]', function () {
+            $route = $this->map('/{package}[/{controller}][/{action}][/{id}][{wildcard}]', function () {
 
                 static $cache = [];
 

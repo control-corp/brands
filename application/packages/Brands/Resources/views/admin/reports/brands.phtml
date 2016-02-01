@@ -75,14 +75,16 @@ if (!empty($this->brands)) :
                     <?php
                     if (isset($this->brands[$countryId][$typeId])) :
                         $brandEntity = $this->brands[$countryId][$typeId];
-                        echo '<div style="padding: 5px; background-color: ' . ($this->statusesColors[$brandEntity['statusId']] ? $this->statusesColors[$brandEntity['statusId']] : '#ffffff') . '">';
-                        echo $this->statuses[$brandEntity['statusId']] . '<br />';
-                        $date = $brandEntity['statusDate'];
-                        if ($date) {
-                            $date = new \DateTime($date);
-                            echo $date->format('d.m.Y');
+                        if (isset($this->statuses[$brandEntity['statusId']])) {
+                            echo '<div style="padding: 5px; background-color: ' . (isset($this->statusesColors[$brandEntity['statusId']]) ? $this->statusesColors[$brandEntity['statusId']] : '#ffffff') . '">';
+                            echo $this->statuses[$brandEntity['statusId']] . '<br />';
+                            $date = $brandEntity['statusDate'];
+                            if ($date) {
+                                $date = new \DateTime($date);
+                                echo $date->format('d.m.Y');
+                            }
+                            echo '</div>';
                         }
-                        echo '</div>';
                     endif;
                     ?>
                     </td>

@@ -43,7 +43,7 @@ class DevTools
         if ($response instanceof HtmlResponse) {
             $b = $response->getBody();
             $b = explode('</body>', $b);
-            $b[0] .= $this->view->render() . '</body>';
+            $b[0] .= str_replace(array("\n", "\t", "\r"), "", $this->view->render()) . '</body>';
             $response->setBody(implode('', $b));
         }
     }

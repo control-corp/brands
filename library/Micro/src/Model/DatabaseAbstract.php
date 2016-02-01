@@ -607,6 +607,8 @@ abstract class DatabaseAbstract implements AdapterInterface, ModelInterface
 
     public function fetchPairs(array $where = \null, array $fields = \null, array $order = \null, $cacheIt = \false)
     {
+        $this->resetSelect(\true);
+
         $adapter = $this->getTable()->getAdapter();
         $cache = \null;
 

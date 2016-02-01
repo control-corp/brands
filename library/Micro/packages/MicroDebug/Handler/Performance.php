@@ -26,6 +26,6 @@ class Performance
             }
         }
 
-        \file_put_contents(config('debug.handlers.performance'), "<?php\nreturn " . \var_export($forStore, \true) . ";", \LOCK_EX);
+        \file_put_contents(config('micro_debug.handlers.performance'), "<?php\nreturn " . \var_export($forStore, \true) . ";", \LOCK_EX);
     }
 }
