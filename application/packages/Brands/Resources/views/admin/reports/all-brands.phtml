@@ -30,7 +30,7 @@
                     if (!empty($this->selectedBrands)) :
                         foreach ($this->selectedBrands as $selectedBrand) :
                     ?>
-                            <div data-id="<?php echo $selectedBrand; ?>"><?php echo $selectedBrand; ?> <span style="cursor: pointer" onclick="removeBrand.call(this)">x</span></div>
+                            <div data-id="<?php echo $selectedBrand; ?>"><?php echo $selectedBrand; ?> <span style="cursor: pointer; color: red;" onclick="removeBrand.call(this)">x</span></div>
                     <?php
                         endforeach;
                     else:
@@ -89,7 +89,7 @@ $('input.typeahead').typeahead({
 		var sb = $('#selected-brands');
 		if (sb.find('[data-id="' + item.text + '"]').length === 0) {
 			$('#no-selected-brands').hide();
-		    sb.prepend('<div data-id="' + item.text + '">' + item.text + ' <span style="cursor: pointer" onclick="removeBrand.call(this)">x</span></div>');
+		    sb.prepend('<div data-id="' + item.text + '">' + item.text + ' <span style="cursor: pointer; color: red;" onclick="removeBrand.call(this)">x</span></div>');
 		}
 		window.setTimeout(function () { $('input.typeahead').val(''); }, 10);
     }
