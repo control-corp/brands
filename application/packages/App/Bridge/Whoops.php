@@ -16,6 +16,10 @@ class Whoops implements ExceptionHandlerInterface
 
     public function handleException(\Exception $e)
     {
+        if ($e->getCode() === 403) {
+            return app('exception.handler.fallback')->handleException($e);
+        }
+
         return $this->whoops->handleException($e);
     }
 }

@@ -125,6 +125,12 @@ class Application extends Container implements ExceptionHandlerInterface
             };
         }
 
+        if (!isset($this['exception.handler.fallback'])) {
+            $this['exception.handler.fallback'] = function ($app) {
+                return $app;
+            };
+        }
+
         if (!isset($this['acl'])) {
             $this['acl'] = function ($app) {
                 if ($app->get('config')->get('acl.enabled', 1)) {
@@ -283,14 +289,13 @@ class Application extends Container implements ExceptionHandlerInterface
 
     /**
      * @param \Exception $e
-     * @throws CoreException
      * @return \Micro\Http\Response
      */
     public function handleException(\Exception $e)
     {
         $errorHandler = $this->get('config')->get('error');
 
-        if ($errorHandler === \null || empty($errorHandler)) {
+        if (empty($errorHandler)) {
             throw $e;
         }
 

@@ -258,7 +258,7 @@ if (!function_exists('is_allowed')) {
 
             $route = app('router')->getCurrentRoute();
 
-            if ($route === \null || $route->getName() === 'error') {
+            if ($route === \null) {
                 return \true;
             }
 

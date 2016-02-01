@@ -55,11 +55,17 @@ class Controller implements ContainerAwareInterface
         }
     }
 
+    /**
+     * @return \Micro\Application\View
+     */
     public function getView()
     {
         return $this->view;
     }
 
+    /**
+     * @return string
+     */
     public function getScope()
     {
         return $this->scope;

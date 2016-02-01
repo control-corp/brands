@@ -2,8 +2,6 @@
 
 namespace Micro\Application;
 
-use Exception as CoreException;
-
 class Route
 {
     /**
