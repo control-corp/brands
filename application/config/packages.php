@@ -10,6 +10,6 @@ return [
         'Pages' => 'application/packages/Pages',
         'UserManagement' => 'application/packages/UserManagement',
         'MicroDebug' => 'library/Micro/packages/MicroDebug',
-        //'MicroMultiLanguage' => 'library/Micro/packages/MicroMultiLanguage',
+        'MicroMultiLanguage' => 'library/Micro/packages/MicroMultiLanguage',
     ]
 ];

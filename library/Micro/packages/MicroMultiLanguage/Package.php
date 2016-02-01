@@ -8,6 +8,8 @@ use App\Model\Entity\Language;
 
 class Package extends BasePackage
 {
+    const DEFAULT_LANG = 'bg';
+
     public function boot()
     {
         $this->container['event']->attach('application.start', array($this, 'onApplicationStart'));
@@ -40,7 +42,7 @@ class Package extends BasePackage
 
             $currentLanguage = \null;
 
-            $defaultLanguage = $container['config']->get('language.default', 'bg');
+            $defaultLanguage = $container['config']->get('language.default', static::DEFAULT_LANG);
 
             $lang = $container['request']->getParam('lang', $defaultLanguage);
 
@@ -65,6 +67,23 @@ class Package extends BasePackage
         foreach ($languages as $language) {
             $validLanguages[] = $language->getCode();
         }
+
+        /* foreach ($router->getRoutes() as $route) {
+
+            $pattern = $route->getPattern();
+
+            if ($route->getName() === 'default') {
+                $pattern = ltrim($pattern, '/');
+            }
+
+            $pattern = '/{lang}' . $pattern;
+
+            $newRoute = $router->map($pattern, $route->getHandler(\false), 'language-' . $route->getName());
+
+            if (!empty($validLanguages)) {
+                $newRoute->addCondition('lang', implode('|', $validLanguages));
+            }
+        } */
 
         foreach ($router->getRoutes() as $route) {
 
@@ -91,8 +110,6 @@ class Package extends BasePackage
         $router = $this->container->get('router');
         $routeParams = $router->getCurrentRoute()->getParams();
 
-        if (isset($routeParams['lang'])) {
-            $router->setGlobalParam('lang', $routeParams['lang']);
-        }
+        $router->setGlobalParam('lang', isset($routeParams['lang']) ? $routeParams['lang'] : $this->container['config']->get('language.default', static::DEFAULT_LANG));
     }
 }
