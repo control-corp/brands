@@ -68,7 +68,7 @@ class Router implements ContainerAwareInterface
         }
 
         foreach ($this->routes as $route) {
-            if ($route->match($requestUri)) {
+            if ($route instanceof Route && $route->match($requestUri)) {
                 return $this->currentRoute = $route;
             }
         }
@@ -232,33 +232,8 @@ class Router implements ContainerAwareInterface
         return $this->currentRoute;
     }
 
-    /**
-     * @param array $routes
-     * @param bool $loadDefaultRoutes
-     */
-    public function mapFromConfig(array $routes, $loadDefaultRoutes = \true)
+    public function loadDefaultRoutes()
     {
-        foreach ($routes as $name => $config) {
-
-            if (!isset($config['pattern']) || !isset($config['handler'])) {
-                continue;
-            }
-
-            $route = $this->map($config['pattern'], $config['handler'], $name);
-
-            if (isset($config['conditions'])) {
-                $route->setConditions($config['conditions']);
-            }
-
-            if (isset($config['defaults'])) {
-                $route->setDefaults($config['defaults']);
-            }
-        }
-
-        if (\false === $loadDefaultRoutes) {
-            return $this;
-        }
-
         if (!isset($this->routes['admin'])) {
 
             $route = $this->map('/admin[/{package}][/{controller}][/{action}][/{id}]', function () {
@@ -288,7 +263,7 @@ class Router implements ContainerAwareInterface
 
         if (!isset($this->routes['default'])) {
 
-            $route = $this->map('/{package}[/{controller}][/{action}][/{id}]', function () {
+            $route = $this->map('/[/{package}][/{controller}][/{action}][/{id}]', function () {
 
                 static $cache = [];
 
@@ -311,6 +286,30 @@ class Router implements ContainerAwareInterface
             $route->setDefaults(['package' => 'app', 'controller' => 'index', 'action' => 'index', 'id' => \null]);
 
             $route->setConditions(['package' => '[^\/]+', 'controller' => '[^\/]+', 'action' => '[^\/]+']);
+        }
+
+        return $this;
+    }
+
+    public function mapFromConfig()
+    {
+        $routes = $this->container->get('config')->get('routes', []);
+
+        foreach ($routes as $name => $config) {
+
+            if (!isset($config['pattern']) || !isset($config['handler'])) {
+                continue;
+            }
+
+            $route = $this->map($config['pattern'], $config['handler'], $name);
+
+            if (isset($config['conditions'])) {
+                $route->setConditions($config['conditions']);
+            }
+
+            if (isset($config['defaults'])) {
+                $route->setDefaults($config['defaults']);
+            }
         }
 
         return $this;

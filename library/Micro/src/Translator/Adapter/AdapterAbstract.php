@@ -10,7 +10,12 @@ abstract class AdapterAbstract implements AdapterInterface
 
     public function translate($key, $code = \null)
     {
-        if ($code === \null && ($language = app('language')) instanceof LanguageInterface) {
+        $container = app();
+
+        if ($code === \null
+            && $container->has('language')
+            && ($language = $container->get('language')) instanceof LanguageInterface
+        ) {
             $code = $language->getCode();
         } else {
             $code = config('language.default');

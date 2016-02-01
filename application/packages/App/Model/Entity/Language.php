@@ -3,8 +3,9 @@
 namespace App\Model\Entity;
 
 use Micro\Translator\Language\LanguageInterface;
+use Micro\Model\EntityAbstract;
 
-class Language implements LanguageInterface
+class Language extends EntityAbstract implements LanguageInterface
 {
     protected $id;
     protected $code;

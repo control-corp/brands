@@ -83,8 +83,8 @@ class Crud extends Controller
 
         $model = $this->getModel();
 
-        if (($language = app('language')) instanceof LanguageInterface) {
-            $model->addJoinCondition('language_id', $language->getId());
+        if ($this->container->has('language') && ($language = $this->container->get('language')) instanceof LanguageInterface) {
+            $model->addJoinCondition('languageId', $language->getId());
         }
 
         $model->addFilters($filters);
@@ -169,8 +169,8 @@ class Crud extends Controller
 
             if (!$form->hasErrors()) {
 
-                if (!isset($post['language_id']) && ($language = app('language')) instanceof LanguageInterface) {
-                    $post['language_id'] = $language->getId();
+                if (!isset($post['languageId']) && $this->container->has('language') && ($language = $this->container->get('language')) instanceof LanguageInterface) {
+                    $post['languageId'] = $language->getId();
                 }
 
                 try {
@@ -271,8 +271,8 @@ class Crud extends Controller
     {
         $model = $this->getModel();
 
-        if (($language = app('language')) instanceof LanguageInterface) {
-            $model->addJoinCondition('language_id', $language->getId());
+        if ($this->container->has('language') && ($language = $this->container->get('language')) instanceof LanguageInterface) {
+            $model->addJoinCondition('languageId', $language->getId());
         }
 
         $entity = $model->find((int) $this->request->getParam('id', 0));

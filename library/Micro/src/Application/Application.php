@@ -13,6 +13,7 @@ use Micro\Database\Database;
 use Micro\Acl\Acl;
 use Micro\Translator\Translator;
 use Micro\Log\Log as CoreLog;
+use Micro\Database\Table\TableAbstract;
 
 class Application extends Container
 {
@@ -61,7 +62,21 @@ class Application extends Container
     {
         try {
 
+            $this->boot();
+
+            $em = $this->get('event');
+
+            $request = $this->get('request');
+
+            if (($eventResponse = $em->trigger('application.start', ['request' => $request])) instanceof Http\Response) {
+                return $eventResponse;
+            }
+
             $response = $this->start();
+
+            if (($eventResponse = $em->trigger('application.end', ['response' => $response])) instanceof Http\Response) {
+                return $eventResponse;
+            }
 
             if (env('development')) {
                 foreach ($this->exceptions as $exception) {
@@ -159,7 +174,10 @@ class Application extends Container
                 if (!isset($adapters[$default])) {
                     return \null;
                 }
-                return Database::factory($adapters[$default]['adapter'], $adapters[$default]);
+                $db = Database::factory($adapters[$default]['adapter'], $adapters[$default]);
+                TableAbstract::setDefaultAdapter($db);
+                TableAbstract::setDefaultMetadataCache($app['cache']);
+                return $db;
             };
         }
 
@@ -220,20 +238,7 @@ class Application extends Container
             $routeHandler = $route->getHandler();
 
             if (is_string($routeHandler) && strpos($routeHandler, '@') !== \false) { // package format
-
-                $this->boot();
-
-                $em = $this->get('event');
-
-                if (($eventResponse = $em->trigger('application.start', ['request' => $request])) instanceof Http\Response) {
-                    return $eventResponse;
-                }
-
                 $routeHandler = $this->resolve($routeHandler, $request, $response);
-
-                if (($eventResponse = $em->trigger('application.end', ['response' => $routeHandler])) instanceof Http\Response) {
-                    return $eventResponse;
-                }
             }
 
             if ($routeHandler instanceof Http\Response) {

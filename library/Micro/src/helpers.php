@@ -14,7 +14,7 @@ use Micro\Helper\Flash;
 if (!function_exists('app')) {
     function app($service = \null, $app = 'app')
     {
-        $container = Container::getInstance('app');
+        $container = Container::getInstance($app);
 
         if ($service !== \null) {
             return $container->get($service);

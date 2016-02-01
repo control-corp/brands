@@ -25,7 +25,7 @@ class Navigation
             $languageCode = 'no';
 
             try {
-                $language = app('language');
+                $language     = app('language');
                 $languageCode = $language ? $language->getCode() : 'no';
             } catch (\Exception $e) {}
 

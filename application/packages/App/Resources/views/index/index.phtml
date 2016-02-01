@@ -2,4 +2,7 @@
 
 $this->extend('layouts/default');
 
-echo sprintf('<h1>Добре дошъл %s</h1>', (identity() ? identity()->getUsername() : ''));
+?>
+
+<h1>Добре дошъл <?php echo identity() ? identity()->getUsername() : ''; ?></h1>
+<a href="<?php echo route('admin', [], \true, \false); ?>">Администраторски панел</a>

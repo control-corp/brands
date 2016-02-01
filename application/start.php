@@ -25,12 +25,6 @@ $app = new Application($config);
 
 $app->registerDefaultServices();
 
-$app['language'] = function ($c) {
-    return new \App\Model\Entity\Language(1, 'bg');
-};
-
-$app['router']->mapFromConfig(
-    $app['config']->get('routes', [])
-);
+$app['router']->mapFromConfig()->loadDefaultRoutes();
 
 return $app;
