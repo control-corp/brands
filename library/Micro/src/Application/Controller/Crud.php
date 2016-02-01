@@ -31,9 +31,16 @@ class Crud extends Controller
             $package = $this->request->getParam('package');
             $controller = $this->request->getParam('controller');
             if ($package && $controller) {
-                $model = ucfirst(Utils::camelize($package)) . '\Model\\' . ucfirst(Utils::camelize($controller));
+                $package = ucfirst(Utils::camelize($package));
+                $controller = ucfirst(Utils::camelize($controller));
+                $model = $package . '\Model\\' . $controller;
                 if (class_exists($model, \true)) {
                     $this->model = new $model;
+                } else {
+                    $model = $package . '\Model\\' . $package;
+                    if (class_exists($model, \true)) {
+                        $this->model = new $model;
+                    }
                 }
             }
         } else if (is_string($this->model) && class_exists($this->model, \true)) {
