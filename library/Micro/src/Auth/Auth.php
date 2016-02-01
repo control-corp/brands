@@ -60,9 +60,27 @@ class Auth
     /**
      * @return string
      */
-    protected function getNamespace()
+    public function getNamespace()
     {
-        return $this->namespace;
+        $default = $this->namespace;
+
+        if (($namespace = config('auth.namespace')) !== \null) {
+            try {
+                $route = app('router')->getCurrentRoute();
+                if ($route) {
+                    foreach ($namespace as $nsk => $ns) {
+                        if (in_array($route->getName(), (array) $ns)) {
+                            $default = $nsk;
+                            break;
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+
+            }
+        }
+
+        return $default;
     }
 
     /**

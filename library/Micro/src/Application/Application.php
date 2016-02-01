@@ -125,8 +125,8 @@ class Application extends Container
         }
 
         if (!isset($this['acl'])) {
-            $this['acl'] = function ($c) {
-                if ($c['config']->get('acl', \true)) {
+            $this['acl'] = function ($app) {
+                if ($app->get('config')->get('acl.enabled', 1)) {
                     return new Acl();
                 }
                 return \null;
