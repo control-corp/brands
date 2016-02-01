@@ -4,14 +4,14 @@ use Micro\Application\Application;
 
 include 'library/Micro/autoload.php';
 
-/* if (file_exists('vendor/autoload.php')) {
+/*if (file_exists('vendor/autoload.php')) {
     include 'vendor/autoload.php';
-} */
+}*/
 
 /**
  * Cached mapped classes / dirs
  */
-if ((file_exists($classes = 'application/data/classes.php')) === \true) {
+if ((file_exists($classes = 'data/classes.php')) === \true) {
     \MicroLoader::setFiles(include $classes);
 }
 
@@ -28,5 +28,9 @@ $app->registerDefaultServices();
 $app['language'] = function ($c) {
     return new \App\Model\Entity\Language(1, 'bg');
 };
+
+$app['router']->mapFromConfig(
+    $app['config']->get('routes', [])
+);
 
 return $app;

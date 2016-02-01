@@ -16,6 +16,7 @@ return [
     'error' => [
         'default' => 'App\Controller\Front\Error@index',
         'admin'   => 'App\Controller\Admin\Error@index',
+        'admin-login' => 'App\Controller\Admin\Error@index',
     ],
     'view' => [
         'paths' => [

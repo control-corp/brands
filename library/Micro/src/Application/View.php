@@ -26,6 +26,8 @@ class View
 
     protected $package;
 
+    protected $resolvedPaths = [];
+
     public function __construct($template = \null, array $data = \null, $injectPaths = \false)
     {
         $this->template = $template;
@@ -71,8 +73,9 @@ class View
         $file = ltrim($file, '/\\');
 
         foreach ($this->paths as $path) {
-            if (file_exists($path . DIRECTORY_SEPARATOR . $file)) {
-                $content = $this->evalFile($path . DIRECTORY_SEPARATOR . $file);
+            $filePath = $path . '/' . $file;
+            if ((isset($this->resolvedPaths[$filePath]) || file_exists($filePath))) {
+                $content = $this->evalFile($this->resolvedPaths[$filePath] = $filePath);
                 if ($renderParent === \true && $this->parent !== \null) {
                     $this->parent->setSections(array_merge(
                         $this->getSections(),

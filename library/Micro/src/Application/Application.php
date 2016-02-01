@@ -145,9 +145,7 @@ class Application extends Container
          */
         if (!isset($this['router'])) {
             $this['router'] = function ($app) {
-                $router = new Router($app['request']);
-                $router->mapFromConfig($app['config']->get('routes', []));
-                return $router;
+                return new Router($app['request']);
             };
         }
 
@@ -190,6 +188,12 @@ class Application extends Container
         return $this;
     }
 
+    /**
+     * @param string $pattern
+     * @param mixed $handler
+     * @param string $name
+     * @return Route
+     */
     public function map($pattern, $handler, $name = \null)
     {
         return $this->get('router')->map($pattern, $handler, $name);

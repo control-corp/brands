@@ -4,12 +4,12 @@ return [
     'mail' => [
         'enabled' => 1,
         'options' => [
-            'name'              => 'mail.otgorata.com',
-            'host'              => 'mail.otgorata.com',
-            'connection_class'  => 'login',
+            'name'              => 'mail.icygen.com',
+            'host'              => 'mail.icygen.com',
+            //'connection_class'  => 'login',
             'connection_config' => [
-                'username' => 'otgorata',
-                'password' => 'rjI2Xsa-!M3D',
+                'username' => 'tst@icygen.com',
+                'password' => 'zat3st0v3',
             ],
         ],
     ]
