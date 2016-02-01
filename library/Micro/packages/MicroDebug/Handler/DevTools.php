@@ -15,7 +15,7 @@ class DevTools
 
     public function boot()
     {
-        if (!config('debug.handlers.dev_tools', 0)) {
+        if (!config('micro_debug.handlers.dev_tools', 0)) {
             return;
         }
 

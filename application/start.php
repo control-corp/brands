@@ -2,11 +2,11 @@
 
 use Micro\Application\Application;
 
-include 'library/Micro/autoload.php';
+include_once 'library/Micro/autoload.php';
 
-/*if (file_exists('vendor/autoload.php')) {
-    include 'vendor/autoload.php';
-}*/
+/* if (file_exists('vendor/autoload.php')) {
+    include_once 'vendor/autoload.php';
+} */
 
 /**
  * Cached mapped classes / dirs
@@ -17,7 +17,7 @@ if ((file_exists($classes = 'data/classes.php')) === \true) {
 
 $config = [];
 
-foreach (glob('application/config/*.php') as $file) {
+foreach (glob('{application/config/*.php,application/config/packages/*.php}', GLOB_BRACE) as $file) {
     $config = array_merge($config, include $file);
 }
 

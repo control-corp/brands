@@ -8,7 +8,7 @@ class FirePHP
 {
     public function boot()
     {
-        if (!config('debug.handlers.fire_php', 0)) {
+        if (!config('micro_debug.handlers.fire_php', 0)) {
             return;
         }
 

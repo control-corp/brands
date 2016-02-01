@@ -229,8 +229,9 @@ class Router
 
     /**
      * @param array $routes
+     * @param bool $loadDefaultRoutes
      */
-    public function mapFromConfig(array $routes)
+    public function mapFromConfig(array $routes, $loadDefaultRoutes = \true)
     {
         foreach ($routes as $name => $config) {
 
@@ -247,6 +248,10 @@ class Router
             if (isset($config['defaults'])) {
                 $route->setDefaults($config['defaults']);
             }
+        }
+
+        if (\false === $loadDefaultRoutes) {
+            return $this;
         }
 
         if (!isset($this->routes['admin'])) {
@@ -266,5 +271,7 @@ class Router
             $route->setDefaults(['package' => 'app', 'controller' => 'index', 'action' => 'index', 'id' => \null]);
             $route->setConditions(['package' => '[^\/]+', 'controller' => '[^\/]+', 'action' => '[^\/]+']);
         }
+
+        return $this;
     }
 }

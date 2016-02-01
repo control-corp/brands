@@ -6,13 +6,6 @@ return [
         'enabled' => 1,
         'path' => 'data/log',
     ],
-    'debug' => [
-        'handlers' => [
-            'dev_tools' => 1,
-            'fire_php' => 1,
-            //'performance' => 'data/classes.php'
-        ],
-    ],
     'error' => [
         'default' => 'App\Controller\Front\Error@index',
         'admin'   => 'App\Controller\Admin\Error@index',

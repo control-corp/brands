@@ -8,7 +8,7 @@ class Performance
 {
     public function boot()
     {
-        if (!\config('debug.handlers.performance')) {
+        if (!\config('micro_debug.handlers.performance')) {
             return;
         }
 
