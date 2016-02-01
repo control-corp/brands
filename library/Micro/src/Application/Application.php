@@ -235,6 +235,10 @@ class Application extends Container
 
             $request->setParams($route->getParams());
 
+            if (($eventResponse = $this->get('event')->trigger('route.end', ['route' => $route])) instanceof Http\Response) {
+                return $eventResponse;
+            }
+
             $routeHandler = $route->getHandler();
 
             if (is_string($routeHandler) && strpos($routeHandler, '@') !== \false) { // package format

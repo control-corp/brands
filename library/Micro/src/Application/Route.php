@@ -207,6 +207,13 @@ class Route implements ContainerAwareInterface
         return $this->handler;
     }
 
+    public function addCondition($key, $value)
+    {
+        $this->conditions[$key] = $value;
+
+        return $this;
+    }
+
     /**
      * @param array $conditions
      * @return \Micro\Application\Route
@@ -224,6 +231,13 @@ class Route implements ContainerAwareInterface
     public function getConditions()
     {
         return $this->conditions;
+    }
+
+    public function addDefault($key, $value)
+    {
+        $this->defaults[$key] = $value;
+
+        return $this;
     }
 
     /**
