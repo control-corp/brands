@@ -263,7 +263,7 @@ class Router implements ContainerAwareInterface
 
         if (!isset($this->routes['default'])) {
 
-            $route = $this->map('/[/{package}][/{controller}][/{action}][/{id}]', function () {
+            $route = $this->map('/{package}[/{controller}][/{action}][/{id}]', function () {
 
                 static $cache = [];
 

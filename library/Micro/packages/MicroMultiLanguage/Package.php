@@ -60,44 +60,21 @@ class Package extends BasePackage
             return $currentLanguage;
         });
 
-        $router = $this->container->get('router');
-
         $validLanguages = [];
 
         foreach ($languages as $language) {
             $validLanguages[] = $language->getCode();
         }
 
-        /* foreach ($router->getRoutes() as $route) {
+        foreach ($this->container->get('router')->getRoutes() as $route) {
 
             $pattern = $route->getPattern();
 
-            if ($route->getName() === 'default') {
-                $pattern = ltrim($pattern, '/');
+            if ($route->getPattern() === '/') {
+                $pattern = '';
             }
 
-            $pattern = '/{lang}' . $pattern;
-
-            $newRoute = $router->map($pattern, $route->getHandler(\false), 'language-' . $route->getName());
-
-            if (!empty($validLanguages)) {
-                $newRoute->addCondition('lang', implode('|', $validLanguages));
-            }
-        } */
-
-        foreach ($router->getRoutes() as $route) {
-
-            if ($route->getName() === 'home') {
-                continue;
-            }
-
-            $pattern = $route->getPattern();
-
-            if ($route->getName() === 'default') {
-                $pattern = ltrim($pattern, '/');
-            }
-
-            $route->setPattern('/{lang}' . $pattern);
+            $route->setPattern('[/{lang}]' . $pattern);
 
             if (!empty($validLanguages)) {
                $route->addCondition('lang', implode('|', $validLanguages));
@@ -108,8 +85,8 @@ class Package extends BasePackage
     public function onRouteEnd()
     {
         $router = $this->container->get('router');
-        $routeParams = $router->getCurrentRoute()->getParams();
+        $request = $this->container->get('request');
 
-        $router->setGlobalParam('lang', isset($routeParams['lang']) ? $routeParams['lang'] : $this->container['config']->get('language.default', static::DEFAULT_LANG));
+        $router->setGlobalParam('lang', $request->getParam('lang', ''));
     }
 }
