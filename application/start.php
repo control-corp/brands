@@ -23,7 +23,7 @@ foreach (glob('{application/config/*.php,application/config/packages/*.php}', GL
 
 $app = new Application($config);
 
-$app->set('exception.handler', function ($container) {
+/* $app->set('exception.handler', function ($container) {
 
     $whoops = new Whoops\Run;
 
@@ -36,7 +36,7 @@ $app->set('exception.handler', function ($container) {
     $whoops->register();
 
     return new App\Bridge\Whoops($whoops);
-});
+}); */
 
 $app->registerDefaultServices();
 
