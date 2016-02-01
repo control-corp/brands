@@ -48,7 +48,7 @@ class Application extends Container
 
         \MicroLoader::addPath($config->get('packages', []), \null);
 
-        $this['config'] = $config;
+        $this->set('config', $config);
 
         static::setInstance($name, $this);
     }
@@ -205,15 +205,17 @@ class Application extends Container
      */
     public function start()
     {
-        $response = $this['response'];
+        $response = $this->get('response');
 
         try {
 
-            if (($route = $this['router']->match()) === \null) {
+            if (($route = $this->get('router')->match()) === \null) {
                 throw new CoreException('[' . __METHOD__ . '] Route not found', 404);
             }
 
-            $this['request']->setParams($route->getParams());
+            $request = $this->get('request');
+
+            $request->setParams($route->getParams());
 
             $routeHandler = $route->getHandler();
 
@@ -221,13 +223,15 @@ class Application extends Container
 
                 $this->boot();
 
-                if (($eventResponse = $this['event']->trigger('application.start', ['request' => $this['request']])) instanceof Http\Response) {
+                $em = $this->get('event');
+
+                if (($eventResponse = $em->trigger('application.start', ['request' => $request])) instanceof Http\Response) {
                     return $eventResponse;
                 }
 
-                $routeHandler = $this->resolve($routeHandler, $this['request'], $this['response']);
+                $routeHandler = $this->resolve($routeHandler, $request, $response);
 
-                if (($eventResponse = $this['event']->trigger('application.end', ['response' => $routeHandler])) instanceof Http\Response) {
+                if (($eventResponse = $em->trigger('application.end', ['response' => $routeHandler])) instanceof Http\Response) {
                     return $eventResponse;
                 }
             }
@@ -235,14 +239,14 @@ class Application extends Container
             if ($routeHandler instanceof Http\Response) {
                 $response = $routeHandler;
             } else {
-                $response = $this['response']->setBody((string) $routeHandler);
+                $response->setBody((string) $routeHandler);
             }
 
         } catch (\Exception $e) {
 
             try {
 
-                if (($exceptionResponse = $this['exception.handler']->handleException($e)) instanceof Http\Response) {
+                if (($exceptionResponse = $this->get('exception.handler')->handleException($e)) instanceof Http\Response) {
                     return $exceptionResponse;
                 }
 
@@ -268,13 +272,13 @@ class Application extends Container
      */
     public function handleException(\Exception $e)
     {
-        $errorHandler = $this['config']->get('error');
+        $errorHandler = $this->get('config')->get('error');
 
         if ($errorHandler === \null || empty($errorHandler)) {
             throw $e;
         }
 
-        $currentRoute = $this['router']->getCurrentRoute();
+        $currentRoute = $this->get('router')->getCurrentRoute();
 
         $package = current($errorHandler);
 
@@ -284,9 +288,11 @@ class Application extends Container
             }
         }
 
-        $this['request']->setParam('exception', $e);
+        $request = $this->get('request');
 
-        return $this->resolve($package, $this['request'], $this['response']);
+        $request->setParam('exception', $e);
+
+        return $this->resolve($package, $request, $this->get('response'));
     }
 
     /**
@@ -299,7 +305,7 @@ class Application extends Container
             return;
         }
 
-        $packages = $this['config']->get('packages', []);
+        $packages = $this->get('config')->get('packages', []);
 
         foreach ($packages as $package => $path) {
 
@@ -346,7 +352,11 @@ class Application extends Container
 
         $packageInstance = new $package($request, $response);
 
-        $actionMethod = lcfirst(Utils::camelize($action)) . 'Action';
+        if ($packageInstance instanceof Controller) {
+            $actionMethod = lcfirst(Utils::camelize($action)) . 'Action';
+        } else {
+            $actionMethod = lcfirst(Utils::camelize($action));
+        }
 
         if (!method_exists($packageInstance, $actionMethod)) {
             throw new CoreException('[' . __METHOD__ . '] Method "' . $actionMethod . '" not found in "' . $package . '"', 404);
@@ -396,7 +406,7 @@ class Application extends Container
 
             $packageResponse->injectPaths((array) package_path($parts[0], 'Resources/views'));
 
-            if (($eventResponse = $this['event']->trigger('render.start', ['view' => $packageResponse])) instanceof Http\Response) {
+            if (($eventResponse = $this->get('event')->trigger('render.start', ['view' => $packageResponse])) instanceof Http\Response) {
                 return $eventResponse;
             }
 

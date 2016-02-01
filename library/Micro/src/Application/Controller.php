@@ -26,19 +26,23 @@ class Controller implements ContainerAwareInterface
      */
     protected $view;
 
+    /**
+     * @var string
+     */
     protected $scope;
 
     /**
      * @param \Micro\Http\Request $request
      * @param \Micro\Http\Response $response
+     * @param \Micro\Application\View $response
      */
-    public function __construct(Http\Request $request, Http\Response $response)
+    public function __construct(Http\Request $request, Http\Response $response, View $view = \null)
     {
         $this->request = $request;
 
         $this->response = $response;
 
-        $this->view = new View();
+        $this->view = $view ?: new View();
     }
 
     /**
