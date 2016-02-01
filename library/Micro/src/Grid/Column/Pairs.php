@@ -25,27 +25,20 @@ class Pairs extends Column
         $this->false = $false;
     }
 
-    public function __toString()
+    public function render()
     {
-        try {
+        $value = parent::render();
 
-            $value = parent::__toString();
+        $pairs = [];
 
-            $pairs = [];
-
-            if ($this->callable !== \null && is_callable($this->callable)) {
-                if ($this->pairs === \null) {
-                    $this->pairs = call_user_func_array($this->callable, $this->params);
-                }
-            } else {
-                $this->pairs = [];
+        if ($this->callable !== \null && is_callable($this->callable)) {
+            if ($this->pairs === \null) {
+                $this->pairs = call_user_func_array($this->callable, $this->params);
             }
-
-            return isset($this->pairs[$value]) ? $this->pairs[$value] : '';
-
-        } catch (\Exception $e) {
-
-            return $e->getMessage();
+        } else {
+            $this->pairs = [];
         }
+
+        return isset($this->pairs[$value]) ? $this->pairs[$value] : '';
     }
 }

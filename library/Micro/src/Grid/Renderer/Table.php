@@ -6,15 +6,22 @@ use Micro\Grid\Grid;
 use Micro\Grid\Column;
 use Micro\Form\Element;
 use Micro\Application\View;
+use Micro\Application\Router;
 
 class Table implements RendererInterface
 {
     protected $grid;
     protected $view;
 
+    /**
+     * @var Router
+     */
+    protected $router;
+
     public function __construct(Grid $grid)
     {
         $this->grid = $grid;
+        $this->router = app('router');
     }
 
     public function getView()
@@ -58,7 +65,7 @@ class Table implements RendererInterface
         }
 
         if (!empty($buttons)) {
-            $output .= '<form class="grid-form" method="post" action="' . route() . '">';
+            $output .= '<form class="grid-form" method="post" action="' . $this->router->assemble(\null) . '">';
             $buttonsCode = '<div class="grid-buttons">';
             foreach ($buttons as $name => $button) {
                 try {
@@ -76,8 +83,14 @@ class Table implements RendererInterface
             }
         }
 
+        $renderPagination = '';
+
+        if ($this->grid->getPaginatorPlacement() & Grid::PLACEMENT_TOP || $this->grid->getPaginatorPlacement() & Grid::PLACEMENT_BOTTOM) {
+            $renderPagination = $this->renderPagination();
+        }
+
         if ($this->grid->getPaginatorPlacement() & Grid::PLACEMENT_TOP) {
-            $output .= $this->renderPagination();
+            $output .= $renderPagination;
         }
 
         $output .= '<div class="table-responsive">';
@@ -93,13 +106,17 @@ class Table implements RendererInterface
             }
 
             if ($column->isSortable()) {
+
                 $sortedClass = 'sorting';
+
                 if ($column->isSorted()) {
                     $sortedClass = 'sorting_' . $column->getSorted();
                 }
+
                 $routeParams = array_merge($requestParams, ['orderField' => $column->getName(),
-                    'orderDir'   => ($column->getSorted() == 'asc') ? 'desc' : 'asc']);
-                $title = '<div class="' . $sortedClass . '" data-url="' . route(\null, $routeParams) . '">' . $column->getTitle() . '</div>';
+                                                            'orderDir'   => ($column->getSorted() == 'asc') ? 'desc' : 'asc']);
+
+                $title = '<div class="' . $sortedClass . '" data-url="' . $this->router->assemble(\null, $routeParams) . '">' . $column->getTitle() . '</div>';
             } else {
                 $title = $column->getTitle();
             }
@@ -126,7 +143,7 @@ class Table implements RendererInterface
                 $columnRep = '<td' . ($column->getStyle() ? ' style="' . $column->getStyle() . '"' : '') . ' class="table-cell' . ($column->getClass() ? ' ' . $column->getClass() : '') . '">%s</td>';
 
                 try {
-                    $output .= sprintf($columnRep, (string) $column);
+                    $output .= sprintf($columnRep, $column->render());
                 } catch (\Exception $e) {
                     if (env('development')) {
                         $output .= sprintf($columnRep, $e->getMessage());
@@ -146,7 +163,7 @@ class Table implements RendererInterface
 
 
         if ($this->grid->getPaginatorPlacement() & Grid::PLACEMENT_BOTTOM) {
-            $output .= $this->renderPagination();
+            $output .= $renderPagination;
         }
 
         if (!empty($buttons)) {

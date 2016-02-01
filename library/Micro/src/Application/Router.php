@@ -4,9 +4,13 @@ namespace Micro\Application;
 
 use Exception as CoreException;
 use Micro\Http;
+use Micro\Container\ContainerAwareInterface;
+use Micro\Container\ContainerAwareTrait;
 
-class Router
+class Router implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * @var \Micro\Http\Request
      */
@@ -94,6 +98,7 @@ class Router
         $pattern = static::URL_DELIMITER . trim($pattern, static::URL_DELIMITER);
 
         $route = new Route($name, $pattern, $handler);
+        $route->setContainer($this->container);
 
         if (Route::isStatic($pattern)) {
             if (isset($this->routesStatic[$pattern])) {
@@ -255,20 +260,56 @@ class Router
         }
 
         if (!isset($this->routes['admin'])) {
+
             $route = $this->map('/admin[/{package}][/{controller}][/{action}][/{id}]', function () {
-                $params = \array_map('Micro\Application\Utils::camelize', $this->getParams());
-                return \ucfirst($params['package']) . '\\Controller\Admin\\' . \ucfirst($params['controller']) . '@' . \lcfirst($params['action']);
+
+                static $cache = [];
+
+                $params = $this->getParams();
+
+                $hash = 'admin_' . $params['package'] . '_' . $params['controller'] . '_' . $params['action'] . '_' . $params['id'];
+
+                if (isset($cache[$hash])) {
+                    return $cache[$hash];
+                }
+
+                foreach ($params as $k => $v) {
+                    $params[$k] = Utils::camelize($v);
+                }
+
+                return $cache[$hash] = \ucfirst($params['package']) . '\\Controller\Admin\\' . \ucfirst($params['controller']) . '@' . \lcfirst($params['action']);
+
             }, 'admin');
+
             $route->setDefaults(['package' => 'app', 'controller' => 'index', 'action' => 'index', 'id' => \null]);
+
             $route->setConditions(['package' => '[^\/]+', 'controller' => '[^\/]+', 'action' => '[^\/]+']);
         }
 
         if (!isset($this->routes['default'])) {
+
             $route = $this->map('/{package}[/{controller}][/{action}][/{id}]', function () {
-                $params = \array_map('Micro\Application\Utils::camelize', $this->getParams());
-                return \ucfirst($params['package']) . '\\Controller\Front\\' . \ucfirst($params['controller']) . '@' . \lcfirst($params['action']);
+
+                static $cache = [];
+
+                $params = $this->getParams();
+
+                $hash = 'front_' . $params['package'] . '_' . $params['controller'] . '_' . $params['action'] . '_' . $params['id'];
+
+                if (isset($cache[$hash])) {
+                    return $cache[$hash];
+                }
+
+                foreach ($params as $k => $v) {
+                    $params[$k] = Utils::camelize($v);
+                }
+
+                return $cache[$hash] = \ucfirst($params['package']) . '\\Controller\Front\\' . \ucfirst($params['controller']) . '@' . \lcfirst($params['action']);
+
             }, 'default');
+
             $route->setDefaults(['package' => 'app', 'controller' => 'index', 'action' => 'index', 'id' => \null]);
+
             $route->setConditions(['package' => '[^\/]+', 'controller' => '[^\/]+', 'action' => '[^\/]+']);
         }
 

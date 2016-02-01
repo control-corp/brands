@@ -19,9 +19,9 @@ class Boolean extends Column
         $this->false = $false;
     }
 
-    public function __toString()
+    public function render()
     {
-        $value = (bool) parent::__toString();
+        $value = (bool) parent::render();
 
         if ($value) {
             return (string) $this->true;

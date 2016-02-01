@@ -3,9 +3,13 @@
 namespace Micro\Application;
 
 use Exception as CoreException;
+use Micro\Container\ContainerAwareInterface;
+use Micro\Container\ContainerAwareTrait;
 
-class Route
+class Route implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * @var string
      */
@@ -197,7 +201,7 @@ class Route
     public function getHandler($invoke = \true)
     {
         if ($invoke === \true && $this->handler instanceof \Closure) {
-            return $this->handler->__invoke();
+            return $this->handler->__invoke($this->container);
         }
 
         return $this->handler;

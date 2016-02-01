@@ -30,6 +30,10 @@ class Utils
 
     public static function camelize($value)
     {
+        if (\null === $value) {
+            return '';
+        }
+
         $value = preg_replace('/[^a-z0-9-._]/ius', '', $value);
 
         if (strpos($value, '-') !== \false) {
@@ -115,17 +119,17 @@ class Utils
         }
 
         if ($emptyOption) {
-            $optionsInput = [escape($emptyOptionValue) => escape($emptyOption)] + $optionsInput;
+            $optionsInput = [$emptyOptionValue => $emptyOption] + $optionsInput;
         }
 
         foreach ($optionsInput as $optionGroup => $group) {
             if (is_array($group)) {
-                $options .= '<optgroup label="' . escape($optionGroup) . '">';
+                $options .= '<optgroup label="' . $optionGroup . '">';
                 $options .= self::buildOptions($group, $value, '', '');
                 $options .= '</optgroup>';
             } else {
                 $selected = (in_array($optionGroup, $value) ? ' selected="selected"' : '');
-                $options .= '<option' . $selected . ' value="' . escape($optionGroup) . '">' . escape($group) . '</option>';
+                $options .= '<option' . $selected . ' value="' . $optionGroup . '">' . $group . '</option>';
             }
         }
 

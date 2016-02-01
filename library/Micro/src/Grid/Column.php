@@ -214,24 +214,19 @@ class Column
             $field = $this->getSourceField();
         }
 
-        $item  = $this->getCurrentItem();
-        $value = '';
+        $ucField = ucfirst($field);
+        $item    = $this->getCurrentItem();
+        $value   = '';
 
-        if (is_array($item) || $item instanceof \ArrayAccess) {
+        if (is_object($item) && method_exists($item, 'get' . $ucField)) {
+            $method = 'get' . ucfirst($field);
+            $value = $item->$method();
+        } else if (is_array($item) || $item instanceof \ArrayAccess) {
             if (isset($item[$field])) {
                 $value = $item[$field];
             }
-        } else if (is_object($item)) {
-            if (isset($item->{$field})) {
-                $value = $item->{$field};
-            } else if (method_exists($item, 'get' . ucfirst($field))) {
-                $method = 'get' . ucfirst($field);
-                $value = $item->$method();
-            } else {
-                throw new CoreException("Column {$this->getTitle()} is bound to non existent object property: {$field}");
-            }
         } else {
-            $value = $item;
+            $value = is_object($item) ? get_class($item) : $item;
         }
 
         if ($this->filter !== \null) {
@@ -245,37 +240,27 @@ class Column
         return $value;
     }
 
-    public function __toString()
+    public function render()
     {
-        try {
+        $value = $this->getCurrentValue();
 
-            $value = $this->getCurrentValue();
+        if ($this->viewScript) {
 
-            if ($this->viewScript) {
+            $view = $this->getGrid()->getRenderer()->getView();
 
-                $view = $this->getGrid()->getRenderer()->getView();
+            $data = [
+                'value' => $value,
+                'item'  => $this->getCurrentItem()
+            ];
 
-                $data = [
-                    'value' => $value,
-                    'item'  => $this->getCurrentItem()
-                ];
-
-                if ($this->partial) {
-                    $value = (string) $view->partial($this->viewScript, $data);
-                } else {
-                    $value = (string) $view->addData($data)
-                                           ->render($this->viewScript);
-                }
-            }
-
-        } catch (\Exception $e) {
-            if (env('development')) {
-                $value = $e->getMessage();
+            if ($this->partial) {
+                $value = (string) $view->partial($this->viewScript, $data);
             } else {
-                $value = '';
+                $value = (string) $view->addData($data)
+                                       ->render($this->viewScript);
             }
         }
 
-        return (string) $value;
+        return $value;
     }
 }

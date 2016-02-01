@@ -22,9 +22,9 @@ class Checkbox extends Column
         $this->checkAll = (bool) $value;
     }
 
-    public function __toString()
+    public function render()
     {
-        $value = parent::__toString();
+        $value = parent::render();
 
         return '<input class="checkbox" type="checkbox" name="' . $this->getName() . '[]" value="' . $value . '" />';
     }
