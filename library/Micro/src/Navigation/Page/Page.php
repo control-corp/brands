@@ -2,7 +2,7 @@
 
 namespace Micro\Navigation\Page;
 
-use Micro\Application\Route;
+use Micro\Router\Route;
 
 class Page extends AbstractPage
 {

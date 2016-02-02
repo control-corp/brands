@@ -6,7 +6,7 @@ use Micro\Grid\Grid;
 use Micro\Grid\Column;
 use Micro\Form\Element;
 use Micro\Application\View;
-use Micro\Application\Router;
+use Micro\Router\Router;
 
 class Table implements RendererInterface
 {

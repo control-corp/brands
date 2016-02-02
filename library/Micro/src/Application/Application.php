@@ -4,6 +4,7 @@ namespace Micro\Application;
 
 use Micro\Exception\Exception as CoreException;
 use Micro\Http;
+use Micro\Router\Router;
 use Micro\Event;
 use Micro\Container\Container;
 use Micro\Container\ContainerAwareInterface;
@@ -70,13 +71,13 @@ class Application extends Container implements ExceptionHandlerInterface
             $request = $this->get('request');
 
             if (($eventResponse = $em->trigger('application.start', ['request' => $request])) instanceof Http\Response) {
-                return $eventResponse;
+                $response = $eventResponse;
+            } else {
+                $response = $this->start();
             }
 
-            $response = $this->start();
-
             if (($eventResponse = $em->trigger('application.end', ['response' => $response])) instanceof Http\Response) {
-                return $eventResponse;
+                $response = $eventResponse;
             }
 
             if (env('development')) {
