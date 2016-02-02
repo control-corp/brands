@@ -6,6 +6,8 @@ function pp($arr){
         foreach ($arr as $key => $val){
             if (is_array($val)){
                 $retStr .= '<li>' . $key . ' => ' . pp($val) . '</li>';
+            } else if (is_object($val)) {
+                $retStr .= '<li>' . $key . ' => ' . gettype($val) . '</li>';
             } else {
                 $retStr .= '<li>' . $key . ' => ' . $val . '</li>';
             }

@@ -52,7 +52,7 @@ if (!function_exists('public_path')) {
 if (!function_exists('package_path')) {
     function package_path($package, $path = \null)
     {
-        $packages = config('packages', []);
+        $packages = app()->getPackages();
 
         if (!isset($packages[$package])) {
             throw new CoreException(sprintf('[' . __FUNCTION__ . '] Invalid package "%s"', $package));
@@ -61,7 +61,7 @@ if (!function_exists('package_path')) {
         if ($packages[$package] instanceof Micro\Application\Package) {
             $packagePath = $packages[$package]->getDir();
         } else {
-            $packagePath = rtrim($packages[$package], '/\\');
+            $packagePath = $packages[$package];
         }
 
         if ($path !== \null) {

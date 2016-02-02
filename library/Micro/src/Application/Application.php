@@ -346,6 +346,8 @@ class Application extends Container implements ExceptionHandlerInterface
                 }
                 $instance->setContainer($this)->boot();
                 $this->packages[$package] = $instance;
+            } else {
+                $this->packages[$package] = rtrim($path, '/\\');
             }
         }
 
