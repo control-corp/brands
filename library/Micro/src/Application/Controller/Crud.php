@@ -10,55 +10,12 @@ use Micro\Application\Utils;
 use Micro\Model\EntityInterface;
 use Micro\Http\Response;
 use Micro\Translator\Language\LanguageInterface;
-use Micro\Model\ModelInterface;
 
 class Crud extends Controller
 {
+    use DetectModelTrait;
+
     protected $ipp = 10;
-
-    /**
-     * @var \Micro\Model\ModelInterface
-     */
-    protected $model;
-
-    /**
-     * @throws \Exception
-     * @return \Micro\Model\ModelInterface
-     */
-    public function getModel()
-    {
-        if ($this->model === \null) {
-            $package = $this->request->getParam('package');
-            $controller = $this->request->getParam('controller');
-            if ($package && $controller) {
-                $package = ucfirst(Utils::camelize($package));
-                $controller = ucfirst(Utils::camelize($controller));
-                $model = $package . '\Model\\' . $controller;
-                if (class_exists($model, \true)) {
-                    $this->model = new $model;
-                } else {
-                    $model = $package . '\Model\\' . $package;
-                    if (class_exists($model, \true)) {
-                        $this->model = new $model;
-                    }
-                }
-            }
-        } else if (is_string($this->model) && class_exists($this->model, \true)) {
-            $this->model = new $this->model;
-        }
-
-        if (!$this->model instanceof ModelInterface) {
-            throw new \Exception(
-                sprintf(
-                    'Model [%s] must be instanceof %s',
-                    (is_object($this->model) ? get_class($this->model) : gettype($this->model)),
-                    ModelInterface::class
-                )
-            );
-        }
-
-        return $this->model;
-    }
 
     /**
      * @return \Micro\Http\Response\RedirectResponse|\Micro\Application\View
@@ -301,11 +258,12 @@ class Crud extends Controller
         $affected = 0;
 
         if (!empty($ids)) {
-            $this->getModel()->addFilters(['id' => $ids]);
-            $items = $this->getModel()->getItems();
+            $model = $this->getModel();
+            $model->addWhere('id', $ids);
+            $items = $model->getItems();
             foreach ($items as $item) {
                 try {
-                    $affected += $this->getModel()->delete($item);
+                    $affected += $model->delete($item);
                 } catch (\Exception $e) {
 
                 }
@@ -335,11 +293,12 @@ class Crud extends Controller
         $affected = 0;
 
         if (!empty($ids)) {
-            $this->getModel()->addWhere('id', $ids);
-            $items = $this->getModel()->getItems();
+            $model = $this->getModel();
+            $model->addWhere('id', $ids);
+            $items = $model->getItems();
             foreach ($items as $item) {
                 try {
-                    $affected += $this->getModel()->activate($item, $active);
+                    $affected += $model->activate($item, $active);
                 } catch (\Exception $e) {
 
                 }
@@ -364,7 +323,7 @@ class Crud extends Controller
      * @param string $key
      * @return \Micro\Http\Response\RedirectResponse|array
      */
-    protected function handleFilters($key = 'filters')
+    protected function handleFilters($key = 'filters', $clearParams = ['id' => \null, 'page' => \null, 'orderDir' => \null, 'orderField' => \null])
     {
         $filters = $this->request->getParam($key);
 
@@ -373,21 +332,20 @@ class Crud extends Controller
             $post = $this->request->getPost($key, []);
 
             if (isset($post['reset'])) {
-                return new RedirectResponse(route(\null, [$key => \null, 'id' => \null, 'page' => \null, 'orderDir' => \null, 'orderField' => \null]));
+                return new RedirectResponse(route(\null, [$key => \null] + $clearParams));
             }
 
             if (isset($post['filter'])) {
                 unset($post['filter']);
                 foreach ($post as $k => $v) {
-                    if (\trim((string) $v) === '') {
+                    if (is_object($v)
+                        || (is_array($v) && empty($v))
+                        || \trim((string) $v) === ''
+                    ) {
                         unset($post[$k]);
                     }
                 }
-                if (!empty($post)) {
-                    return new RedirectResponse(route(\null, [$key => Utils::base64urlEncode(http_build_query($post)), 'id' => \null, 'page' => \null, 'orderDir' => \null, 'orderField' => \null]));
-                } else {
-                    return new RedirectResponse(route(\null, [$key => \null, 'id' => \null, 'page' => \null, 'orderDir' => \null, 'orderField' => \null]));
-                }
+                return new RedirectResponse(route(\null, [$key => (!empty($post) ? Utils::base64urlEncode(http_build_query($post)) : \null)] + $clearParams));
             }
         }
 
