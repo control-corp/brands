@@ -1,5 +1,20 @@
 <?php
 
+function pp($arr){
+    $retStr = '<ul>';
+    if (is_array($arr)){
+        foreach ($arr as $key => $val){
+            if (is_array($val)){
+                $retStr .= '<li>' . $key . ' => ' . pp($val) . '</li>';
+            } else {
+                $retStr .= '<li>' . $key . ' => ' . $val . '</li>';
+            }
+        }
+    }
+    $retStr .= '</ul>';
+    return $retStr;
+}
+
 $total = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
 
 echo '<div class="debug-bar">';
@@ -16,7 +31,7 @@ try {
     if (isset($params['exception']) && $params['exception'] instanceof \Exception) {
         $params['exception'] = $params['exception']->getMessage();
     }
-    print_r($params);
+    echo pp($params);
 } catch (\Exception $e) {
     echo $e->getMessage();
 }
@@ -77,7 +92,7 @@ if (isset($_SESSION)) {
     echo '<div class="debug-item">';
     echo '<h1>Session</h1>';
     echo '<pre>';
-    print_r($_SESSION);
+    echo pp($_SESSION);
     echo '</pre>';
     echo '</div>';
 }
@@ -85,7 +100,7 @@ if (isset($_SESSION)) {
 echo '<div class="debug-item">';
 echo '<h1>Config</h1>';
 echo '<pre>';
-print_r(config());
+echo pp(config());
 echo '</pre>';
 echo '</div>';
 
@@ -94,7 +109,7 @@ echo '<h1>Classes (' . count(\MicroLoader::getFiles()) . ')</h1>';
 echo '<pre>';
 echo count(\MicroLoader::getFiles());
 echo '<br />';
-print_r(\MicroLoader::getFiles());
+echo pp(\MicroLoader::getFiles());
 echo '</pre>';
 echo '</div>';
 
