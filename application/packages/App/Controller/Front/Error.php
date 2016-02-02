@@ -14,7 +14,7 @@ class Error extends Controller
         $exception = $this->request->getParam('exception');
 
         if (!$exception instanceof \Exception) {
-            return;
+            return ['exception' => $exception, 'message' => static::ERROR];
         }
 
         $code = $exception->getCode() ?: 404;
@@ -34,11 +34,7 @@ class Error extends Controller
 
         $this->response->setCode($code);
 
-        return $this->view
-                    ->addData([
-                        'exception' => $exception,
-                        'message'   => $message
-                    ]);
+        return ['exception' => $exception, 'message' => $message];
     }
 
     /**

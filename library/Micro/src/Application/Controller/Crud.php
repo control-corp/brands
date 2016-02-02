@@ -73,9 +73,7 @@ class Crud extends Controller
 
         $this->view->setTemplate(($this->scope ? $this->scope . '/' : '') . $controller . '/index');
 
-        $this->view->addData(['grid' => $grid, 'filters' => $filters]);
-
-        return $this->view;
+        return $this->view->addData(['grid' => $grid, 'filters' => $filters]);
     }
 
     /**
@@ -163,11 +161,9 @@ class Crud extends Controller
             }
         }
 
-        $this->view->addData(['form' => $form, 'item' => $entity]);
-
         $this->view->setTemplate(($this->scope ? $this->scope . '/' : '') . $controller . '/add');
 
-        return $this->view;
+        return $this->view->addData(['form' => $form, 'item' => $entity]);
     }
 
     /**

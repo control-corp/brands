@@ -39,9 +39,7 @@ class Expired extends Crud
 
     public function indexAction()
     {
-        $response = parent::indexAction();
-
-        if ($response instanceof Response) {
+        if (($response = parent::indexAction()) instanceof Response) {
             return $response;
         }
 

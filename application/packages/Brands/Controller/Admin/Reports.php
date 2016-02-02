@@ -145,10 +145,7 @@ class Reports extends Crud
         }
 
         if (empty($brands)) {
-            return $this->view->addData([
-                'form'   => $form,
-                'brands' => $brands
-            ]);
+            return ['form' => $form, 'brands' => $brands];
         }
 
         $nomContinents = new Continents();
@@ -190,7 +187,7 @@ class Reports extends Crud
         $nomStatus->resetSelect(true);
         $statusesColors = $nomStatus->fetchCachedPairs(null, array('id', 'color'));
 
-        return $this->view->addData([
+        return [
             'form' => $form,
             'continents' => $continents,
             'populations' => $populations,
@@ -200,7 +197,7 @@ class Reports extends Crud
             'brandImages' => $brandImages,
             'statuses' => $statuses,
             'statusesColors' => $statusesColors,
-        ]);
+        ];
     }
 
     public function ajaxGetBrandsAction()
