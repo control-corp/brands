@@ -5,4 +5,5 @@ $this->extend('layouts/default');
 ?>
 
 <h1>Добре дошъл <?php echo identity() ? identity()->getUsername() : ''; ?></h1>
+<a href="<?php echo route('home', [], \true, \false); ?>">Начало</a>
 <a href="<?php echo route('admin', [], \true, \false); ?>">Администраторски панел</a>

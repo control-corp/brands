@@ -7,10 +7,11 @@ use Micro\Model\EntityInterface;
 use Micro\Form\Form;
 use Micro\Helper\Files;
 use Micro\Cache;
+use UserManagement\Model\Groups as GroupsModel;
 
 class Groups extends Crud
 {
-    protected $model = \UserManagement\Model\Groups::class;
+    protected $model = GroupsModel::class;
 
     protected $scope = 'admin';
 
