@@ -81,11 +81,10 @@ class Router implements ContainerAwareInterface
      * @param string $pattern
      * @param \Closure|string $handler
      * @param string $name
-     * @param string $name
      * @throws \Exception
      * @return \Micro\Router\Route
      */
-    public function map($pattern, $handler, $name = \null, $routeType = \null)
+    public function map($pattern, $handler, $name = \null)
     {
         if (\null === $name) {
             $name = preg_replace('~[^\w]~', '-', $pattern);
@@ -99,14 +98,7 @@ class Router implements ContainerAwareInterface
 
         $pattern = static::URL_DELIMITER . trim($pattern, static::URL_DELIMITER);
 
-        if ($routeType !== \null) {
-            if (!is_string($routeType) || !class_exists($routeType)) {
-                throw new CoreException(sprintf('[' . __METHOD__ . '] Route type "%s" must be valid class', $routeType), 500);
-            }
-            $route = new $routeType($name, $pattern, $handler);
-        } else {
-            $route = new Route($name, $pattern, $handler);
-        }
+        $route = new Route($name, $pattern, $handler);
 
         if (Route::isStatic($pattern)) {
             if (isset($this->routesStatic[$pattern])) {
@@ -129,6 +121,8 @@ class Router implements ContainerAwareInterface
      */
     public function assemble($name, array $data = [], $reset = \false, $qsa = \true)
     {
+        static $baseUrl;
+
         if ($name === \null && $this->currentRoute instanceof Route) {
             $name = $this->currentRoute->getName();
         }
@@ -143,17 +137,10 @@ class Router implements ContainerAwareInterface
 
         $data += $this->globalParams;
 
-        if ($this->currentRoute instanceof Route
-            && $name === $this->currentRoute->getName()
-            && $reset === \false
-        ) {
-            $data += $this->currentRoute->getParams();
-        }
-
         if (isset($this->routesStatic[$pattern])) {
             $url = $pattern;
         } else {
-            $url = $route->assemble($data);
+            $url = $route->assemble($data, $reset);
         }
 
         if ($qsa === \true) {
@@ -171,7 +158,11 @@ class Router implements ContainerAwareInterface
             }
         }
 
-        return $this->request->getBaseUrl() . static::URL_DELIMITER . trim($url, static::URL_DELIMITER);
+        if ($baseUrl === \null) {
+            $baseUrl = $this->request->getBaseUrl();
+        }
+
+        return $baseUrl . static::URL_DELIMITER . trim($url, static::URL_DELIMITER);
     }
 
     /**

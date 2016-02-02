@@ -56,8 +56,9 @@ class Route
      */
     public function __construct($name, $pattern, $handler)
     {
-        $this->name    = $name;
-        $this->pattern = $pattern;
+        $this->setPattern($pattern);
+
+        $this->name = $name;
 
         if ($handler instanceof \Closure) {
             $handler = $handler->bindTo($this);
@@ -156,18 +157,19 @@ class Route
 
     /**
      * @param array $data
+     * @param bool $reset
      * @throws \Exception
      * @return string
      */
-    public function assemble(array &$data = [])
+    public function assemble(array &$data = [], $reset = \false)
     {
-        $data += $this->defaults;
+        $data += ($reset ? [] : $this->params) + $this->defaults;
 
         $url = $this->pattern;
 
         foreach ($data as $key => $value) {
             $count = 0;
-            $url = preg_replace(sprintf('#\{%s(:[^}]+)?\}#', preg_quote($key)), $value, $url, -1, $count);
+            $url = preg_replace('#\{' . $key . '(:[^}]+)?\}#', $value, $url, -1, $count);
             if ($count) {
                 unset($data[$key]);
             }
