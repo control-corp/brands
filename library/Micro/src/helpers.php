@@ -1,7 +1,6 @@
 <?php
 
 use Micro\Container\Container;
-use Micro\Application\Utils;
 use Micro\Application\View;
 use Micro\Exception\Exception as CoreException;
 use Micro\Http\Response\JsonResponse;
@@ -276,19 +275,10 @@ if (!function_exists('is_allowed')) {
 if (!function_exists('forward')) {
     function forward($package, array $params = [], $subRequest = \false)
     {
-        $req = clone app('request');
+        $request = clone app('request');
+        $request->setParams($params);
 
-        list($packageParts, $action) = explode('@', $package);
-
-        $packageParts = explode('\\', $packageParts);
-
-        $params['package'] = Utils::decamelize($packageParts[0]);
-        $params['controller'] = Utils::decamelize($packageParts[count($packageParts) - 1]);
-        $params['action'] = Utils::decamelize($action);
-
-        $req->setParams($params);
-
-        return app()->resolve($package, $req, clone app('response'), $subRequest);
+        return app()->resolve($package, $request, clone app('response'), $subRequest);
     }
 }
 

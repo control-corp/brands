@@ -372,6 +372,16 @@ class Application extends Container implements ExceptionHandlerInterface
             throw new CoreException('[' . __METHOD__ . '] Package class "' . $package . '" not found', 404);
         }
 
+        $parts = explode('\\', $package);
+
+        $packageParam = Utils::decamelize($parts[0]);
+        $controllerParam = Utils::decamelize($parts[count($parts) - 1]);
+        $actionParam = Utils::decamelize($action);
+
+        $request->setParam('package', $packageParam);
+        $request->setParam('controller', $controllerParam);
+        $request->setParam('action', $actionParam);
+
         $packageInstance = new $package($request, $response);
 
         if ($packageInstance instanceof Controller) {
@@ -420,10 +430,8 @@ class Application extends Container implements ExceptionHandlerInterface
 
         if ($packageResponse instanceof View) {
 
-            $parts = explode('\\', $package);
-
             if ($packageResponse->getTemplate() === \null) {
-                $packageResponse->setTemplate(($scope ? $scope . '/' : '') . Utils::decamelize($parts[count($parts) - 1]) . '/' . Utils::decamelize($action));
+                $packageResponse->setTemplate(($scope ? $scope . '/' : '') . $controllerParam . '/' . $actionParam);
             }
 
             $packageResponse->injectPaths((array) package_path($parts[0], 'Resources/views'));

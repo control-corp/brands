@@ -247,13 +247,13 @@ class Router implements ContainerAwareInterface
     {
         if (!isset($this->routes['admin'])) {
 
-            $route = $this->map('/admin[/{package}][/{controller}][/{action}][/{id}][{wildcard}]', function () {
+            $route = $this->map('/admin[/{package}][/{controller}][/{action}][/{id}]', function () {
 
                 static $cache = [];
 
                 $params = $this->getParams();
 
-                $hash = 'admin_' . $params['package'] . '_' . $params['controller'] . '_' . $params['action'] . '_' . $params['id'] . '_' . $params['wildcard'];
+                $hash = 'admin_' . $params['package'] . '_' . $params['controller'] . '_' . $params['action'] . '_' . $params['id'];
 
                 if (isset($cache[$hash])) {
                     return $cache[$hash];
@@ -267,20 +267,20 @@ class Router implements ContainerAwareInterface
 
             }, 'admin');
 
-            $route->setDefaults(['package' => 'app', 'controller' => 'index', 'action' => 'index', 'id' => \null, 'wildcard' => \null]);
+            $route->setDefaults(['package' => 'app', 'controller' => 'index', 'action' => 'index', 'id' => \null]);
 
-            $route->setConditions(['package' => '[^\/]+', 'controller' => '[^\/]+', 'action' => '[^\/]+', 'wildcard' => '.+']);
+            $route->setConditions(['package' => '[^\/]+', 'controller' => '[^\/]+', 'action' => '[^\/]+']);
         }
 
         if (!isset($this->routes['default'])) {
 
-            $route = $this->map('/{package}[/{controller}][/{action}][/{id}][{wildcard}]', function () {
+            $route = $this->map('/{package}[/{controller}][/{action}][/{id}]', function () {
 
                 static $cache = [];
 
                 $params = $this->getParams();
 
-                $hash = 'front_' . $params['package'] . '_' . $params['controller'] . '_' . $params['action'] . '_' . $params['id'] . '_' . $params['wildcard'];
+                $hash = 'front_' . $params['package'] . '_' . $params['controller'] . '_' . $params['action'] . '_' . $params['id'];
 
                 if (isset($cache[$hash])) {
                     return $cache[$hash];
@@ -294,9 +294,9 @@ class Router implements ContainerAwareInterface
 
             }, 'default');
 
-            $route->setDefaults(['package' => 'app', 'controller' => 'index', 'action' => 'index', 'id' => \null, 'wildcard' => \null]);
+            $route->setDefaults(['package' => 'app', 'controller' => 'index', 'action' => 'index', 'id' => \null]);
 
-            $route->setConditions(['package' => '[^\/]+', 'controller' => '[^\/]+', 'action' => '[^\/]+', 'wildcard' => '.+']);
+            $route->setConditions(['package' => '[^\/]+', 'controller' => '[^\/]+', 'action' => '[^\/]+']);
         }
 
         return $this;
