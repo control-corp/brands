@@ -52,17 +52,13 @@ if (!function_exists('public_path')) {
 if (!function_exists('package_path')) {
     function package_path($package, $path = \null)
     {
-        $packages = app()->getPackages();
+        $packages = app('config')->get('packages', []);
 
         if (!isset($packages[$package])) {
             throw new CoreException(sprintf('[' . __FUNCTION__ . '] Invalid package "%s"', $package));
         }
 
-        if ($packages[$package] instanceof Micro\Application\Package) {
-            $packagePath = $packages[$package]->getDir();
-        } else {
-            $packagePath = $packages[$package];
-        }
+        $packagePath = $packages[$package];
 
         if ($path !== \null) {
             $packagePath .= DIRECTORY_SEPARATOR . trim($path, '/\\');

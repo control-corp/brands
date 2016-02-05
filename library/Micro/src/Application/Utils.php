@@ -136,12 +136,31 @@ class Utils
         return $options;
     }
 
+    public static function merge(array $a, array $b, $preserveNumericKeys = false)
+    {
+        foreach ($b as $key => $value) {
+            if (isset($a[$key]) || array_key_exists($key, $a)) {
+                if (!$preserveNumericKeys && is_int($key)) {
+                    $a[] = $value;
+                } elseif (is_array($value) && is_array($a[$key])) {
+                    $a[$key] = static::merge($a[$key], $value, $preserveNumericKeys);
+                } else {
+                    $a[$key] = $value;
+                }
+            } else {
+                $a[$key] = $value;
+            }
+        }
+
+        return $a;
+    }
+
     public static function globRecursive($pattern, $flags = 0)
     {
         $files = glob($pattern, $flags);
 
         foreach (glob(dirname($pattern) . '/*', GLOB_ONLYDIR | GLOB_NOSORT) as $dir) {
-            $files = array_merge($files, static::globRecursive($dir . '/' . basename($pattern), $flags));
+            $files = static::merge($files, static::globRecursive($dir . '/' . basename($pattern), $flags));
         }
 
         return $files;

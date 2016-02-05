@@ -49,8 +49,6 @@ class Application extends Container implements ExceptionHandlerInterface
             throw new CoreException('[' . __METHOD__ . '] Config param must be valid file or array', 500);
         }
 
-        \MicroLoader::addPath($config->get('packages', []), \null);
-
         $this->set('config', $config);
 
         static::setInstance($name, $this);
@@ -331,12 +329,6 @@ class Application extends Container implements ExceptionHandlerInterface
 
         foreach ($packages as $package => $path) {
 
-            if ($path instanceof Package) {
-                $path->setContainer($this)->boot();
-                $this->packages[$package] = $path;
-                continue;
-            }
-
             $packageInstance = $package . '\\Package';
 
             if (\class_exists($packageInstance, \true)) {
@@ -346,8 +338,6 @@ class Application extends Container implements ExceptionHandlerInterface
                 }
                 $instance->setContainer($this)->boot();
                 $this->packages[$package] = $instance;
-            } else {
-                $this->packages[$package] = rtrim($path, '/\\');
             }
         }
 

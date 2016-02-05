@@ -1,7 +1,5 @@
 <?php
 
-\MicroLoader::register();
-
 include __DIR__ . '/src/helpers.php';
 
 class MicroLoader
@@ -12,9 +10,9 @@ class MicroLoader
 
     public static function register()
     {
-        static::addPath('Micro\\', __DIR__ . DIRECTORY_SEPARATOR . 'src');
+        static::addPath('Micro\\', __DIR__ . '/src');
 
-        spl_autoload_register(array('MicroLoader', 'autoload'));
+        spl_autoload_register(array('MicroLoader', 'autoload'), true, true);
     }
 
     public static function autoload($class)
@@ -35,7 +33,7 @@ class MicroLoader
 
             $file = static::$paths[$vendor] . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, substr($class, strlen($vendor))) . '.php';
 
-            if (file_exists($file)) {
+            if (is_file($file)) {
                 include $file;
                 static::$files[$class] = $file;
                 return \true;
@@ -44,22 +42,20 @@ class MicroLoader
         }
     }
 
-    public static function addPath($prefix, $path = \null, $suffix = \null)
+    public static function addPath($prefix, $path = \null)
     {
         if (is_array($prefix)) {
             foreach ($prefix as $k => $v) {
-                static::addPath($k, $v, $suffix);
+                static::addPath($k, $v);
             }
             return;
         }
 
-        if ($path === \null || !is_string($path)) {
+        if ($path === \null) {
             return;
         }
 
-        $prefix = rtrim($prefix, '\\') . '\\';
-
-        static::$paths[$prefix] = rtrim($path, '/\\') . ($suffix !== \null ? DIRECTORY_SEPARATOR . trim($suffix, '/\\') : '');
+        static::$paths[ rtrim($prefix, '\\') . '\\'] = rtrim($path, '/\\');
     }
 
     public static function getFiles()
