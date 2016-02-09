@@ -23,7 +23,7 @@ return [
         'color' => [
             'type' => 'text',
             'options' => [
-                'label' => 'Цвятa',
+                'label' => 'Цвят',
                 'labelClass' => 'control-label',
                 'class' => 'form-control color',
             ],

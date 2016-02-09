@@ -45,7 +45,7 @@ if (!empty($this->brands)) :
                 <tr>
                     <th>
                         <div>Общо държави: <?php echo (isset($this->countries[$continentId]) ? count($this->countries[$continentId]) : 0); ?></div>
-                        <div>Общо население: <?php echo (isset($this->populations[$continentId]) ? $this->populations[$continentId] : 0); ?></div>
+                        <div>Общо население: <div><?php echo (isset($this->populations[$continentId]) ? number_format($this->populations[$continentId], 0, ".", " ") : 0); ?></div></div>
                     </th>
                 <?php
                 foreach (range(1, 3) as $i) :
@@ -68,8 +68,8 @@ if (!empty($this->brands)) :
         if (isset($this->countries[$continentId])) :
             foreach ($this->countries[$continentId] as $countryId => $country) :
         ?>
-                <tr>
-                    <td><?php echo $country['ISO3166Code']; ?> <?php echo $country['name']; ?></td>
+                <tr style="background-color: <?php echo $country['color'] ? $country['color'] : '#FFFFFF'; ?>">
+                    <td><?php echo $country['ISO3166Code']; ?> <?php echo $country['name']; ?> <div><?php echo number_format($country['population'], 0, ".", " "); ?></div></td>
                 <?php foreach ($this->types as $typeId => $type) : ?>
                     <td class="text-center">
                     <?php

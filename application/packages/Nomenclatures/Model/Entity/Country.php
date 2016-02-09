@@ -12,6 +12,7 @@ class Country extends EntityAbstract
     protected $ISO3166Code;
     protected $population = 0;
     protected $countBrands = 0;
+    protected $color;
     protected $active = 1;
 
     public function setPopulation($value)

@@ -61,12 +61,12 @@ return array(
             )
         ),
         'statusNote' => array(
-            'type' => 'text',
+            'type' => 'textarea',
             'options' => array(
                 'label' => 'Пояснение',
                 'labelClass' => 'control-label',
                 'class' => 'form-control',
-                'attributes' => array('maxlength' => 255)
+                'attributes' => array('rows' => 5)
             )
         ),
         'notifierId' => array(

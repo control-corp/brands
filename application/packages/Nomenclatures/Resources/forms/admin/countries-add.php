@@ -41,6 +41,14 @@ return [
                 'attributes' => ['maxlength' => 20],
             ],
         ],
+        'color' => [
+            'type' => 'text',
+            'options' => [
+                'label' => 'Цвят',
+                'labelClass' => 'control-label',
+                'class' => 'form-control color',
+            ],
+        ],
         'active' => [
             'type' => 'checkbox',
             'options' => [

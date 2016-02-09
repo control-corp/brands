@@ -95,6 +95,16 @@ class Index extends Crud
                 $form->markAsError();
             }
         }
+
+        if ($data['statusId'] && !$data['statusDate']) {
+            $form->statusDate->addError('Дата на статуса е задължителна');
+            $form->markAsError();
+        }
+
+        if (!$data['statusId'] && $data['statusDate']) {
+            $form->statusId->addError('Статус на марката е задължителен');
+            $form->markAsError();
+        }
     }
 
     /**
@@ -108,6 +118,10 @@ class Index extends Crud
         if ($classes) {
             $form->classes->setValue(explode(',', $classes));
         }
+
+        $form->statusId->setValue("");
+        $form->statusDate->setValue("");
+        $form->statusNote->setValue("");
     }
 
     /**

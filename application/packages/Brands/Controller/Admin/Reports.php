@@ -152,9 +152,10 @@ class Reports extends Crud
         $continents = $nomContinents->fetchCachedPairs(array('active' => 1), null, array('id' => 'ASC'));
 
         $nomTypes = new Types();
-        $types = $nomTypes->fetchCachedPairs();
+        $types = $nomTypes->fetchCachedPairs(['active' => 1]);
 
         $nomCountries = new Countries();
+        $nomCountries->addWhere('active', '1');
         $nomCountries->addOrder('name', 'ASC');
         $countriesRows = $nomCountries->getItems();
 
