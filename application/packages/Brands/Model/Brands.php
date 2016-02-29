@@ -49,17 +49,6 @@ class Brands extends DatabaseAbstract
                 $entity->setStatusDate($date->format('Y-m-d'));
             }
 
-            /* if ($entity->getPrice() <= 0 || !$entity->getPriceDate()) {
-                $entity->setPrice(null);
-                $entity->setPriceDate(null);
-                $entity->setPriceComment(null);
-            } */
-
-            if ($entity->getPriceDate()) {
-                $date = new \DateTime($entity->getPriceDate());
-                $entity->setPriceDate($date->format('Y-m-d'));
-            }
-
             if ($entity->getReNewDate()) {
                 $date = new \DateTime($entity->getReNewDate());
                 $entity->setReNewDate($date->format('Y-m-d'));
@@ -68,7 +57,6 @@ class Brands extends DatabaseAbstract
             $result = parent::save($entity);
 
             $this->saveStatus($entity);
-            $this->savePrices($entity);
             $this->saveImage($entity);
 
             /**
@@ -111,37 +99,8 @@ class Brands extends DatabaseAbstract
                     'date' => $entity->getStatusDate()
                 ));
             }
+            $row->price = $entity->getPrice();
             $row->note = $entity->getStatusNote();
-            $row->save();
-        } catch (\Exception $e) {
-
-        }
-    }
-
-    protected function savePrices(EntityInterface $entity)
-    {
-        if ($entity->getPrice() <= 0 || !$entity->getPriceDate()) {
-            return;
-        }
-
-        $rel = new Table\BrandsPricesRel();
-
-        $row = $rel->fetchRow(array(
-            'brandId = ?' => $entity->getId(),
-            'price = ?' => $entity->getPrice(),
-            'date = ?' => $entity->getPriceDate()
-
-        ));
-
-        try {
-            if ($row === \null) {
-                $row = $rel->createRow(array(
-                    'brandId' => $entity->getId(),
-                    'price' => $entity->getPrice(),
-                    'date' => $entity->getPriceDate()
-                ));
-            }
-            $row->comment = $entity->getPriceComment();
             $row->save();
         } catch (\Exception $e) {
 

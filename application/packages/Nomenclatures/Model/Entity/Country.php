@@ -8,6 +8,7 @@ class Country extends EntityAbstract
 {
     protected $id;
     protected $continentId;
+    protected $currencyId;
     protected $name;
     protected $ISO3166Code;
     protected $population = 0;

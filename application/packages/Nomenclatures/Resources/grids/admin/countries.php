@@ -49,6 +49,15 @@ return array(
                 'headStyle' => 'width: 15%'
             )
         ),
+        'currencyId' => array(
+            'type' => 'pairs',
+            'options' => array(
+                'sourceField' => 'currencyId',
+                'title' => 'Валута',
+                'callable' => array(new Nomenclatures\Model\Currencies(), 'fetchCachedPairs'),
+                'params' => [null, null, ['name' => 'asc']]
+            )
+        ),
         'population' => array(
             'options' => array(
                 'sourceField' => 'population',

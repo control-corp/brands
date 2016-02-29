@@ -156,23 +156,6 @@ return array(
                 'class' => 'form-control'
             )
         ),
-        'priceDate' => array(
-            'type' => 'datepicker',
-            'options' => array(
-                'format' => 'd.m.Y',
-                'label' => 'Дата за цена',
-                'labelClass' => 'control-label',
-                'class' => 'datepicker form-control'
-            )
-        ),
-        'priceComment' => array(
-            'type' => 'text',
-            'options' => array(
-                'label' => 'Допълнителна информация',
-                'labelClass' => 'control-label',
-                'class' => 'form-control'
-            )
-        ),
         'btnSave'  => ['type' => 'submit', 'options' => ['value' => 'Запазване', 'class' => 'btn btn-primary']],
         'btnApply' => ['type' => 'submit', 'options' => ['value' => 'Прилагане', 'class' => 'btn btn-success']],
         'btnBack'  => ['type' => 'submit', 'options' => ['value' => 'Назад', 'class' => 'btn btn-default']],

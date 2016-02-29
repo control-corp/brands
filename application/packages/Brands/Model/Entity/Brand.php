@@ -3,7 +3,6 @@
 namespace Brands\Model\Entity;
 
 use Micro\Model\EntityAbstract;
-use Brands\Model\Table\BrandsPricesRel;
 use Brands\Model\Table\BrandsStatusesRel;
 
 class Brand extends EntityAbstract
@@ -26,10 +25,7 @@ class Brand extends EntityAbstract
     protected $active = 1;
 
     protected $price;
-    protected $priceDate;
-    protected $priceComment;
 
-    protected $priceHistory;
     protected $statusHistory;
 
     protected $image;
@@ -199,26 +195,6 @@ class Brand extends EntityAbstract
         $this->price = $price;
     }
 
-    public function getPriceDate ()
-    {
-        return $this->priceDate;
-    }
-
-    public function setPriceDate ($priceDate)
-    {
-        $this->priceDate = $priceDate;
-    }
-
-    public function getPriceComment ()
-    {
-        return $this->priceComment;
-    }
-
-    public function setPriceComment ($priceComment)
-    {
-        $this->priceComment = $priceComment;
-    }
-
     public function getReNewDate ()
     {
         return $this->reNewDate;
@@ -227,16 +203,6 @@ class Brand extends EntityAbstract
     public function setReNewDate ($reNewDate)
     {
         $this->reNewDate = $reNewDate;
-    }
-
-    public function getPriceHistory()
-    {
-        if ($this->priceHistory === null) {
-            $rel = new BrandsPricesRel();
-            $this->priceHistory = $rel->getAdapter()->fetchAll($rel->select(true)->setIntegrityCheck(false)->where('brandId = ?', $this->getId())->order('date DESC'));
-        }
-
-        return $this->priceHistory;
     }
 
     public function getStatusHistory()

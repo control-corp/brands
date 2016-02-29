@@ -68,7 +68,7 @@ $this->hookToMenu('main', 'brands', $label);
                             <h3 style="margin: 0 0 10px 0">История на статуса</h3>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-hover">
-                                    <thead><tr><th>Статус</th><th>Дата</th><th>Пояснение</th></tr></thead>
+                                    <thead><tr><th>Статус</th><th>Дата</th><th>Цена</th><th>Пояснение</th></tr></thead>
                                 <?php if ($this->item->getId()) : ?>
                                     <tbody>
                                 <?php
@@ -78,6 +78,7 @@ $this->hookToMenu('main', 'brands', $label);
                                         <tr>
                                             <td><?php echo $this->nomStatuses[$row['statusId']]; ?></td>
                                             <td><?php echo $date->format('d.m.Y'); ?></td>
+                                            <td><?php echo $row['price']; ?></td>
                                             <td><?php echo $row['note']; ?></td>
                                         </tr>
                                 <?php endforeach; ?>
@@ -86,30 +87,6 @@ $this->hookToMenu('main', 'brands', $label);
                                 </table>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                         <div class="col-md-12">
-                            <h3 style="margin: 0 0 10px 0">История на цените</h3>
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover">
-                                    <thead><tr><th>Цена</th><th>Дата</th><th>Коментар</th></tr></thead>
-                            <?php if ($this->item->getId()) : ?>
-                                    <tbody>
-                                <?php
-                                foreach ($this->item->getPriceHistory() as $row) :
-                                    $date = new \DateTime($row['date']);
-                                ?>
-                                        <tr>
-                                            <td><?php echo $row['price']; ?></td>
-                                            <td><?php echo $date->format('d.m.Y'); ?></td>
-                                            <td><?php echo $row['comment']; ?></td>
-                                        </tr>
-                                <?php endforeach; ?>
-                                    </tbody>
-                            <?php endif; ?>
-                                </table>
-                            </div>
-                         </div>
                     </div>
                 </div>
             </div>
@@ -164,31 +141,14 @@ $this->hookToMenu('main', 'brands', $label);
                     </div>
                     <div class="form-group">
                         <div class="col-md-12">
-                            <?php echo $this->form->statusNote->renderLabel(); ?>
-                            <?php echo $this->form->statusNote; ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">Цени към марката</div>
-                <div class="panel-body">
-                    <div class="form-group">
-                        <div class="col-md-12">
                             <?php echo $this->form->price->renderLabel(); ?>
                             <?php echo $this->form->price; ?>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-md-12">
-                            <?php echo $this->form->priceDate->renderLabel(); ?>
-                            <?php echo $this->form->priceDate; ?>
-                        </div>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <div class="col-md-12">
-                            <?php echo $this->form->priceComment->renderLabel(); ?>
-                            <?php echo $this->form->priceComment; ?>
+                            <?php echo $this->form->statusNote->renderLabel(); ?>
+                            <?php echo $this->form->statusNote; ?>
                         </div>
                     </div>
                 </div>

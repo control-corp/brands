@@ -122,6 +122,7 @@ class Index extends Crud
         $form->statusId->setValue("");
         $form->statusDate->setValue("");
         $form->statusNote->setValue("");
+        $form->price->setValue("");
     }
 
     /**
