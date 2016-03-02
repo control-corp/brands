@@ -27,21 +27,6 @@ if (isset($config['packages'])) {
 
 $app = new Application($config);
 
-/* $app->set('exception.handler', function ($container) {
-
-    $whoops = new Whoops\Run;
-
-    if ($container->get('request')->isAjax()) {
-        $whoops->pushHandler(new Whoops\Handler\JsonResponseHandler);
-    } else {
-        $whoops->pushHandler(new Whoops\Handler\PrettyPageHandler);
-    }
-
-    $whoops->register();
-
-    return new App\Bridge\Whoops($whoops);
-}); */
-
 $app->registerDefaultServices();
 
 $app->get('router')->mapFromConfig()->loadDefaultRoutes();

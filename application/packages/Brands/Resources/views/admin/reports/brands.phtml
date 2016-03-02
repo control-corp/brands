@@ -43,9 +43,9 @@
                 <thead>
                     <tr>
                         <th style="width: 14%" class="text-center">Държава</th>
-                        <th style="width: 32%" class="text-center" colspan="<?php echo $typesCount; ?>"><?php echo $brand; ?><br />статус</th>
-                        <th style="width: 32%" class="text-center" colspan="<?php echo $typesCount; ?>"><?php echo $brand; ?><br />коментар</th>
-                        <th style="width: 32%" class="text-center" colspan="<?php echo $typesCount; ?>">Предприети действия</th>
+                        <th style="width: 32%" class="text-center" colspan="<?php echo $typesCount; ?>"><?php echo $brand; ?><br />Статус</th>
+                        <th style="width: 32%" class="text-center" colspan="<?php echo $typesCount; ?>"><?php echo $brand; ?><br />Коментар</th>
+                        <th style="width: 32%" class="text-center" colspan="<?php echo $typesCount; ?>"><?php echo $brand; ?><br />Предприети действия</th>
                     </tr>
                     <tr>
                         <th>
@@ -74,7 +74,23 @@
                 foreach ($this->countries[$continentId] as $countryId => $country) :
             ?>
                     <tr style="background-color: <?php echo $country['color'] ? $country['color'] : '#FFFFFF'; ?>">
-                        <td><?php echo $country['ISO3166Code']; ?> <?php echo $country['name']; ?> <div><?php echo number_format($country['population'], 0, ".", " "); ?></div></td>
+                        <td>
+                        	<?php echo $country['ISO3166Code']; ?> <?php echo $country['name']; ?>
+                        	<div>Население: <?php echo number_format($country['population'], 0, ".", " "); ?></div>
+                    		<?php
+                    		$totalPrice = 0;
+                    		$brandEntity = null;
+                    		foreach ($this->types as $typeId => $type) :
+                        		if (isset($this->brands[$countryId][$typeId])) :
+                                    $brandEntity = $this->brands[$countryId][$typeId];
+                    		        $totalPrice += $brandEntity->getPrice();
+                    	        endif;
+                            endforeach;
+                            if ($brandEntity && $totalPrice > 0) :
+                                echo '<div>Обща цена: ' . $brandEntity->getFormatedPrice($totalPrice, $this->currentCurrency) . '</div>';
+                            endif;
+                    		?>
+                    	</td>
                     <?php foreach ($this->types as $typeId => $type) : ?>
                         <td class="text-center">
                         <?php
@@ -89,7 +105,7 @@
                                     echo $date->format('d.m.Y');
                                 }
                                 if ($brandEntity->getPrice()) {
-                                    echo '<br />Цена: ' . $brandEntity->getFormatedPrice(null, $currentCurrency);
+                                    echo '<br />Цена: ' . $brandEntity->getFormatedPrice(null, $this->currentCurrency);
                                 }
                                 echo '</div>';
                             }
