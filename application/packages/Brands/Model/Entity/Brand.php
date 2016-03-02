@@ -252,26 +252,32 @@ class Brand extends EntityAbstract
         return $thumb;
     }
 
-    public function getFormatedPrice($price)
+    public function getFormatedPrice($price = null, \Nomenclatures\Model\Entity\Currency $currency = null)
     {
-        static $countrySymbol;
-
-        if ($countrySymbol === null) {
-            $countriesTable = new \Nomenclatures\Model\Table\Countries();
-            $countryRow  = $countriesTable->fetchRow(
-                $countriesTable->select(true)
-                               ->setIntegrityCheck(false)
-                               ->where('NomCountries.id = ?', (int) $this->getCountryId())
-                               ->joinLeft('NomCurrencies', 'NomCurrencies.id = NomCountries.currencyId', array())
-                               ->reset('columns')->columns(array('NomCurrencies.symbol'))
-            );
-            $countrySymbol = $countryRow && $countryRow['symbol'] ? $countryRow['symbol'] : '';
+        if ($price === null) {
+            $price = $this->getPrice();
         }
 
-        if (!empty($countrySymbol)) {
-            return $price . ' ' . $countrySymbol;
+        if (empty($price)) {
+            return '';
         }
 
-        return $price . ' ' . config('currency.defaultSymbol');
+        $countriesTable = new \Nomenclatures\Model\Table\Countries();
+        $countrySymbols = $countriesTable->getCountrySymbols();
+
+        $symbol = isset($countrySymbols[$this->getCountryId()]) ? $countrySymbols[$this->getCountryId()] : null;
+
+        if (empty($symbol)) {
+            $symbol = config('currency.defaultSymbol');
+        }
+
+        if ($currency !== null) {
+            $symbol = $currency['symbol'];
+            $price = $price * $currency['rate'];
+        }
+
+        $price = round($price, 2);
+
+        return $price . ' ' . $symbol;
     }
 }
