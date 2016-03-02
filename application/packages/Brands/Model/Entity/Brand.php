@@ -251,4 +251,27 @@ class Brand extends EntityAbstract
 
         return $thumb;
     }
+
+    public function getFormatedPrice($price)
+    {
+        static $countrySymbol;
+
+        if ($countrySymbol === null) {
+            $countriesTable = new \Nomenclatures\Model\Table\Countries();
+            $countryRow  = $countriesTable->fetchRow(
+                $countriesTable->select(true)
+                               ->setIntegrityCheck(false)
+                               ->where('NomCountries.id = ?', (int) $this->getCountryId())
+                               ->joinLeft('NomCurrencies', 'NomCurrencies.id = NomCountries.currencyId', array())
+                               ->reset('columns')->columns(array('NomCurrencies.symbol'))
+            );
+            $countrySymbol = $countryRow && $countryRow['symbol'] ? $countryRow['symbol'] : '';
+        }
+
+        if (!empty($countrySymbol)) {
+            return $price . ' ' . $countrySymbol;
+        }
+
+        return $price . ' ' . config('currency.defaultSymbol');
+    }
 }

@@ -7,6 +7,7 @@ use Micro\Http\Response;
 use Micro\Model\EntityInterface;
 use Micro\Form\Form;
 use Micro\Database\Expr;
+use Micro\Http\Response\RedirectResponse;
 
 class Index extends Crud
 {
@@ -132,5 +133,28 @@ class Index extends Crud
     protected function modifyEntity(EntityInterface $entity)
     {
         $entity->setClasses(implode(',', $entity->getClasses()));
+    }
+
+    /**
+     * Delete selected status from history
+     * @return RedirectResponse
+     */
+    public function deleteStatusAction()
+    {
+        $id = (int) $this->request->getParam('id');
+        $brandId = (int) $this->request->getParam('brandId');
+
+        $rel = new \Brands\Model\Table\BrandsStatusesRel();
+        $row = $rel->find($id)->current();
+
+        if ($row !== null) {
+            $row->delete();
+            $this->getModel()->fixLastStatus($brandId);
+        }
+
+        $redirect = new RedirectResponse(route(null, array('action' => 'edit', 'id' => $brandId, 'brandId' => null)));
+        $redirect->withFlash(sprintf('Запис %s беше изтрит', $id));
+
+        return $redirect;
     }
 }

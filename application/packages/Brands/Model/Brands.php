@@ -38,12 +38,6 @@ class Brands extends DatabaseAbstract
                 $entity->setRequestDate($date->format('Y-m-d'));
             }
 
-           /*  if (!$entity->getStatusId() || !$entity->getStatusDate()) {
-                $entity->setStatusId(null);
-                $entity->setStatusDate(null);
-                $entity->setStatusNote(null);
-            } */
-
             if ($entity->getStatusDate()) {
                 $date = new \DateTime($entity->getStatusDate());
                 $entity->setStatusDate($date->format('Y-m-d'));
@@ -105,6 +99,33 @@ class Brands extends DatabaseAbstract
         } catch (\Exception $e) {
 
         }
+
+        $this->fixLastStatus((int) $entity->getId());
+    }
+
+    public function fixLastStatus($brandId)
+    {
+        $rel = new Table\BrandsStatusesRel();
+
+        $row = $rel->fetchRow(array('brandId = ?' => $brandId), 'id DESC');
+
+        if ($row !== null) {
+            $data = array(
+                'statusId' => $row['statusId'],
+                'statusDate' => $row['date'],
+                'statusNote' => $row['note'],
+                'price' => $row['price'],
+            );
+        } else {
+            $data = array(
+                'statusId' => \null,
+                'statusDate' => \null,
+                'statusNote' => \null,
+                'price' => \null,
+            );
+        }
+
+        $this->getTable()->update($data, array('id = ?' => $brandId));
     }
 
     protected function saveImage(EntityInterface $entity)
