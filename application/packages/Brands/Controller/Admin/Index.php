@@ -3,6 +3,7 @@
 namespace Brands\Controller\Admin;
 
 use Micro\Application\Controller\Crud;
+use Micro\Application\Utils;
 use Micro\Http\Response;
 use Micro\Model\EntityInterface;
 use Micro\Form\Form;
@@ -43,6 +44,13 @@ class Index extends Crud
     {
         if (($response = parent::indexAction()) instanceof Response) {
             return $response;
+        }
+
+        if ($this->request->isPost()) {
+            $post = $this->request->getPost();
+            if (isset($post['btnWizzard'])) {
+                return new RedirectResponse(route(\null, ['action' => 'wizzard', 'id' => \null, 'page' => \null]));
+            }
         }
 
         $form = new Form(package_path('Brands', 'Resources/forms/admin/index-filters.php'));
@@ -109,6 +117,20 @@ class Index extends Crud
     }
 
     /**
+     * {@inheritDoc}
+     * @see \Micro\Application\Controller\Crud::modifyData()
+     */
+    protected function modifyData(array &$data)
+    {
+        if (empty($data['statusId']) || empty($data['statusDate'])) {
+            unset($data['statusId']);
+            unset($data['statusDate']);
+            unset($data['statusNote']);
+            unset($data['price']);
+        }
+    }
+
+    /**
      * (non-PHPdoc)
      * @see \Light\Controller\Crud::prepareForm()
      */
@@ -133,6 +155,51 @@ class Index extends Crud
     protected function modifyEntity(EntityInterface $entity)
     {
         $entity->setClasses(implode(',', $entity->getClasses()));
+    }
+
+    public function wizzardAction()
+    {
+        $form = new Form(package_path('Brands', 'Resources/forms/admin/wizzard.php'));
+
+        if ($this->request->isPost()) {
+
+            $post = $this->request->getPost();
+
+            $post = Utils::arrayMapRecursive('trim', $post);
+
+            if (isset($post['btnBack'])) {
+                return new RedirectResponse(route(\null, ['action' => 'index', 'id' => \null]));
+            }
+
+            $form->isValid($post);
+
+            if (isset($post['name']) && $post['name'] && isset($post['countryId']) && $post['countryId']) {
+                $m = new \Brands\Model\Table\Brands();
+                foreach ($post['countryId'] as $countryId) {
+                    $where = array('name = ?' => $post['name'], 'countryId = ?' => $countryId, 'typeId = ?' => $post['typeId']);
+                    if ($m->fetchRow($where)) {
+                        $form->countryId->addError('Тази марка и тип съществува за някои от избраните държави');
+                        $form->markAsError();
+                        break;
+                    }
+                }
+            }
+
+            if (!$form->hasErrors()) {
+
+                $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index', 'id' => \null]));
+
+                try {
+                    $post = Utils::arrayMapRecursive('trim', $post, true);
+                    $this->getModel()->multipleInsert($post);
+                    return $redirectResponse->withFlash('Информацията е записана');
+                } catch (\Exception $e) {
+                    return $redirectResponse->withFlash($e->getMessage(), 'danger');
+                }
+            }
+        }
+
+        $this->view->assign('form', $form);
     }
 
     /**

@@ -135,7 +135,7 @@ class Brands extends DatabaseAbstract
                 $name     = $_FILES['image']['name'];
                 $tmp_name = $_FILES['image']['tmp_name'];
                 @unlink(static::getImagePath($entity->getId(), $name, true));
-                if (!move_uploaded_file($tmp_name, static::getImagePath($entity->getId(), $name))) {
+                if (!copy($tmp_name, static::getImagePath($entity->getId(), $name))) {
                     throw new \Exception('Файлът не може да се запише', 500);
                 }
                 $this->getTable()->update(array('image' => $name), array('id = ?' => $entity->getId()));
@@ -162,5 +162,25 @@ class Brands extends DatabaseAbstract
     public static function getImagePath($id, $image, $thumb = false)
     {
         return public_path('uploads/brands/' . ($thumb ? 'thumbs/' : '') . $id . '.' . pathinfo($image, PATHINFO_EXTENSION));
+    }
+
+    public function multipleInsert(array $data)
+    {
+        foreach ($data['countryId'] as $countryId) {
+            $entity = $this->createEntity();
+            $statusId = null;
+            $statusDate = null;
+            if ($data['registerDate']) {
+                $statusId = 7; // публикувана
+                $statusDate = $data['registerDate'];
+            }
+            $entity->setFromArray(
+                array('countryId' => $countryId, 'statusId' => $statusId, 'statusDate' => $statusDate)
+                +
+                $data
+            );
+            $entity->setClasses(implode(',', $entity->getClasses()));
+            $this->save($entity);
+        }
     }
 }

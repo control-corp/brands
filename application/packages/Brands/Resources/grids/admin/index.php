@@ -13,6 +13,10 @@ if (!function_exists('toDate')) {
 return array(
     'paginatorPlacement' => 'both',
     'buttons' => [
+        'btnWizzard' => [
+            'value' => 'Wizzard',
+            'class' => 'btn btn-default'
+        ],
         'btnAdd' => [
             'value' => 'Добавяне',
             'class' => 'btn btn-primary'
