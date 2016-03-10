@@ -14,7 +14,7 @@ return array(
     'paginatorPlacement' => 'both',
     'buttons' => [
         'btnWizzard' => [
-            'value' => 'Wizzard',
+            'value' => 'Генериране на марки',
             'class' => 'btn btn-default'
         ],
         'btnAdd' => [

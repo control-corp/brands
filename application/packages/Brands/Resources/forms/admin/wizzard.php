@@ -109,7 +109,7 @@ return array(
                 'class' => 'datepicker form-control'
             )
         ),
-        'btnSave'  => ['type' => 'submit', 'options' => ['value' => 'Генериране записи', 'class' => 'btn btn-primary']],
+        'btnSave'  => ['type' => 'submit', 'options' => ['value' => 'Генериране', 'class' => 'btn btn-primary']],
         'btnBack'  => ['type' => 'submit', 'options' => ['value' => 'Назад', 'class' => 'btn btn-default']],
     )
 );
