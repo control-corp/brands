@@ -209,7 +209,7 @@ class Brand extends EntityAbstract
     {
         if ($this->statusHistory === null) {
             $rel = new BrandsStatusesRel();
-            $this->statusHistory = $rel->getAdapter()->fetchAll($rel->select(true)->setIntegrityCheck(false)->where('brandId = ?', $this->getId())->order('date DESC'));
+            $this->statusHistory = $rel->getAdapter()->fetchAll($rel->select(true)->setIntegrityCheck(false)->where('brandId = ?', $this->getId())->order('id DESC'));
         }
 
         return $this->statusHistory;
@@ -263,17 +263,27 @@ class Brand extends EntityAbstract
         }
 
         $countriesTable = new \Nomenclatures\Model\Table\Countries();
-        $countrySymbols = $countriesTable->getCountrySymbols();
+        $currenciesModel = new \Nomenclatures\Model\Currencies();
 
-        $symbol = isset($countrySymbols[$this->getCountryId()]) ? $countrySymbols[$this->getCountryId()] : null;
+        $defaultCurrency =  config('currency.default');
 
-        if (empty($symbol)) {
-            $symbol = config('currency.defaultSymbol');
-        }
+        $countryCurrencies = $countriesTable->getCountryCurrencies();
+
+        $currencyId = isset($countryCurrencies[$this->getCountryId()]) && $countryCurrencies[$this->getCountryId()]
+                      ? $countryCurrencies[$this->getCountryId()]
+                      : $defaultCurrency;
+
+        $currencySymbols = $currenciesModel->fetchCachedPairs(null, array('id', 'symbol'));
+        $symbol = isset($currencySymbols[$currencyId]) && $currencySymbols[$currencyId] ? $currencySymbols[$currencyId] : '';
 
         if ($currency !== null) {
+
+            $currencyRates = $currenciesModel->fetchCachedPairs(null, array('id', 'rate'));
+            $rate = isset($currencyRates[$currencyId]) && $currencyRates[$currencyId] ? $currencyRates[$currencyId] : 1;
+
             $symbol = $currency['symbol'];
-            $price = $price * $currency['rate'];
+            $price  = $price * $currency['rate'] / $rate;
+
         }
 
         $price = round($price, 2);

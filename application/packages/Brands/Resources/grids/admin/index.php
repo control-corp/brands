@@ -15,11 +15,17 @@ return array(
     'buttons' => [
         'btnWizzard' => [
             'value' => 'Генериране на марки',
-            'class' => 'btn btn-default'
+            'class' => 'btn btn-default',
+            'resources' => array(
+                'Brands\Controller\Admin\Index@wizzard',
+            ),
         ],
         'btnAdd' => [
             'value' => 'Добавяне',
-            'class' => 'btn btn-primary'
+            'class' => 'btn btn-primary',
+            'resources' => array(
+                'Brands\Controller\Admin\Index@add',
+            ),
         ],
         'btnActivate' => [
             'value' => 'Активиране',
@@ -28,7 +34,10 @@ return array(
                 'data-rel' => 'ids[]',
                 'data-action' => app('router')->assemble(\null, ['action' => 'activate']),
                 'data-confirm' => 'Сигурни ли сте, че искате да активирате избраните записи?'
-            ]
+            ],
+            'resources' => array(
+                'Brands\Controller\Admin\Index@activate',
+            ),
         ],
         'btnDeactivate' => [
             'value' => 'Деактивиране',
@@ -37,7 +46,10 @@ return array(
                 'data-rel' => 'ids[]',
                 'data-action' => app('router')->assemble(\null, ['action' => 'deactivate']),
                 'data-confirm' => 'Сигурни ли сте, че искате да деактивирате избраните записи?'
-            ]
+            ],
+            'resources' => array(
+                'Brands\Controller\Admin\Index@deactivate',
+            ),
         ],
         'btnDelete' => [
             'value' => 'Изтриване',
@@ -46,7 +58,10 @@ return array(
                 'data-rel' => 'ids[]',
                 'data-action' => app('router')->assemble(\null, ['action' => 'delete']),
                 'data-confirm' => 'Сигурни ли сте, че искате да изтриете избраните записи?'
-            ]
+            ],
+            'resources' => array(
+                'Brands\Controller\Admin\Index@delete',
+            ),
         ]
     ],
     'columns' => array(
@@ -58,20 +73,20 @@ return array(
                 'class' => 'text-center',
                 'headClass' => 'text-center',
                 'headStyle' => 'width: 3%',
+                'resources' => array(
+                    'Brands\Controller\Admin\Index@add',
+                    'Brands\Controller\Admin\Index@activate',
+                    'Brands\Controller\Admin\Index@deactivate',
+                    'Brands\Controller\Admin\Index@delete',
+                ),
             )
         ),
         'name' => array(
-            'type' => 'href',
             'options' => array(
                 'sourceField' => 'name',
                 'sortable' => 1,
                 'title'  => 'Име',
-                'reset'  => 0,
-                'params' => array(
-                    'controller' => 'index',
-                    'action' => 'edit',
-                    'id' => ':id'
-                )
+                'viewScript' => 'admin/index/grid-edit',
             )
         ),
         'countryId' => array(
@@ -151,6 +166,13 @@ return array(
                 'viewScript' => 'admin/index/grid-status'
             )
         ),
+        'price' => array(
+            'options' => array(
+                'sourceField' => 'price',
+                'title' => 'Цена',
+                'viewScript' => 'admin/index/grid-price'
+            )
+        ),
         'reNewDate' => array(
             'options' => array(
                 'sourceField' => 'reNewDate',
@@ -179,7 +201,10 @@ return array(
                 'params' => array(
                     'action' => 'delete',
                     'id' => ':id'
-                )
+                ),
+                'resources' => array(
+                    'Brands\Controller\Admin\Index@delete',
+                ),
             )
         ),
     )

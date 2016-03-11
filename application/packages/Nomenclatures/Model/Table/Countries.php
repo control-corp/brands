@@ -8,21 +8,20 @@ class Countries extends TableAbstract
 {
     protected $_name = 'NomCountries';
 
-    public function getCountrySymbols()
+    public function getCountryCurrencies()
     {
         $cache = app('cache');
 
-        if ($cache === \null || ($rows = $cache->load('NomCountryCurrencySymbols')) === \false) {
+        if ($cache === \null || ($rows = $cache->load('NomCountryCurrencyCurrencies')) === \false) {
 
             $rows = $this->getAdapter()->fetchPairs(
                 $this->select(true)
                      ->setIntegrityCheck(false)
-                     ->joinLeft('NomCurrencies', 'NomCurrencies.id = NomCountries.currencyId', array())
-                     ->reset('columns')->columns(array('NomCountries.id', 'NomCurrencies.symbol'))
+                     ->reset('columns')->columns(array('NomCountries.id', 'NomCountries.currencyId'))
             );
 
             if ($cache instanceof \Micro\Cache\Core) {
-                $cache->save($rows, 'NomCountryCurrencySymbols', array('Nomenclatures_Model_Countries', 'Nomenclatures_Model_Currencies'));
+                $cache->save($rows, 'NomCountryCurrencyCurrencies', array('Nomenclatures_Model_Countries'));
             }
         }
 

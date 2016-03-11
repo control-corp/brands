@@ -2,6 +2,6 @@
 
 return array(
     'currency' => array(
-        'defaultSymbol' => '€'
+        'default' => '2'
     )
 );
