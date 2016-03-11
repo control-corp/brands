@@ -29,7 +29,16 @@ return [
                 'label' => 'Парола',
                 'required' => 1,
                 'class' => 'form-control',
-                'attributes' => ['autocomplete' => 'off']
+                'attributes' => ['autocomplete' => 'off'],
+                'validators' => array(
+                    array(
+                        'validator' => 'Identical',
+                        'options'   => array(
+                            'field' => 'repassword',
+                            'error' => 'Паролите не съвпадат'
+                        )
+                    )
+                )
             ]
         ],
         'repassword' => [
