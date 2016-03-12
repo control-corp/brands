@@ -287,3 +287,35 @@ tr.brand-alert td a {
 	background-color: #BC1914;
 	color: #FFF;
 }
+
+.navbar-inverse {
+	background-color: white;
+    border-color: green;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: black;
+}
+
+.navbar-inverse .navbar-nav > li > a:hover {
+    color: black;
+	text-decoration: underline;
+}
+
+.navbar-inverse .navbar-nav > .open > a, 
+.navbar-inverse .navbar-nav > .open > a:focus, 
+.navbar-inverse .navbar-nav > .open > a:hover {
+	background-color: green;
+}
+
+.navbar-inverse .navbar-nav > .active > a, 
+.navbar-inverse .navbar-nav > .active > a:focus, 
+.navbar-inverse .navbar-nav > .active > a:hover {
+	background-color: green;
+}
+
+.dropdown-menu > .active > a, 
+.dropdown-menu > .active > a:focus, 
+.dropdown-menu > .active > a:hover {
+	background-color: green;
+}

@@ -21,11 +21,6 @@
         <?php echo $this->render('layouts/admin/includes/_flash'); ?>
         <?php echo $this->renderSection('content'); ?>
     </div>
-    <footer class="footer">
-        <div class="container">
-            <p class="text-muted">Copyright © <?php echo date('Y'); ?></p>
-        </div>
-    </footer>
     <script>var siteLanguage = {code: 'bg'}; </script>
     <script>var siteConfig = <?php echo json_encode(config('config.js', [])); ?>; </script>
     <script type="text/javascript" src="assets/js/jquery/jquery-1.11.0.min.js"></script>
