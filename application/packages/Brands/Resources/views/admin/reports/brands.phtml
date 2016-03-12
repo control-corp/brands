@@ -59,7 +59,18 @@
                         <th class="vtop text-center">
                             <?php echo $type; ?>
                         <?php if (isset($this->brandImages[$typeId]) && file_exists($this->brandImages[$typeId]['path'])) : ?>
-                            <div style="margin-top: 5px"><img src="<?php echo $this->brandImages[$typeId]['image'] . '?r=' . time(); ?>" /></div>
+                            <div style="margin-top: 5px">
+                            	<img style="cursor: pointer" data-toggle="modal" data-target="#brandImageModal<?php echo $typeId; ?>" src="<?php echo $this->brandImages[$typeId]['image'] . '?r=' . time(); ?>" />
+                        	</div>
+                            <div id="brandImageModal<?php echo $typeId; ?>" class="modal fade" tabindex="-1" role="dialog">
+                            	<div class="modal-dialog">
+                            		<div class="modal-content">
+                            			<div class="modal-body">
+                            				<img src="<?php echo server_url(base_url($this->brandImages[$typeId]['real'])); ?>" class="img-responsive">
+                            			</div>
+                            		</div>
+                            	</div>
+                            </div>
                         <?php endif; ?>
                         </th>
                     <?php

@@ -81,6 +81,12 @@ return array(
                 ),
             )
         ),
+        'image' => array(
+            'options' => array(
+                'sourceField' => 'id',
+                'viewScript' => 'admin/index/grid-image'
+            )
+        ),
         'name' => array(
             'options' => array(
                 'sourceField' => 'name',

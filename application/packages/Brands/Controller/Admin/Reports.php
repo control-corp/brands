@@ -138,7 +138,8 @@ class Reports extends Crud
                     if ($brandRow->getThumb()) {
                         $brandImages[$brandRow['typeId']] = array(
                             'path'  => $brandRow->getThumb(),
-                            'image' => 'uploads/brands/thumbs/' . $brandRow->getId() . '.' . pathinfo($brandRow->getImage(), PATHINFO_EXTENSION)
+                            'image' => 'uploads/brands/thumbs/' . $brandRow->getId() . '.' . pathinfo($brandRow->getImage(), PATHINFO_EXTENSION),
+                            'real'  => 'uploads/brands/' . $brandRow->getId() . '.' . pathinfo($brandRow->getImage(), PATHINFO_EXTENSION),
                         );
                     }
                 }
