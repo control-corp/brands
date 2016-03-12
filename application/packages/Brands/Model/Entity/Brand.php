@@ -240,7 +240,7 @@ class Brand extends EntityAbstract
                 if (!file_exists($thumb)) {
                     try {
                         $resizer = new \Micro\Image\Native($path);
-                        $resizer->resizeAndFill(240, 150);
+                        $resizer->resizeAndFill(config('thumb.width', 150), config('thumb.height', 90));
                         $resizer->save($thumb);
                     } catch (\Exception $e) {
                         $thumb = null;

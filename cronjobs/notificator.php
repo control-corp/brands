@@ -1,11 +1,16 @@
 <?php
 
+use Mail\Model\Mail;
+
 chdir(dirname(__DIR__));
 
 $app = include 'application/start.php';
 
 $db = app('db');
 $db instanceof Micro\Database\Adapter\AdapterAbstract;
+
+sendMail('имало едно време');
+die;
 
 $result = $db->fetchAll("SELECT * FROM Brands WHERE reNewDate IS NOT NULL ORDER BY reNewDate ASC");
 
@@ -65,5 +70,18 @@ function checkBrand($c)
 
 function sendMail($text)
 {
-    var_dump($text);
+    $mail = new Mail();
+
+    $to = array(
+        'vchavdarov@icygen.com'
+    );
+
+    $mail->send('Изтичащи марки', $text, $to, 'vchavdarov@icygen.com');
+
+    /*
+     $mail->addTo('k.taneva78@gmail.com');
+     $mail->addTo('tousheto@gmail.com');
+     $mail->addTo('359899997111@sms.mtel.net');
+     $mail->addTo('359888701404@sms.mtel.net');
+     */
 }
