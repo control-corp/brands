@@ -76,7 +76,7 @@ function sendMail($text)
         'vchavdarov@icygen.com'
     );
 
-    $mail->send('Изтичащи марки', $text, $to, 'vchavdarov@icygen.com');
+    $mail->send('Изтичащи марки', $text, $to, ['brands@vp.brands.bg', 'VP Brands - international']);
 
     /*
      $mail->addTo('k.taneva78@gmail.com');
