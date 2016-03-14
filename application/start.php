@@ -3,18 +3,6 @@
 use Micro\Application\Application;
 use Micro\Application\Utils;
 
-include_once 'library/Micro/autoload.php';
-
-if (is_file($composer = 'vendor/autoload.php')) {
-    include_once $composer;
-}
-
-MicroLoader::register();
-
-if ((is_file($classes = 'data/classes.php')) === \true) {
-    MicroLoader::setFiles(include $classes);
-}
-
 $config = [];
 
 foreach (glob('{application/config/*.php,application/config/packages/*.php}', GLOB_BRACE) as $file) {
