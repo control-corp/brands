@@ -60,7 +60,7 @@
                             <?php echo $type; ?>
                         <?php if (isset($this->brandImages[$typeId]) && file_exists($this->brandImages[$typeId]['path'])) : ?>
                             <div style="margin-top: 5px">
-                            	<img style="width: 100%; cursor: pointer" data-toggle="modal" data-target="#brandImageModal<?php echo $typeId; ?>" src="<?php echo $this->brandImages[$typeId]['image'] . '?r=' . time(); ?>" />
+                            	<img style="width: 80px; cursor: pointer" data-toggle="modal" data-target="#brandImageModal<?php echo $typeId; ?>" src="<?php echo $this->brandImages[$typeId]['image'] . '?r=' . time(); ?>" />
                         	</div>
                             <div id="brandImageModal<?php echo $typeId; ?>" class="modal fade" tabindex="-1" role="dialog">
                             	<div class="modal-dialog modal-lg">

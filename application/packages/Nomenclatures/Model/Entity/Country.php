@@ -10,11 +10,13 @@ class Country extends EntityAbstract
     protected $continentId;
     protected $currencyId;
     protected $name;
+    protected $price;
     protected $ISO3166Code;
     protected $population = 0;
     protected $countBrands = 0;
     protected $color;
     protected $active = 1;
+    protected $classA = 0;
 
     public function setPopulation($value)
     {
@@ -45,6 +47,17 @@ class Country extends EntityAbstract
         }
 
         $this->active = (int) $value ? 1 : 0;
+
+        return $this;
+    }
+
+    public function setClassA($value)
+    {
+        if (empty($value)) {
+            $value = 0;
+        }
+
+        $this->classA = (int) $value ? 1 : 0;
 
         return $this;
     }

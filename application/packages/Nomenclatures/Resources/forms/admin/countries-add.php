@@ -60,6 +60,20 @@ return [
                 'class' => 'form-control color',
             ],
         ],
+        'price' => [
+            'type' => 'text',
+            'options' => [
+                'label' => 'Базова цена',
+                'labelClass' => 'control-label',
+                'class' => 'form-control',
+            ],
+        ],
+        'classA' => [
+            'type' => 'checkbox',
+            'options' => [
+                'label' => 'Клас А',
+            ],
+        ],
         'active' => [
             'type' => 'checkbox',
             'options' => [
