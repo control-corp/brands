@@ -164,6 +164,10 @@ class Reports extends Crud
 
         foreach ($countriesRows as $countryRow) {
 
+            if (empty($countryRow['continentId'])) {
+                continue;
+            }
+
             /**
              * Създаване на списъци от държави за континент
              */
@@ -217,5 +221,76 @@ class Reports extends Crud
         }
 
         return new Response\JsonResponse($response);
+    }
+
+    public function exportAction()
+    {
+        $brands = $this->brandsAction();
+
+        if ($brands instanceof Response || empty($brands['brands'])) {
+            return new Response\HtmlResponse();
+        }
+
+        $phpExcel = new \PHPExcel();
+        $phpExcel->setActiveSheetIndex(0);
+
+        $sheet = $phpExcel->getActiveSheet();
+
+        $rowIndex = '1';
+        $chars = range('A', 'Z');
+
+        $countTypes = count($brands['types']);
+        $count = $countTypes * 3 + 1;
+
+        foreach ($brands['continents'] as $continentId => $continent) {
+
+            $cellIndex = 'A';
+
+            $sheet->setCellValue($cellIndex . $rowIndex, $continent);
+            $sheet->mergeCells($cellIndex . $rowIndex . ':' . $chars[$count - 1] . $rowIndex);
+            $rowIndex++;
+
+            $sheet->setCellValue($cellIndex . $rowIndex, 'Държава');
+
+            $cellIndex++;
+            $sheet->setCellValue($cellIndex . $rowIndex, 'Статус');
+            $mergeIndex = $cellIndex . $rowIndex . ':' . $chars[array_search($cellIndex, $chars) + $countTypes - 1] . $rowIndex;
+            $sheet->mergeCells($mergeIndex);
+
+            $cellIndex = $chars[array_search($cellIndex, $chars) + $countTypes - 1];
+            $cellIndex++;
+            $sheet->setCellValue($cellIndex . $rowIndex, 'Коментар');
+            $mergeIndex = $cellIndex . $rowIndex . ':' . $chars[array_search($cellIndex, $chars) + $countTypes - 1] . $rowIndex;
+            $sheet->mergeCells($mergeIndex);
+
+            $cellIndex = $chars[array_search($cellIndex, $chars) + $countTypes - 1];
+            $cellIndex++;
+            $sheet->setCellValue($cellIndex . $rowIndex, 'Предприети действия');
+            $mergeIndex = $cellIndex . $rowIndex . ':' . $chars[array_search($cellIndex, $chars) + $countTypes - 1] . $rowIndex;
+            $sheet->mergeCells($mergeIndex);
+
+            $rowIndex++;
+
+            $cellIndex = 'A';
+            $sheet->setCellValue($cellIndex . $rowIndex, "Общо държави:\nОбщо население:");
+            $sheet->getStyle('A' . $rowIndex)->getAlignment()->setWrapText(true);
+            $sheet->getColumnDimension('A')->setAutoSize(true);
+
+            $cellIndex++;
+            foreach (range(1, 3) as $i) {
+                foreach ($brands['types'] as $type) {
+                    $sheet->setCellValue($cellIndex . $rowIndex, $type);
+                    $sheet->getColumnDimension($cellIndex)->setAutoSize(true);
+                    $cellIndex++;
+                }
+            }
+
+            $rowIndex++;
+        }
+
+        $writer = \PHPExcel_IOFactory::createWriter ($phpExcel, 'Excel5');
+        $writer->save('data/brand.xls');
+
+        die;
     }
 }

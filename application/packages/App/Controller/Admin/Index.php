@@ -11,8 +11,5 @@ class Index extends Controller
 
     public function indexAction()
     {
-        if (!identity()) {
-            return new RedirectResponse(route('admin-login'));
-        }
     }
 }
