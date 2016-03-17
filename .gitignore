@@ -5,3 +5,8 @@
 /application/data/session
 /application/data/log
 /data
+/vendor
+/composer.lock
+/composer.phar
+/composer.json
+/public/uploads

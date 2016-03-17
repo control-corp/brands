@@ -49,6 +49,21 @@ return array(
                 'headStyle' => 'width: 15%'
             )
         ),
+        'price' => array(
+            'options' => array(
+                'sourceField' => 'price',
+                'title' => 'Базова цена',
+            )
+        ),
+        'currencyId' => array(
+            'type' => 'pairs',
+            'options' => array(
+                'sourceField' => 'currencyId',
+                'title' => 'Валута',
+                'callable' => array(new Nomenclatures\Model\Currencies(), 'fetchCachedPairs'),
+                'params' => [null, null, ['name' => 'asc']]
+            )
+        ),
         'population' => array(
             'options' => array(
                 'sourceField' => 'population',
@@ -63,6 +78,17 @@ return array(
                 'title' => 'Брой марки в държавата',
                 'sortable' => 1,
                 'headStyle' => 'width: 15%'
+            )
+        ),
+        'classA' => array(
+            'type' => 'boolean',
+            'options' => array(
+                'sourceField' => 'classA',
+                'headStyle' => 'width: 5%',
+                'title' => 'Клас&nbsp;А',
+                'class' => 'text-center',
+                'true' => '<span class="fa fa-check"></span>',
+                'false' => '<span class="fa fa-ban"></span>',
             )
         ),
         'active' => array(

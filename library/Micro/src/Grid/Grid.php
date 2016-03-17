@@ -293,6 +293,10 @@ class Grid
             throw new CoreException('Trying to add invalid column to grid');
         }
 
+        if (!$this->checkAccessRights($options)) {
+            return $this;
+        }
+
         $columnObj->setGrid($this);
 
         $this->columns[$name] = $columnObj;
@@ -383,6 +387,10 @@ class Grid
             $options = [];
         }
 
+        if (!$this->checkAccessRights($options)) {
+            return $this;
+        }
+
         $this->buttons[$name] = $options;
 
         return $this;
@@ -421,6 +429,28 @@ class Grid
     public function getPaginator()
     {
         return $this->paginator;
+    }
+
+    protected function checkAccessRights($config)
+    {
+        if (isset($config['resources'])) {
+
+            $resources = $config['resources'];
+
+            if (!is_array($resources)) {
+                $resources = array($resources);
+            }
+
+            foreach ($resources as $resource) {
+                if (is_allowed($resource)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        return true;
     }
 
     public function render()

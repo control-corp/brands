@@ -38,26 +38,9 @@ class Brands extends DatabaseAbstract
                 $entity->setRequestDate($date->format('Y-m-d'));
             }
 
-           /*  if (!$entity->getStatusId() || !$entity->getStatusDate()) {
-                $entity->setStatusId(null);
-                $entity->setStatusDate(null);
-                $entity->setStatusNote(null);
-            } */
-
             if ($entity->getStatusDate()) {
                 $date = new \DateTime($entity->getStatusDate());
                 $entity->setStatusDate($date->format('Y-m-d'));
-            }
-
-            /* if ($entity->getPrice() <= 0 || !$entity->getPriceDate()) {
-                $entity->setPrice(null);
-                $entity->setPriceDate(null);
-                $entity->setPriceComment(null);
-            } */
-
-            if ($entity->getPriceDate()) {
-                $date = new \DateTime($entity->getPriceDate());
-                $entity->setPriceDate($date->format('Y-m-d'));
             }
 
             if ($entity->getReNewDate()) {
@@ -68,7 +51,6 @@ class Brands extends DatabaseAbstract
             $result = parent::save($entity);
 
             $this->saveStatus($entity);
-            $this->savePrices($entity);
             $this->saveImage($entity);
 
             /**
@@ -111,41 +93,39 @@ class Brands extends DatabaseAbstract
                     'date' => $entity->getStatusDate()
                 ));
             }
+            $row->price = $entity->getPrice();
             $row->note = $entity->getStatusNote();
             $row->save();
         } catch (\Exception $e) {
 
         }
+
+        $this->fixLastStatus((int) $entity->getId());
     }
 
-    protected function savePrices(EntityInterface $entity)
+    public function fixLastStatus($brandId)
     {
-        if ($entity->getPrice() <= 0 || !$entity->getPriceDate()) {
-            return;
+        $rel = new Table\BrandsStatusesRel();
+
+        $row = $rel->fetchRow(array('brandId = ?' => $brandId), 'id DESC');
+
+        if ($row !== null) {
+            $data = array(
+                'statusId' => $row['statusId'],
+                'statusDate' => $row['date'],
+                'statusNote' => $row['note'],
+                'price' => $row['price'],
+            );
+        } else {
+            $data = array(
+                'statusId' => \null,
+                'statusDate' => \null,
+                'statusNote' => \null,
+                'price' => \null,
+            );
         }
 
-        $rel = new Table\BrandsPricesRel();
-
-        $row = $rel->fetchRow(array(
-            'brandId = ?' => $entity->getId(),
-            'price = ?' => $entity->getPrice(),
-            'date = ?' => $entity->getPriceDate()
-
-        ));
-
-        try {
-            if ($row === \null) {
-                $row = $rel->createRow(array(
-                    'brandId' => $entity->getId(),
-                    'price' => $entity->getPrice(),
-                    'date' => $entity->getPriceDate()
-                ));
-            }
-            $row->comment = $entity->getPriceComment();
-            $row->save();
-        } catch (\Exception $e) {
-
-        }
+        $this->getTable()->update($data, array('id = ?' => $brandId));
     }
 
     protected function saveImage(EntityInterface $entity)
@@ -155,7 +135,7 @@ class Brands extends DatabaseAbstract
                 $name     = $_FILES['image']['name'];
                 $tmp_name = $_FILES['image']['tmp_name'];
                 @unlink(static::getImagePath($entity->getId(), $name, true));
-                if (!move_uploaded_file($tmp_name, static::getImagePath($entity->getId(), $name))) {
+                if (!copy($tmp_name, static::getImagePath($entity->getId(), $name))) {
                     throw new \Exception('Файлът не може да се запише', 500);
                 }
                 $this->getTable()->update(array('image' => $name), array('id = ?' => $entity->getId()));
@@ -182,5 +162,25 @@ class Brands extends DatabaseAbstract
     public static function getImagePath($id, $image, $thumb = false)
     {
         return public_path('uploads/brands/' . ($thumb ? 'thumbs/' : '') . $id . '.' . pathinfo($image, PATHINFO_EXTENSION));
+    }
+
+    public function multipleInsert(array $data)
+    {
+        foreach ($data['countryId'] as $countryId) {
+            $entity = $this->createEntity();
+            $statusId = null;
+            $statusDate = null;
+            if ($data['registerDate']) {
+                $statusId = 7; // публикувана
+                $statusDate = $data['registerDate'];
+            }
+            $entity->setFromArray(
+                array('countryId' => $countryId, 'statusId' => $statusId, 'statusDate' => $statusDate)
+                +
+                $data
+            );
+            $entity->setClasses(implode(',', $entity->getClasses()));
+            $this->save($entity);
+        }
     }
 }

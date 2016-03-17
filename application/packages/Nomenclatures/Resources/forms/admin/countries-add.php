@@ -22,6 +22,17 @@ return [
                 'multiOptions' => (new Nomenclatures\Model\Continents)->fetchCachedPairs(\null, \null, ['name' => 'asc']),
             ],
         ],
+        'currencyId' => [
+            'type' => 'select',
+            'options' => [
+                'label' => 'Валута',
+                'required' => 1,
+                'labelClass' => 'control-label',
+                'class' => 'form-control',
+                'emptyOption' => 'Избери',
+                'multiOptions' => (new Nomenclatures\Model\Currencies)->fetchCachedPairs(\null, \null, ['name' => 'asc']),
+            ],
+        ],
         'ISO3166Code' => [
             'type' => 'text',
             'options' => [
@@ -47,6 +58,20 @@ return [
                 'label' => 'Цвят',
                 'labelClass' => 'control-label',
                 'class' => 'form-control color',
+            ],
+        ],
+        'price' => [
+            'type' => 'text',
+            'options' => [
+                'label' => 'Базова цена',
+                'labelClass' => 'control-label',
+                'class' => 'form-control',
+            ],
+        ],
+        'classA' => [
+            'type' => 'checkbox',
+            'options' => [
+                'label' => 'Клас А',
             ],
         ],
         'active' => [

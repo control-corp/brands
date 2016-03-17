@@ -1,0 +1,17 @@
+<?php
+
+$label = 'Потребители';
+
+$this->extend('layouts/admin/default');
+
+$this->section('title', $label);
+
+?>
+
+<h1><?php echo $label; ?></h1>
+
+<div class="row">
+    <div class="col-md-12 table-responsive">
+        <?php echo $this->grid; ?>
+    </div>
+</div>

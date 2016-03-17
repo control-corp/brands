@@ -1,6 +1,9 @@
 <?php
 
 foreach ($this->container as $item) {
+    if (!$item->getVisible() || !$item->isAllowed()) {
+        continue;
+    }
     echo '<div class="panel panel-default" style="margin: 5px 0 10px 0;">';
     if ($item->hasPages()) {
         echo '<div class="panel-heading" style="padding: 5px 10px"><a href="' . $item->getHref() . '">' . $item->getLabel() . '</a></div>';

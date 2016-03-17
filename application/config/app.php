@@ -1,9 +1,9 @@
 <?php
 
 return [
-    /* 'acl' => [
+    'acl' => [
         'enabled' => 1
-    ], */
+    ],
     /* 'auth' => [
         'namespace' => [
             'admin' => [
@@ -26,10 +26,10 @@ return [
             'application/resources',
         ]
     ],
-    'session' => [
+    /*'session' => [
         'name' => 'TEST',
         'save_path' => 'data/session'
-    ],
+    ],*/
     'translator' => [
         'adapter' => 'TranslatorArray',
         'options' => [

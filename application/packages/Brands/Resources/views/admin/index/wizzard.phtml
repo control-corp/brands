@@ -1,0 +1,112 @@
+<?php
+
+$this->extend('layouts/admin/default');
+
+$label = 'Генериране на марки';
+
+$this->section('title', $label);
+
+$this->hookToMenu('main', 'brands', $label);
+
+?>
+
+<h1><?php echo $label; ?></h1>
+
+<form class="form-horizontal" action="<?php echo route(); ?>" method="post" enctype="multipart/form-data">
+    <div style="margin-bottom: 20px">
+        <?php echo $this->form->btnSave; ?>
+        <?php echo $this->form->btnBack; ?>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="panel panel-default">
+                <div class="panel-heading">&nbsp;</div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <?php echo $this->form->name->renderLabel(); ?>
+                            <?php echo $this->form->name; ?>
+                        </div>
+                        <div class="col-md-6">
+                            <?php echo $this->form->countryId->renderLabel(); ?>
+                            <?php echo $this->form->countryId; ?>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <?php echo $this->form->typeId->renderLabel(); ?>
+                            <?php echo $this->form->typeId; ?>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <?php echo $this->form->requestNum->renderLabel(); ?>
+                            <?php echo $this->form->requestNum; ?>
+                        </div>
+                        <div class="col-md-3">
+                            <?php echo $this->form->requestDate->renderLabel(); ?>
+                            <?php echo $this->form->requestDate; ?>
+                        </div>
+                        <div class="col-md-3">
+                            <?php echo $this->form->registerNum->renderLabel(); ?>
+                            <?php echo $this->form->registerNum; ?>
+                        </div>
+                        <div class="col-md-3">
+                            <?php echo $this->form->registerDate->renderLabel(); ?>
+                            <?php echo $this->form->registerDate; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">Допълнителни настройки</div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <label class="control-label required">Снимка</label>
+                            <input type="file" name="image" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <?php echo $this->form->active; ?>
+                            <?php echo $this->form->active->getLabel(); ?>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <?php echo $this->form->notifierId->renderLabel(); ?>
+                            <?php echo $this->form->notifierId; ?>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <div class="col-md-12">
+                            <?php echo $this->form->classes->renderLabel(); ?>
+                            <?php echo $this->form->classes; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <?php echo $this->form->btnSave; ?>
+        <?php echo $this->form->btnBack; ?>
+    </div>
+</form>
+<?php $this->start('scripts'); ?>
+<script>
+$('.edit-status').on('click', function () {
+	$(this).closest('tr').find('td').each(function () {
+		var target = $(this).attr('data-target');
+		if (target) {
+			$('[name="' + target + '"]').val($(this).attr('data-value'));
+		}
+	});
+	$('.status-panel').effect('highlight', 1000);
+	return false;
+});
+</script>
+<?php $this->stop(); ?>

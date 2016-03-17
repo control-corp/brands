@@ -9,7 +9,7 @@ return [
         'Nomenclatures' => 'application/packages/Nomenclatures',
         'Pages' => 'application/packages/Pages',
         'UserManagement' => 'application/packages/UserManagement',
-        'MicroDebug' => 'library/Micro/packages/MicroDebug',
+        //'MicroDebug' => 'library/Micro/packages/MicroDebug',
         //'MicroMultiLanguage' => 'library/Micro/packages/MicroMultiLanguage',
     ]
 ];

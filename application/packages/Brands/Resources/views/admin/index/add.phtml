@@ -68,7 +68,17 @@ $this->hookToMenu('main', 'brands', $label);
                             <h3 style="margin: 0 0 10px 0">История на статуса</h3>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-hover">
-                                    <thead><tr><th>Статус</th><th>Дата</th><th>Пояснение</th></tr></thead>
+                                    <thead>
+                                    	<tr>
+                                    		<th>#</th>
+                                    		<th>Статус</th>
+                                    		<th style="width: 10%">Дата</th>
+                                    		<th style="width: 10%">Цена</th>
+                                    		<th>Пояснение</th>
+                                    		<th style="width: 5%"></th>
+                                    		<th style="width: 5%"></th>
+                                		</tr>
+                            		</thead>
                                 <?php if ($this->item->getId()) : ?>
                                     <tbody>
                                 <?php
@@ -76,9 +86,13 @@ $this->hookToMenu('main', 'brands', $label);
                                     $date = new \DateTime($row['date']);
                                 ?>
                                         <tr>
-                                            <td><?php echo $this->nomStatuses[$row['statusId']]; ?></td>
-                                            <td><?php echo $date->format('d.m.Y'); ?></td>
-                                            <td><?php echo $row['note']; ?></td>
+                                            <td><?php echo $row['id']; ?></td>
+                                            <td data-target="statusId" data-value="<?php echo $row['statusId']; ?>"><?php echo $this->nomStatuses[$row['statusId']]; ?></td>
+                                            <td data-target="statusDate" data-value="<?php echo $date->format('d.m.Y'); ?>"><?php echo $date->format('d.m.Y'); ?></td>
+                                            <td data-target="price" data-value="<?php echo $row['price']; ?>"><?php echo $this->item->getFormatedPrice($row['price']); ?></td>
+                                            <td data-target="statusNote" data-value="<?php echo $row['note']; ?>"><?php echo $row['note']; ?></td>
+                                            <td class="text-center"><a class="edit-status glyphicon glyphicon-edit" href="<?php echo route(); ?>"></a></td>
+                                            <td class="text-center"><a class="remove glyphicon glyphicon-trash" href="<?php echo route(\null, array('action' => 'delete-status', 'id' => $row['id'], 'brandId' => $this->item->getId())); ?>"></a></td>
                                         </tr>
                                 <?php endforeach; ?>
                                     </tbody>
@@ -86,30 +100,6 @@ $this->hookToMenu('main', 'brands', $label);
                                 </table>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                         <div class="col-md-12">
-                            <h3 style="margin: 0 0 10px 0">История на цените</h3>
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover">
-                                    <thead><tr><th>Цена</th><th>Дата</th><th>Коментар</th></tr></thead>
-                            <?php if ($this->item->getId()) : ?>
-                                    <tbody>
-                                <?php
-                                foreach ($this->item->getPriceHistory() as $row) :
-                                    $date = new \DateTime($row['date']);
-                                ?>
-                                        <tr>
-                                            <td><?php echo $row['price']; ?></td>
-                                            <td><?php echo $date->format('d.m.Y'); ?></td>
-                                            <td><?php echo $row['comment']; ?></td>
-                                        </tr>
-                                <?php endforeach; ?>
-                                    </tbody>
-                            <?php endif; ?>
-                                </table>
-                            </div>
-                         </div>
                     </div>
                 </div>
             </div>
@@ -122,8 +112,20 @@ $this->hookToMenu('main', 'brands', $label);
                         <div class="col-md-12">
                             <label class="control-label required">Снимка</label>
                             <input type="file" name="image" />
-                            <?php if ($this->item->getThumb() !== null) : ?>
-                            <img src="<?php echo 'uploads/brands/thumbs/' . $this->item->getId() . '.' . pathinfo($this->item->getImage(), PATHINFO_EXTENSION) . '?r=' . time(); ?>" />
+                            <?php
+                            if ($this->item->getThumb() !== null) :
+                                $suffix = $this->item->getId() . '.' . pathinfo($this->item->getImage(), PATHINFO_EXTENSION) . '?r=' . time();
+                            ?>
+                            <img style="max-width: 100%; cursor: pointer" data-toggle="modal" data-target="#brandImageModal<?php echo $this->item->getId(); ?>" src="<?php echo 'uploads/brands/thumbs/' . $suffix; ?>" />
+                            <div id="brandImageModal<?php echo $this->item->getId(); ?>" class="modal fade" tabindex="-1" role="dialog">
+                            	<div class="modal-dialog modal-lg">
+                            		<div class="modal-content">
+                            			<div class="modal-body">
+                            				<img src="<?php echo server_url(base_url('uploads/brands/' . $suffix)); ?>" class="img-responsive" />
+                            			</div>
+                            		</div>
+                            	</div>
+                            </div>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -149,7 +151,7 @@ $this->hookToMenu('main', 'brands', $label);
             </div>
             <div class="panel panel-default">
                 <div class="panel-heading">Статус на марката</div>
-                <div class="panel-body">
+                <div class="panel-body status-panel">
                     <div class="form-group">
                         <div class="col-md-12">
                             <?php echo $this->form->statusId->renderLabel(); ?>
@@ -164,31 +166,14 @@ $this->hookToMenu('main', 'brands', $label);
                     </div>
                     <div class="form-group">
                         <div class="col-md-12">
-                            <?php echo $this->form->statusNote->renderLabel(); ?>
-                            <?php echo $this->form->statusNote; ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">Цени към марката</div>
-                <div class="panel-body">
-                    <div class="form-group">
-                        <div class="col-md-12">
                             <?php echo $this->form->price->renderLabel(); ?>
                             <?php echo $this->form->price; ?>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-md-12">
-                            <?php echo $this->form->priceDate->renderLabel(); ?>
-                            <?php echo $this->form->priceDate; ?>
-                        </div>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <div class="col-md-12">
-                            <?php echo $this->form->priceComment->renderLabel(); ?>
-                            <?php echo $this->form->priceComment; ?>
+                            <?php echo $this->form->statusNote->renderLabel(); ?>
+                            <?php echo $this->form->statusNote; ?>
                         </div>
                     </div>
                 </div>
@@ -201,3 +186,17 @@ $this->hookToMenu('main', 'brands', $label);
         <?php echo $this->form->btnBack; ?>
     </div>
 </form>
+<?php $this->start('scripts'); ?>
+<script>
+$('.edit-status').on('click', function () {
+	$(this).closest('tr').find('td').each(function () {
+		var target = $(this).attr('data-target');
+		if (target) {
+			$('[name="' + target + '"]').val($(this).attr('data-value'));
+		}
+	});
+	$('.status-panel').effect('highlight', 1000);
+	return false;
+});
+</script>
+<?php $this->stop(); ?>

@@ -3,7 +3,6 @@
 namespace Brands\Model\Entity;
 
 use Micro\Model\EntityAbstract;
-use Brands\Model\Table\BrandsPricesRel;
 use Brands\Model\Table\BrandsStatusesRel;
 
 class Brand extends EntityAbstract
@@ -26,10 +25,7 @@ class Brand extends EntityAbstract
     protected $active = 1;
 
     protected $price;
-    protected $priceDate;
-    protected $priceComment;
 
-    protected $priceHistory;
     protected $statusHistory;
 
     protected $image;
@@ -199,26 +195,6 @@ class Brand extends EntityAbstract
         $this->price = $price;
     }
 
-    public function getPriceDate ()
-    {
-        return $this->priceDate;
-    }
-
-    public function setPriceDate ($priceDate)
-    {
-        $this->priceDate = $priceDate;
-    }
-
-    public function getPriceComment ()
-    {
-        return $this->priceComment;
-    }
-
-    public function setPriceComment ($priceComment)
-    {
-        $this->priceComment = $priceComment;
-    }
-
     public function getReNewDate ()
     {
         return $this->reNewDate;
@@ -229,21 +205,11 @@ class Brand extends EntityAbstract
         $this->reNewDate = $reNewDate;
     }
 
-    public function getPriceHistory()
-    {
-        if ($this->priceHistory === null) {
-            $rel = new BrandsPricesRel();
-            $this->priceHistory = $rel->getAdapter()->fetchAll($rel->select(true)->setIntegrityCheck(false)->where('brandId = ?', $this->getId())->order('date DESC'));
-        }
-
-        return $this->priceHistory;
-    }
-
     public function getStatusHistory()
     {
         if ($this->statusHistory === null) {
             $rel = new BrandsStatusesRel();
-            $this->statusHistory = $rel->getAdapter()->fetchAll($rel->select(true)->setIntegrityCheck(false)->where('brandId = ?', $this->getId())->order('date DESC'));
+            $this->statusHistory = $rel->getAdapter()->fetchAll($rel->select(true)->setIntegrityCheck(false)->where('brandId = ?', $this->getId())->order('id DESC'));
         }
 
         return $this->statusHistory;
@@ -274,7 +240,7 @@ class Brand extends EntityAbstract
                 if (!file_exists($thumb)) {
                     try {
                         $resizer = new \Micro\Image\Native($path);
-                        $resizer->resizeAndFill(50, 150);
+                        $resizer->resizeAndFill(config('thumb.width', 150), config('thumb.height', 90));
                         $resizer->save($thumb);
                     } catch (\Exception $e) {
                         $thumb = null;
@@ -284,5 +250,44 @@ class Brand extends EntityAbstract
         }
 
         return $thumb;
+    }
+
+    public function getFormatedPrice($price = null, \Nomenclatures\Model\Entity\Currency $currency = null)
+    {
+        if ($price === null) {
+            $price = $this->getPrice();
+        }
+
+        if (empty($price)) {
+            return '';
+        }
+
+        $countriesTable = new \Nomenclatures\Model\Table\Countries();
+        $currenciesModel = new \Nomenclatures\Model\Currencies();
+
+        $defaultCurrency =  config('currency.default');
+
+        $countryCurrencies = $countriesTable->getCountryCurrencies();
+
+        $currencyId = isset($countryCurrencies[$this->getCountryId()]) && $countryCurrencies[$this->getCountryId()]
+                      ? $countryCurrencies[$this->getCountryId()]
+                      : $defaultCurrency;
+
+        $currencySymbols = $currenciesModel->fetchCachedPairs(null, array('id', 'symbol'));
+        $symbol = isset($currencySymbols[$currencyId]) && $currencySymbols[$currencyId] ? $currencySymbols[$currencyId] : '';
+
+        if ($currency !== null) {
+
+            $currencyRates = $currenciesModel->fetchCachedPairs(null, array('id', 'rate'));
+            $rate = isset($currencyRates[$currencyId]) && $currencyRates[$currencyId] ? $currencyRates[$currencyId] : 1;
+
+            $symbol = $currency['symbol'];
+            $price  = $price * $currency['rate'] / $rate;
+
+        }
+
+        $price = round($price, 2);
+
+        return $price . ' ' . $symbol;
     }
 }

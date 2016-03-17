@@ -7,7 +7,7 @@ return [
             'localhost' => [
                 'adapter'  => 'mysqli',
                 'host'     => 'localhost',
-                'dbname'   => 'brands_micro',
+                'dbname'   => 'brands',
                 'username' => 'root',
                 'password' => '',
                 'charset'  => 'utf8'

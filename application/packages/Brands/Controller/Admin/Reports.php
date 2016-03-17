@@ -14,6 +14,7 @@ use Nomenclatures\Model\Statuses;
 use Micro\Application\Controller\Crud;
 use Micro\Database\Expr;
 use Micro\Http\Response\JsonResponse;
+use Nomenclatures\Model\Currencies;
 
 class Reports extends Crud
 {
@@ -137,7 +138,8 @@ class Reports extends Crud
                     if ($brandRow->getThumb()) {
                         $brandImages[$brandRow['typeId']] = array(
                             'path'  => $brandRow->getThumb(),
-                            'image' => 'uploads/brands/thumbs/' . $brandRow->getId() . '.' . pathinfo($brandRow->getImage(), PATHINFO_EXTENSION)
+                            'image' => 'uploads/brands/thumbs/' . $brandRow->getId() . '.' . pathinfo($brandRow->getImage(), PATHINFO_EXTENSION),
+                            'real'  => 'uploads/brands/' . $brandRow->getId() . '.' . pathinfo($brandRow->getImage(), PATHINFO_EXTENSION),
                         );
                     }
                 }
@@ -148,11 +150,18 @@ class Reports extends Crud
             return ['form' => $form, 'brands' => $brands];
         }
 
+        $currentCurrency = null;
+
+        if (isset($filters['currency'])) {
+            $currencyModel = new Currencies();
+            $currentCurrency = $currencyModel->find((int) $filters['currency']);
+        }
+
         $nomContinents = new Continents();
         $continents = $nomContinents->fetchCachedPairs(array('active' => 1), null, array('id' => 'ASC'));
 
         $nomTypes = new Types();
-        $types = $nomTypes->fetchCachedPairs(['active' => 1]);
+        $types = $nomTypes->fetchCachedPairs(['active' => 1], null, ['id' => 'ASC']);
 
         $nomCountries = new Countries();
         $nomCountries->addWhere('active', '1');
@@ -202,6 +211,8 @@ class Reports extends Crud
             'brandImages' => $brandImages,
             'statuses' => $statuses,
             'statusesColors' => $statusesColors,
+            'filters' => $filters,
+            'currentCurrency' => $currentCurrency
         ];
     }
 

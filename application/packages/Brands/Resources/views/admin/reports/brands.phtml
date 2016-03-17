@@ -2,12 +2,12 @@
 
 <h1>Марки</h1>
 
-<div class="row">
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">Филтри</div>
-            <div class="panel-body">
-                <form class="form-horizontal filter" action="<?php echo route(); ?>" method="post">
+<form class="form-horizontal filter" action="<?php echo route(); ?>" method="post">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">Филтри</div>
+                <div class="panel-body">
                     <div class="form-group">
                         <div class="col-md-12">
                             <?php echo $this->form->brandId->renderLabel(); ?>
@@ -16,113 +16,151 @@
                     </div>
                     <div class="form-group">
                         <div class="col-md-12">
-                            <input class="btn btn-primary" type="submit" name="filters[filter]" value="Филтриране" />
+                            <input class="btn btn-primary" type="submit" id="btnFilter" name="filters[filter]" value="Филтриране" />
                             <input class="btn btn-default" type="submit" name="filters[reset]" value="Нулиране" />
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
-    </div>
-<?php
-if (!empty($this->brands)) :
-    $brand = $this->form->brandId->getValue();
-?>
-    <div class="col-md-12 table-responsive">
-        <?php
-        $typesCount = count($this->types);
-        foreach ($this->continents as $continentId => $continent) :
-        ?>
-        <h3><?php echo $continent; ?></h3>
-        <table class="table table-hover table-bordered">
-            <thead>
-                <tr>
-                    <th style="width: 14%" class="text-center">Държава</th>
-                    <th style="width: 32%" class="text-center" colspan="<?php echo $typesCount; ?>"><?php echo $brand; ?><br />статус</th>
-                    <th style="width: 32%" class="text-center" colspan="<?php echo $typesCount; ?>"><?php echo $brand; ?><br />коментар</th>
-                    <th style="width: 32%" class="text-center" colspan="<?php echo $typesCount; ?>"><?php echo $brand; ?><br />Предприети действия</th>
-                </tr>
-                <tr>
-                    <th>
-                        <div>Общо държави: <?php echo (isset($this->countries[$continentId]) ? count($this->countries[$continentId]) : 0); ?></div>
-                        <div>Общо население: <div><?php echo (isset($this->populations[$continentId]) ? number_format($this->populations[$continentId], 0, ".", " ") : 0); ?></div></div>
-                    </th>
-                <?php
-                foreach (range(1, 3) as $i) :
-                    foreach ($this->types as $typeId => $type) :
-                ?>
-                    <th class="vtop text-center">
-                        <?php echo $type; ?>
-                    <?php if (isset($this->brandImages[$typeId]) && file_exists($this->brandImages[$typeId]['path'])) : ?>
-                        <div style="margin-top: 5px"><img src="<?php echo $this->brandImages[$typeId]['image'] . '?r=' . time(); ?>" /></div>
-                    <?php endif; ?>
-                    </th>
-                <?php
+    <?php
+    if (!empty($this->brands)) :
+        $brand = $this->form->brandId->getValue();
+    ?>
+		<div class="col-md-3">
+    		<label class="control-label">Валута</label>
+        	<select id="change-currency" class="form-control" name="filters[currency]">
+    			<?php echo \Micro\Application\Utils::buildOptions((new \Nomenclatures\Model\Currencies)->fetchCachedPairs(), (isset($this->filters['currency']) ? (int) $this->filters['currency'] : 0), 'Избери'); ?>
+        	</select>
+    	</div>
+        <div class="col-md-12 table-responsive">
+            <?php
+            $typesCount = count($this->types);
+            foreach ($this->continents as $continentId => $continent) :
+            ?>
+            <h3><?php echo $continent; ?></h3>
+            <table class="table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width: 14%" class="text-center">Държава</th>
+                        <th style="width: 32%" class="text-center" colspan="<?php echo $typesCount; ?>"><?php echo $brand; ?><br />Статус</th>
+                        <th style="width: 32%" class="text-center" colspan="<?php echo $typesCount; ?>"><?php echo $brand; ?><br />Коментар</th>
+                        <th style="width: 32%" class="text-center" colspan="<?php echo $typesCount; ?>"><?php echo $brand; ?><br />Предприети действия</th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <div>Общо държави: <?php echo (isset($this->countries[$continentId]) ? count($this->countries[$continentId]) : 0); ?></div>
+                            <div>Общо население: <div><?php echo (isset($this->populations[$continentId]) ? number_format($this->populations[$continentId], 0, ".", " ") : 0); ?></div></div>
+                        </th>
+                    <?php
+                    foreach (range(1, 3) as $i) :
+                        foreach ($this->types as $typeId => $type) :
+                    ?>
+                        <th class="vtop text-center">
+                            <?php echo $type; ?>
+                        <?php if (isset($this->brandImages[$typeId]) && file_exists($this->brandImages[$typeId]['path'])) : ?>
+                            <div style="margin-top: 5px">
+                            	<img style="width: 80px; cursor: pointer" data-toggle="modal" data-target="#brandImageModal<?php echo $typeId; ?>" src="<?php echo $this->brandImages[$typeId]['image'] . '?r=' . time(); ?>" />
+                        	</div>
+                            <div id="brandImageModal<?php echo $typeId; ?>" class="modal fade" tabindex="-1" role="dialog">
+                            	<div class="modal-dialog modal-lg">
+                            		<div class="modal-content">
+                            			<div class="modal-body">
+                            				<img src="<?php echo server_url(base_url($this->brandImages[$typeId]['real'])); ?>" class="img-responsive" />
+                            			</div>
+                            		</div>
+                            	</div>
+                            </div>
+                        <?php endif; ?>
+                        </th>
+                    <?php
+                        endforeach;
                     endforeach;
-                endforeach;
-                ?>
-                </tr>
-            </thead>
-            <tbody>
-        <?php
-        if (isset($this->countries[$continentId])) :
-            foreach ($this->countries[$continentId] as $countryId => $country) :
-        ?>
-                <tr style="background-color: <?php echo $country['color'] ? $country['color'] : '#FFFFFF'; ?>">
-                    <td><?php echo $country['ISO3166Code']; ?> <?php echo $country['name']; ?> <div><?php echo number_format($country['population'], 0, ".", " "); ?></div></td>
-                <?php foreach ($this->types as $typeId => $type) : ?>
-                    <td class="text-center">
-                    <?php
-                    if (isset($this->brands[$countryId][$typeId])) :
-                        $brandEntity = $this->brands[$countryId][$typeId];
-                        if (isset($this->statuses[$brandEntity['statusId']])) {
-                            echo '<div style="padding: 5px; background-color: ' . (isset($this->statusesColors[$brandEntity['statusId']]) ? $this->statusesColors[$brandEntity['statusId']] : '#ffffff') . '">';
-                            echo $this->statuses[$brandEntity['statusId']] . '<br />';
-                            $date = $brandEntity['statusDate'];
-                            if ($date) {
-                                $date = new \DateTime($date);
-                                echo $date->format('d.m.Y');
+                    ?>
+                    </tr>
+                </thead>
+                <tbody>
+            <?php
+            if (isset($this->countries[$continentId])) :
+                foreach ($this->countries[$continentId] as $countryId => $country) :
+            ?>
+                    <tr style="background-color: <?php echo $country['color'] ? $country['color'] : '#FFFFFF'; ?>">
+                        <td>
+                        	<?php echo $country['ISO3166Code']; ?> <?php echo $country['name']; ?>
+                        	<div>Население: <?php echo number_format($country['population'], 0, ".", " "); ?></div>
+                    		<?php
+                    		$totalPrice = 0;
+                    		$brandEntity = null;
+                    		foreach ($this->types as $typeId => $type) :
+                        		if (isset($this->brands[$countryId][$typeId])) :
+                                    $brandEntity = $this->brands[$countryId][$typeId];
+                    		        $totalPrice += $brandEntity->getPrice();
+                    	        endif;
+                            endforeach;
+                            if ($brandEntity && $totalPrice > 0) :
+                                echo '<div>Обща цена: ' . $brandEntity->getFormatedPrice($totalPrice, $this->currentCurrency) . '</div>';
+                            endif;
+                    		?>
+                    	</td>
+                    <?php foreach ($this->types as $typeId => $type) : ?>
+                        <td class="text-center">
+                        <?php
+                        if (isset($this->brands[$countryId][$typeId])) :
+                            $brandEntity = $this->brands[$countryId][$typeId];
+                            if (isset($this->statuses[$brandEntity['statusId']])) {
+                                echo '<div style="padding: 5px; background-color: ' . (isset($this->statusesColors[$brandEntity['statusId']]) ? $this->statusesColors[$brandEntity['statusId']] : '#ffffff') . '">';
+                                echo $this->statuses[$brandEntity['statusId']] . '<br />';
+                                $date = $brandEntity['statusDate'];
+                                if ($date) {
+                                    $date = new \DateTime($date);
+                                    echo $date->format('d.m.Y');
+                                }
+                                if ($brandEntity->getPrice()) {
+                                    echo '<br />Цена: ' . $brandEntity->getFormatedPrice(null, $this->currentCurrency);
+                                }
+                                echo '</div>';
                             }
-                            echo '</div>';
-                        }
-                    endif;
-                    ?>
-                    </td>
-                <?php endforeach; ?>
-                <?php foreach ($this->types as $typeId => $type) : ?>
-                    <td>
-                    <?php
-                    if (isset($this->brands[$countryId][$typeId])) :
-                    echo $this->brands[$countryId][$typeId]['statusNote'];
-                    endif;
-                    ?>
-                    </td>
-                <?php endforeach; ?>
-                <?php foreach ($this->types as $typeId => $type) : ?>
-                    <td>
-                    <?php
-                    if (isset($this->brands[$countryId][$typeId])) :
-                    echo $this->brands[$countryId][$typeId]['description'];
-                    endif;
-                    ?>
-                    </td>
-                <?php endforeach; ?>
-                </tr>
-        <?php
-            endforeach;
-        endif;
-        ?>
-            </tbody>
-        </table>
-        <?php endforeach; ?>
+                        endif;
+                        ?>
+                        </td>
+                    <?php endforeach; ?>
+                    <?php foreach ($this->types as $typeId => $type) : ?>
+                        <td>
+                        <?php
+                        if (isset($this->brands[$countryId][$typeId])) :
+                            echo $this->brands[$countryId][$typeId]['statusNote'];
+                        endif;
+                        ?>
+                        </td>
+                    <?php endforeach; ?>
+                    <?php foreach ($this->types as $typeId => $type) : ?>
+                        <td>
+                        <?php
+                        if (isset($this->brands[$countryId][$typeId])) :
+                            echo $this->brands[$countryId][$typeId]['description'];
+                        endif;
+                        ?>
+                        </td>
+                    <?php endforeach; ?>
+                    </tr>
+            <?php
+                endforeach;
+            endif;
+            ?>
+                </tbody>
+            </table>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
     </div>
-<?php endif; ?>
-</div>
-
+</form>
 <?php $this->section('scripts', '<script src="assets/js/typeahead/typeahead.js"></script>'); ?>
 
 <?php $this->start('scripts'); ?>
 <script>
+$('#change-currency').on('change', function () {
+	$('#btnFilter').trigger('click');
+});
 $('.typeahead').typeahead({
 	items: 9999,
 	ajax: {

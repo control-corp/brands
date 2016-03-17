@@ -21,16 +21,9 @@ return array(
             )
         ),
         'name' => array(
-            'type' => 'href',
             'options' => array(
                 'sourceField' => 'name',
                 'title'  => 'Име',
-                'reset'  => 0,
-                'params' => array(
-                    'controller' => 'index',
-                    'action' => 'edit',
-                    'id' => ':id'
-                )
             )
         ),
         'typeId' => array(

@@ -8,11 +8,118 @@ use Micro\Auth\Auth;
 use Micro\Http\Response\RedirectResponse;
 use Micro\Application\Security;
 use Micro\Form\Form;
+use Micro\Grid\Grid;
 use UserManagement\Model\Users;
+use Micro\Model\EntityInterface;
+use Micro\Application\Utils;
 
 class Index extends Controller
 {
     protected $scope = 'admin';
+
+    public function indexAction()
+    {
+        if ($this->request->isPost()) {
+            $post = $this->request->getPost();
+            if (isset($post['btnAdd'])) {
+                return new RedirectResponse(route(\null, ['action' => 'add', 'id' => \null, 'page' => \null]));
+            }
+        }
+
+        $model = new Users();
+
+        $grid = new Grid(
+            $model,
+            package_path('UserManagement', '/Resources/grids/admin/index.php')
+        );
+
+        $grid->getRenderer()->setView($this->view);
+
+        return new View('admin/index/index', ['grid' => $grid]);
+    }
+
+    public function addAction(EntityInterface $entity = \null)
+    {
+        $model = new Users();
+
+        if ($entity === \null) {
+            $entity = $model->createEntity();
+        }
+
+        $form = new Form(package_path('UserManagement', '/Resources/forms/admin/users-add.php'));
+
+        $form->populate($entity->toArray());
+
+        if ($entity->getId()) {
+            $form->password->setRequired(false);
+            $form->repassword->setRequired(false);
+        }
+
+        if ($this->request->isPost()) {
+
+            $post = $this->request->getPost();
+
+            if (isset($post['btnBack'])) {
+                return new RedirectResponse(route(\null, ['action' => 'index', 'id' => \null]));
+            }
+
+            $post = Utils::arrayMapRecursive('trim', $post);
+
+            $form->isValid($post);
+
+            if (!$form->hasErrors()) {
+
+                $post = Utils::arrayMapRecursive('trim', $post, true);
+
+                if (array_key_exists('password', $post)) {
+                    if ($post['password']) {
+                        $post['password'] = Security::hash($post['password']);
+                    } else {
+                        unset($post['password']);
+                    }
+                }
+
+                $entity->setFromArray($post);
+
+                try {
+                    $model->save($entity);
+
+                    if (isset($post['btnApply'])) {
+                        $redirectResponse = new RedirectResponse(route(\null, ['action' => 'edit', 'id' => $entity[$model->getIdentifier()]]));
+                    } else {
+                        $redirectResponse = new RedirectResponse(route(\null, ['action' => 'index', 'id' => \null]));
+                    }
+
+                    return $redirectResponse->withFlash('Информацията е записана');
+
+                } catch (\Exception $e) {
+
+                    if ($entity->getId()) {
+                        $redirectResponse = new RedirectResponse(route(\null, ['action' => 'edit', 'id' => $entity->getId()]));
+                    } else {
+                        $redirectResponse = new RedirectResponse(route(\null, ['action' => 'add', 'id' => \null]));
+                    }
+
+                    return $redirectResponse->withFlash((env('development') ? $e->getMessage() : 'Възникна грешка. Опитайте по-късно'), 'danger');
+                }
+            }
+        }
+
+        return new View('admin/index/add', ['form' => $form, 'item' => $entity]);
+    }
+
+    public function editAction()
+    {
+        $model = new Users();
+
+        $entity = $model->find((int) $this->request->getParam('id', 0));
+
+        if ($entity === \null) {
+            throw new \Exception(sprintf('Записът не е намерен'), 404);
+        }
+
+        return $this->addAction($entity);
+    }
 
     public function profileAction()
     {
