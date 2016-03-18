@@ -4,7 +4,7 @@ return [
     'routes' => [
         'home' => [
             'pattern' => '/',
-            'handler' => 'App\Controller\Front\Index@index'
+            'handler' => 'UserManagement\Controller\Admin\Index@login'
         ],
         'admin-login' => [
             'pattern' => '/admin/login',

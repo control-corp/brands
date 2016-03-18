@@ -1,0 +1,110 @@
+<?php
+
+$this->extend('layouts/admin/default');
+
+$label = ($this->item['id'] ? 'Редактиране' : 'Добавяне');
+
+$this->section('title', $label);
+
+$this->hookToMenu('main', 'designs', $label);
+
+?>
+
+<h1><?php echo $label; ?></h1>
+
+<form class="form-horizontal" action="<?php echo route(); ?>" method="post" enctype="multipart/form-data">
+    <div style="margin-bottom: 20px">
+        <?php echo $this->form->btnSave; ?>
+        <?php echo $this->form->btnApply; ?>
+        <?php echo $this->form->btnBack; ?>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="panel panel-default">
+                <div class="panel-heading">&nbsp;</div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-md-4">
+                            <?php echo $this->form->name->renderLabel(); ?>
+                            <?php echo $this->form->name; ?>
+                        </div>
+                        <div class="col-md-4">
+                            <?php echo $this->form->countryId->renderLabel(); ?>
+                            <?php echo $this->form->countryId; ?>
+                        </div>
+                        <div class="col-md-4">
+                            <?php echo $this->form->date->renderLabel(); ?>
+                            <?php echo $this->form->date; ?>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <?php echo $this->form->description->renderLabel(); ?>
+                            <?php echo $this->form->description; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">Допълнителни настройки</div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <label class="control-label required">Снимка</label>
+                            <input type="file" name="image" />
+                            <?php
+                            if ($this->item->getThumb() !== null) :
+                                $suffix = $this->item->getId() . '.' . pathinfo($this->item->getImage(), PATHINFO_EXTENSION) . '?r=' . time();
+                            ?>
+                            <img style="max-width: 100%; cursor: pointer" data-toggle="modal" data-target="#designImageModal<?php echo $this->item->getId(); ?>" src="<?php echo 'uploads/designs/thumbs/' . $suffix; ?>" />
+                            <div id="designImageModal<?php echo $this->item->getId(); ?>" class="modal fade" tabindex="-1" role="dialog">
+                            	<div class="modal-dialog modal-lg">
+                            		<div class="modal-content">
+                            			<div class="modal-body">
+                            				<img src="<?php echo server_url(base_url('uploads/designs/' . $suffix)); ?>" class="img-responsive" />
+                            			</div>
+                            		</div>
+                            	</div>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <?php echo $this->form->active; ?>
+                            <?php echo $this->form->active->getLabel(); ?>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12" style="margin-bottom: 0;">
+                            <?php echo $this->form->notifierId->renderLabel(); ?>
+                            <?php echo $this->form->notifierId; ?>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <?php echo $this->form->statusId->renderLabel(); ?>
+                            <?php echo $this->form->statusId; ?>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                        	<?php echo $this->form->price->renderLabel(); ?>
+                        	<div class="input-group">
+                                <span class="input-group-addon"><?php echo $this->item->getCurrencySymbol(); ?></span>
+                                <?php echo $this->form->price; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <?php echo $this->form->btnSave; ?>
+        <?php echo $this->form->btnApply; ?>
+        <?php echo $this->form->btnBack; ?>
+    </div>
+</form>

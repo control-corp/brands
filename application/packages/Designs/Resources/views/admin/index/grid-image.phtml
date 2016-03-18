@@ -1,0 +1,15 @@
+<?php
+if ($this->item->getThumb() !== null) :
+    $suffix = $this->item->getId() . '.' . pathinfo($this->item->getImage(), PATHINFO_EXTENSION) . '?r=' . time();
+?>
+<img style="width: 80px; cursor: pointer" data-toggle="modal" data-target="#designImageModal<?php echo $this->item->getId(); ?>" src="<?php echo 'uploads/designs/thumbs/' . $suffix; ?>" />
+<div id="designImageModal<?php echo $this->item->getId(); ?>" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-body text-center">
+				<img src="<?php echo server_url(base_url('uploads/designs/' . $suffix)); ?>" class="img-responsive" />
+			</div>
+		</div>
+	</div>
+</div>
+<?php endif; ?>

@@ -4,6 +4,8 @@ return [
     'packages' => [
         'App' => 'application/packages/App',
         'Brands' => 'application/packages/Brands',
+        'Designs' => 'application/packages/Designs',
+        'Domains' => 'application/packages/Domains',
         'Mail' => 'application/packages/Mail',
         'Navigation' => 'application/packages/Navigation',
         'Nomenclatures' => 'application/packages/Nomenclatures',
