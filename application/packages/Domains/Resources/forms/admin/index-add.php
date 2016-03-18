@@ -44,7 +44,15 @@ return array(
                 'label' => 'Крайна дата',
                 'required' => 1,
                 'labelClass' => 'control-label',
-                'class' => 'datepicker form-control'
+                'class' => 'datepicker form-control',
+                'validators' => array(
+                    array(
+                        'validator' => 'DateIsNotEarlier',
+                        'options'   => array(
+                            'field' => 'dateStart'
+                        )
+                    )
+                )
             )
         ),
         'notifierId' => array(

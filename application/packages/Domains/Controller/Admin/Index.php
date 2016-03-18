@@ -39,20 +39,4 @@ class Index extends Crud
 
         $this->view->assign('form', $form);
     }
-
-    /**
-     * {@inheritDoc}
-     * @see \Micro\Application\Controller\Crud::postValidate()
-     */
-    protected function postValidate(Form $form, EntityInterface $item, array $data)
-    {
-        if ($data['dateStart'] && $data['dateEnd']) {
-            $dateStart = new \DateTime($data['dateStart']);
-            $dateEnd = new \DateTime($data['dateEnd']);
-            $diffInterval = $dateStart->diff($dateEnd);
-            if ($diffInterval->invert) {
-                $form->dateEnd->addError('Крайната дата трябва да бъде след началната');
-            }
-        }
-    }
 }

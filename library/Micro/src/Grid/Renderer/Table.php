@@ -140,17 +140,19 @@ class Table implements RendererInterface
                     continue;
                 }
 
-                $columnRep = '<td' . ($column->getStyle() ? ' style="' . $column->getStyle() . '"' : '') . ' class="table-cell' . ($column->getClass() ? ' ' . $column->getClass() : '') . '">%s</td>';
+                $output .= '<td' . ($column->getStyle() ? ' style="' . $column->getStyle() . '"' : '') . ' class="table-cell' . ($column->getClass() ? ' ' . $column->getClass() : '') . '">';
 
                 try {
-                    $output .= sprintf($columnRep, $column->render());
+                    $output .= $column->render();
                 } catch (\Exception $e) {
                     if (env('development')) {
-                        $output .= sprintf($columnRep, $e->getMessage());
+                        $output .= $e->getMessage();
                     } else {
-                        $output .= sprintf($columnRep, '&nbsp;');
+                        $output .= '&nbsp;';
                     }
                 }
+
+                $output .= '</td>';
             }
 
             $output .= '</tr>';
