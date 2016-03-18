@@ -68,12 +68,6 @@ return [
                 'class' => 'form-control',
             ],
         ],
-        'classA' => [
-            'type' => 'checkbox',
-            'options' => [
-                'label' => 'Клас А',
-            ],
-        ],
         'active' => [
             'type' => 'checkbox',
             'options' => [

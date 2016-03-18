@@ -290,4 +290,22 @@ class Brand extends EntityAbstract
 
         return $price . ' ' . $symbol;
     }
+
+    public function getCurrencySymbol()
+    {
+        $countriesTable = new \Nomenclatures\Model\Table\Countries();
+        $currenciesModel = new \Nomenclatures\Model\Currencies();
+
+        $defaultCurrency =  config('currency.default');
+
+        $countryCurrencies = $countriesTable->getCountryCurrencies();
+
+        $currencyId = isset($countryCurrencies[$this->getCountryId()]) && $countryCurrencies[$this->getCountryId()]
+                      ? $countryCurrencies[$this->getCountryId()]
+                      : $defaultCurrency;
+
+        $currencySymbols = $currenciesModel->fetchCachedPairs(null, array('id', 'symbol'));
+
+        return isset($currencySymbols[$currencyId]) && $currencySymbols[$currencyId] ? $currencySymbols[$currencyId] : '';
+    }
 }

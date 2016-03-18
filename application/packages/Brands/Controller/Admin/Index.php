@@ -9,6 +9,7 @@ use Micro\Model\EntityInterface;
 use Micro\Form\Form;
 use Micro\Database\Expr;
 use Micro\Http\Response\RedirectResponse;
+use Nomenclatures\Model\Countries;
 
 class Index extends Crud
 {
@@ -81,7 +82,7 @@ class Index extends Crud
                 $this->getModel()->addWhere(new Expr('
                     reNewDate IS NOT NULL
                     AND reNewDate >= "' . $now . '"
-                    AND TIMESTAMPDIFF(MONTH, "' . $now . '", reNewDate) + 1 = ' . $months . '
+                    AND TIMESTAMPDIFF(MONTH, "' . $now . '", reNewDate) + 1 <= ' . $months . '
                 '));
             }
         }
@@ -146,6 +147,14 @@ class Index extends Crud
         $form->statusDate->setValue("");
         $form->statusNote->setValue("");
         $form->price->setValue("");
+
+        if ($item->getId() && $item->getCountryId()) {
+            $countriesModel = new Countries();
+            $country = $countriesModel->find((int) $item->getCountryId());
+            if ($country) {
+                $form->price->setValue($country['price']);
+            }
+        }
     }
 
     /**

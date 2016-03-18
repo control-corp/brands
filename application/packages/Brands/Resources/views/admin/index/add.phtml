@@ -89,7 +89,7 @@ $this->hookToMenu('main', 'brands', $label);
                                             <td><?php echo $row['id']; ?></td>
                                             <td data-target="statusId" data-value="<?php echo $row['statusId']; ?>"><?php echo $this->nomStatuses[$row['statusId']]; ?></td>
                                             <td data-target="statusDate" data-value="<?php echo $date->format('d.m.Y'); ?>"><?php echo $date->format('d.m.Y'); ?></td>
-                                            <td data-target="price" data-value="<?php echo $row['price']; ?>"><?php echo $this->item->getFormatedPrice($row['price']); ?></td>
+                                            <td data-target="price" data-value="<?php echo $row['price']; ?>"><?php echo $row['price'] ? $this->item->getFormatedPrice($row['price']) : ''; ?></td>
                                             <td data-target="statusNote" data-value="<?php echo $row['note']; ?>"><?php echo $row['note']; ?></td>
                                             <td class="text-center"><a class="edit-status glyphicon glyphicon-edit" href="<?php echo route(); ?>"></a></td>
                                             <td class="text-center"><a class="remove glyphicon glyphicon-trash" href="<?php echo route(\null, array('action' => 'delete-status', 'id' => $row['id'], 'brandId' => $this->item->getId())); ?>"></a></td>
@@ -166,8 +166,11 @@ $this->hookToMenu('main', 'brands', $label);
                     </div>
                     <div class="form-group">
                         <div class="col-md-12">
-                            <?php echo $this->form->price->renderLabel(); ?>
-                            <?php echo $this->form->price; ?>
+                        	<?php echo $this->form->price->renderLabel(); ?>
+                        	<div class="input-group">
+                                <span class="input-group-addon"><?php echo $this->item->getCurrencySymbol(); ?></span>
+                                <?php echo $this->form->price; ?>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">

@@ -156,6 +156,10 @@ class Index extends Controller
 
     public function loginAction()
     {
+        if (identity()) {
+            return new RedirectResponse(route('admin', [], \true));
+        }
+
         $form = new Form(package_path('UserManagement', 'Resources/forms/admin/login.php'));
 
         if ($this->request->isPost()) {

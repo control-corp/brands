@@ -80,17 +80,6 @@ return array(
                 'headStyle' => 'width: 15%'
             )
         ),
-        'classA' => array(
-            'type' => 'boolean',
-            'options' => array(
-                'sourceField' => 'classA',
-                'headStyle' => 'width: 5%',
-                'title' => 'Клас&nbsp;А',
-                'class' => 'text-center',
-                'true' => '<span class="fa fa-check"></span>',
-                'false' => '<span class="fa fa-ban"></span>',
-            )
-        ),
         'active' => array(
             'type' => 'boolean',
             'options' => array(
