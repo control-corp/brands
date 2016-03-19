@@ -5,7 +5,6 @@ namespace Domains\Controller\Admin;
 use Micro\Application\Controller\Crud;
 use Micro\Http\Response;
 use Micro\Form\Form;
-use Micro\Model\EntityInterface;
 
 class Index extends Crud
 {
