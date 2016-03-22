@@ -5,6 +5,7 @@ namespace Brands\Controller\Admin;
 use Micro\Form\Form;
 use Micro\Grid\Grid;
 use Micro\Http\Response;
+use Micro\Http\Response\FileResponse;
 
 use Nomenclatures\Model\Continents;
 use Nomenclatures\Model\Types;
@@ -433,6 +434,6 @@ class Reports extends Crud
         $writer = \PHPExcel_IOFactory::createWriter ($phpExcel, 'Excel5');
         $writer->save('data/brand.xls');
 
-        die;
+        return new FileResponse('data/brand.xls');
     }
 }

@@ -33,6 +33,10 @@
     			<?php echo \Micro\Application\Utils::buildOptions((new \Nomenclatures\Model\Currencies)->fetchCachedPairs(), (isset($this->filters['currency']) ? (int) $this->filters['currency'] : 0), 'Избери'); ?>
         	</select>
     	</div>
+    	<div class="col-md-3">
+    		<label class="control-label" style="display: block">&nbsp;</label>
+    		<a href="<?php echo route(\null, ['action' => 'export']); ?>" class="btn btn-primary" style="float: left; display: block">Export</a>
+    	</div>
         <div class="col-md-12 table-responsive">
             <?php
             $typesCount = count($this->types);
