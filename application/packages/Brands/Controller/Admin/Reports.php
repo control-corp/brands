@@ -236,6 +236,26 @@ class Reports extends Crud
 
     public function exportAction()
     {
+        function addHeaderRow($excelActiveSheet, $index, $value = '', $size = 10, $bold = true, $horizontal = null)
+        {
+            if ($horizontal == null) {
+                $horizontal = \PHPExcel_Style_Alignment::HORIZONTAL_CENTER;
+            }
+
+            $parts = explode(':', $index);
+
+            $excelActiveSheet->setCellValue($parts[0], $value);
+
+            if (isset($parts[1])) {
+                $excelActiveSheet->mergeCells($index);
+            }
+
+            $excelActiveSheet->getStyle($index)->getFont()->setBold($bold);
+            $excelActiveSheet->getStyle($index)->getFont()->setSize($size);
+            $excelActiveSheet->getStyle($index)->getAlignment()->setHorizontal($horizontal);
+            $excelActiveSheet->getStyle($index)->getAlignment()->setWrapText(true);
+        }
+
         $brands = $this->brandsAction();
 
         if ($brands instanceof Response || empty($brands['brands'])) {
@@ -253,51 +273,162 @@ class Reports extends Crud
         $countTypes = count($brands['types']);
         $count = $countTypes * 3 + 1;
 
+        addHeaderRow($sheet, 'A' . $rowIndex . ':' . $chars[$count - 1] . $rowIndex, $brands['form']->brandId->getValue(), 30);
+        $rowIndex++;
+
         foreach ($brands['continents'] as $continentId => $continent) {
 
             $cellIndex = 'A';
+            addHeaderRow($sheet, $cellIndex . $rowIndex . ':' . $chars[$count - 1] . $rowIndex, $continent, 14);
 
-            $sheet->setCellValue($cellIndex . $rowIndex, $continent);
-            $sheet->mergeCells($cellIndex . $rowIndex . ':' . $chars[$count - 1] . $rowIndex);
             $rowIndex++;
 
-            $sheet->setCellValue($cellIndex . $rowIndex, 'Държава');
+            addHeaderRow($sheet, $cellIndex . $rowIndex, 'Държава', 12);
 
             $cellIndex++;
-            $sheet->setCellValue($cellIndex . $rowIndex, 'Статус');
-            $mergeIndex = $cellIndex . $rowIndex . ':' . $chars[array_search($cellIndex, $chars) + $countTypes - 1] . $rowIndex;
-            $sheet->mergeCells($mergeIndex);
+            addHeaderRow($sheet, $cellIndex . $rowIndex . ':' . $chars[array_search($cellIndex, $chars) + $countTypes - 1] . $rowIndex, 'Статус', 12);
 
             $cellIndex = $chars[array_search($cellIndex, $chars) + $countTypes - 1];
             $cellIndex++;
-            $sheet->setCellValue($cellIndex . $rowIndex, 'Коментар');
-            $mergeIndex = $cellIndex . $rowIndex . ':' . $chars[array_search($cellIndex, $chars) + $countTypes - 1] . $rowIndex;
-            $sheet->mergeCells($mergeIndex);
+            addHeaderRow($sheet, $cellIndex . $rowIndex . ':' . $chars[array_search($cellIndex, $chars) + $countTypes - 1] . $rowIndex, 'Коментар', 12);
 
             $cellIndex = $chars[array_search($cellIndex, $chars) + $countTypes - 1];
             $cellIndex++;
-            $sheet->setCellValue($cellIndex . $rowIndex, 'Предприети действия');
-            $mergeIndex = $cellIndex . $rowIndex . ':' . $chars[array_search($cellIndex, $chars) + $countTypes - 1] . $rowIndex;
-            $sheet->mergeCells($mergeIndex);
+            addHeaderRow($sheet, $cellIndex . $rowIndex . ':' . $chars[array_search($cellIndex, $chars) + $countTypes - 1] . $rowIndex, 'Предприети действия', 12);
 
             $rowIndex++;
 
             $cellIndex = 'A';
-            $sheet->setCellValue($cellIndex . $rowIndex, "Общо държави:\nОбщо население:");
-            $sheet->getStyle('A' . $rowIndex)->getAlignment()->setWrapText(true);
-            $sheet->getColumnDimension('A')->setAutoSize(true);
+            addHeaderRow($sheet, $cellIndex . $rowIndex, "Общо държави: " . (isset($brands['countries'][$continentId]) ? count($brands['countries'][$continentId]) : 0) . "\nОбщо население: " . (isset($brands['populations'][$continentId]) ? number_format($brands['populations'][$continentId], 0, ".", " ") : 0), 10, true, \PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+            $sheet->getStyle($cellIndex . $rowIndex)->getAlignment()->setWrapText(true);
+            $sheet->getColumnDimension($cellIndex)->setAutoSize(true);
 
             $cellIndex++;
             foreach (range(1, 3) as $i) {
                 foreach ($brands['types'] as $type) {
-                    $sheet->setCellValue($cellIndex . $rowIndex, $type);
-                    $sheet->getColumnDimension($cellIndex)->setAutoSize(true);
+                    addHeaderRow($sheet, $cellIndex . $rowIndex, $type);
+                    $sheet->getStyle($cellIndex . $rowIndex)->getAlignment()->setWrapText(true);
+                    $sheet->getColumnDimension($cellIndex)->setWidth(20);
                     $cellIndex++;
                 }
             }
 
             $rowIndex++;
+
+            if (isset($brands['countries'][$continentId])) {
+
+                foreach ($brands['countries'][$continentId] as $countryId => $country) {
+
+                    $cellIndex = 'A';
+
+                    $cellValue = $country['ISO3166Code'] . ' ' . $country['name'] . "\nНаселение: " . number_format($country['population'], 0, ".", " ");
+
+                    $totalPrice = 0;
+                    $brandEntity = null;
+                    foreach ($brands['types'] as $typeId => $type) {
+                        if (isset($brands['brands'][$countryId][$typeId])) {
+                            $brandEntity = $brands['brands'][$countryId][$typeId];
+                            $totalPrice += $brandEntity->getPrice();
+                        }
+                    }
+
+                    if ($brandEntity && $totalPrice > 0) {
+                        $cellValue .= "\nОбща цена: " . $brandEntity->getFormatedPrice($totalPrice, $brands['currentCurrency']);
+                    }
+
+                    $sheet->setCellValue($cellIndex . $rowIndex, $cellValue);
+                    $sheet->getStyle($cellIndex . $rowIndex)->getAlignment()->setWrapText(true);
+
+                    $cellIndex++;
+
+                    foreach ($brands['types'] as $typeId => $type) {
+
+                        $cellValue = "";
+
+                        if (isset($brands['brands'][$countryId][$typeId])) {
+                            $brandEntity = $brands['brands'][$countryId][$typeId];
+                            if (isset($brands['statuses'][$brandEntity['statusId']])) {
+                                $cellValue .= $brands['statuses'][$brandEntity['statusId']];
+                                $date = $brandEntity['statusDate'];
+                                if ($date) {
+                                    $date = new \DateTime($date);
+                                    $cellValue .= "\n" . $date->format('d.m.Y');
+                                }
+                                if ($brandEntity->getPrice()) {
+                                    $cellValue .= "\nЦена: " . $brandEntity->getFormatedPrice(null, $brands['currentCurrency']);
+                                }
+                            }
+                        }
+
+                        $sheet->setCellValue($cellIndex . $rowIndex, $cellValue);
+                        $sheet->getStyle($cellIndex . $rowIndex)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                        $sheet->getStyle($cellIndex . $rowIndex)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+                        $sheet->getStyle($cellIndex . $rowIndex)->getAlignment()->setWrapText(true);
+
+                        /* if (isset($brands['brands'][$countryId][$typeId])) {
+
+                            $brandEntity = $brands['brands'][$countryId][$typeId];
+                            $color = (isset($brands['statusesColors'][$brandEntity['statusId']]) ? $brands['statusesColors'][$brandEntity['statusId']] : '#FFFFFF');
+
+                            if ($color) {
+
+                                if ($color[0] == '#') {
+                                    $color = array('rgb' => substr($color, 1));
+                                } else {
+                                    $color = array('argb' => $color);
+                                }
+
+                                $sheet->getStyle($cellIndex . $rowIndex)->getFill()->applyFromArray(
+                                    array(
+                                        'type'  => \PHPExcel_Style_Fill::FILL_SOLID,
+                                        'startcolor' => $color
+                                    )
+                                );
+                            }
+                        } */
+
+                        $cellIndex++;
+
+                    }
+
+                    foreach ($brands['types'] as $typeId => $type) {
+
+                        $cellValue = "";
+
+                        if (isset($brands['brands'][$countryId][$typeId])) {
+                            $cellValue .= $brands['brands'][$countryId][$typeId]['statusNote'];
+                        }
+
+                        $sheet->setCellValue($cellIndex . $rowIndex, strip_tags(str_replace(array("<br />", "<br>"), "\n", $cellValue)));
+                        $sheet->getStyle($cellIndex . $rowIndex)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+                        $sheet->getStyle($cellIndex . $rowIndex)->getAlignment()->setWrapText(true);
+
+                        $cellIndex++;
+                    }
+
+                    foreach ($brands['types'] as $typeId => $type) {
+
+                        $cellValue = "";
+
+                        if (isset($brands['brands'][$countryId][$typeId])) {
+                            $cellValue .= $brands['brands'][$countryId][$typeId]['description'];
+                        }
+
+                        $sheet->setCellValue($cellIndex . $rowIndex, strip_tags(str_replace(array("<br />", "<br>"), "\n", $cellValue)));
+                        $sheet->getStyle($cellIndex . $rowIndex)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+                        $sheet->getStyle($cellIndex . $rowIndex)->getAlignment()->setWrapText(true);
+
+                        $cellIndex++;
+                    }
+
+                    $rowIndex++;
+                }
+            }
+
+            $rowIndex++;
         }
+
+        $sheet->setSelectedCell('A1');
 
         $writer = \PHPExcel_IOFactory::createWriter ($phpExcel, 'Excel5');
         $writer->save('data/brand.xls');
