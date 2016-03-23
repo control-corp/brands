@@ -55,7 +55,7 @@ class MicroLoader
             return;
         }
 
-        static::$paths[ rtrim($prefix, '\\') . '\\'] = rtrim($path, '/\\');
+        static::$paths[rtrim($prefix, '\\') . '\\'] = rtrim($path, '/\\');
     }
 
     public static function getFiles()

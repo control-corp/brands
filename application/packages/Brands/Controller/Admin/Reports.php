@@ -237,6 +237,9 @@ class Reports extends Crud
 
     public function exportAction()
     {
+        $isAdmin = in_array(\UserManagement\Constants::GROUP_ADMINISTRATOR, identity()->getGroups());
+        $maxRange = ($isAdmin ? 2 : 1);
+
         function addHeaderRow($excelActiveSheet, $index, $value = '', $size = 10, $bold = true, $horizontal = null)
         {
             if ($horizontal == null) {
@@ -272,7 +275,7 @@ class Reports extends Crud
         $chars = range('A', 'Z');
 
         $countTypes = count($brands['types']);
-        $count = $countTypes * 3 + 1;
+        $count = $countTypes * $maxRange + 1;
 
         addHeaderRow($sheet, 'A' . $rowIndex . ':' . $chars[$count - 1] . $rowIndex, $brands['form']->brandId->getValue(), 30);
         $rowIndex++;
@@ -289,13 +292,11 @@ class Reports extends Crud
             $cellIndex++;
             addHeaderRow($sheet, $cellIndex . $rowIndex . ':' . $chars[array_search($cellIndex, $chars) + $countTypes - 1] . $rowIndex, 'Статус', 12);
 
-            $cellIndex = $chars[array_search($cellIndex, $chars) + $countTypes - 1];
-            $cellIndex++;
-            addHeaderRow($sheet, $cellIndex . $rowIndex . ':' . $chars[array_search($cellIndex, $chars) + $countTypes - 1] . $rowIndex, 'Коментар', 12);
-
-            $cellIndex = $chars[array_search($cellIndex, $chars) + $countTypes - 1];
-            $cellIndex++;
-            addHeaderRow($sheet, $cellIndex . $rowIndex . ':' . $chars[array_search($cellIndex, $chars) + $countTypes - 1] . $rowIndex, 'Предприети действия', 12);
+            if ($isAdmin) {
+                $cellIndex = $chars[array_search($cellIndex, $chars) + $countTypes - 1];
+                $cellIndex++;
+                addHeaderRow($sheet, $cellIndex . $rowIndex . ':' . $chars[array_search($cellIndex, $chars) + $countTypes - 1] . $rowIndex, 'Предприети действия', 12);
+            }
 
             $rowIndex++;
 
@@ -305,7 +306,7 @@ class Reports extends Crud
             $sheet->getColumnDimension($cellIndex)->setAutoSize(true);
 
             $cellIndex++;
-            foreach (range(1, 3) as $i) {
+            foreach (range(1, $maxRange) as $i) {
                 foreach ($brands['types'] as $type) {
                     addHeaderRow($sheet, $cellIndex . $rowIndex, $type);
                     $sheet->getStyle($cellIndex . $rowIndex)->getAlignment()->setWrapText(true);
@@ -358,6 +359,9 @@ class Reports extends Crud
                                 if ($brandEntity->getPrice()) {
                                     $cellValue .= "\nЦена: " . $brandEntity->getFormatedPrice(null, $brands['currentCurrency']);
                                 }
+                                if ($brandEntity->getStatusNote()) {
+                                    $cellValue .= "\nКоментар: " . $brandEntity->getStatusNote();
+                                }
                             }
                         }
 
@@ -392,34 +396,21 @@ class Reports extends Crud
 
                     }
 
-                    foreach ($brands['types'] as $typeId => $type) {
+                    if ($isAdmin) {
+                        foreach ($brands['types'] as $typeId => $type) {
 
-                        $cellValue = "";
+                            $cellValue = "";
 
-                        if (isset($brands['brands'][$countryId][$typeId])) {
-                            $cellValue .= $brands['brands'][$countryId][$typeId]['statusNote'];
+                            if (isset($brands['brands'][$countryId][$typeId])) {
+                                $cellValue .= $brands['brands'][$countryId][$typeId]['description'];
+                            }
+
+                            $sheet->setCellValue($cellIndex . $rowIndex, strip_tags(str_replace(array("<br />", "<br>"), "\n", $cellValue)));
+                            $sheet->getStyle($cellIndex . $rowIndex)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+                            $sheet->getStyle($cellIndex . $rowIndex)->getAlignment()->setWrapText(true);
+
+                            $cellIndex++;
                         }
-
-                        $sheet->setCellValue($cellIndex . $rowIndex, strip_tags(str_replace(array("<br />", "<br>"), "\n", $cellValue)));
-                        $sheet->getStyle($cellIndex . $rowIndex)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
-                        $sheet->getStyle($cellIndex . $rowIndex)->getAlignment()->setWrapText(true);
-
-                        $cellIndex++;
-                    }
-
-                    foreach ($brands['types'] as $typeId => $type) {
-
-                        $cellValue = "";
-
-                        if (isset($brands['brands'][$countryId][$typeId])) {
-                            $cellValue .= $brands['brands'][$countryId][$typeId]['description'];
-                        }
-
-                        $sheet->setCellValue($cellIndex . $rowIndex, strip_tags(str_replace(array("<br />", "<br>"), "\n", $cellValue)));
-                        $sheet->getStyle($cellIndex . $rowIndex)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
-                        $sheet->getStyle($cellIndex . $rowIndex)->getAlignment()->setWrapText(true);
-
-                        $cellIndex++;
                     }
 
                     $rowIndex++;
